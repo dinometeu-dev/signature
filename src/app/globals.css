@@ -1,26 +1,36 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Colors */
+  --color-material: rgba(255, 255, 255, 0.55);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-button-material: rgba(196, 196, 196, 0.35);
+  --color-button-material-hover: rgba(255, 255, 255, 0.25);
+  --color-button-elements: rgba(26, 56, 84, 1);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-slide: rgba(255, 255, 255, 0.8);
+
+
+  /* Border radius */
+  --radius-material: 30px;
+  --radius-slide: 50px;
+
+  /* Background Blur */
+  --blur-material: 45px;
+  --blur-slide: 40px;
+
+  /* Shadows */
+  --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
+
+  /* Spacings */
+  --spacing-slide-height: 796px;
+  --spacing-slide-width: 1192px;
+
+  /* Grid */
+  --grid-template-cols-main-layout: 20% 1fr 20%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  width: 100vw;
+  height: 100vh;
 }
