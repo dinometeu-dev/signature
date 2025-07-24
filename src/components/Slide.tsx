@@ -1,25 +1,24 @@
-import React, { FC } from 'react'
-import { cn } from '@/utils/functions/mergeClasses'
-import { LiquidGlassProps, Material } from '@/components/Material'
+'use client'
 
-const Slide: FC<LiquidGlassProps> = ({ className, ...props }) => (
-  <Material
-    displacementScale={64}
-    blurAmount={0.1}
-    saturation={130}
-    aberrationIntensity={2}
-    elasticity={0}
-    cornerRadius={50}
-    mode={'standard'}
-    padding="64px"
-    className={cn('max-w-slide-width max-h-slide-height bg-white', className)}
-    {...props}
-  >
-    <div className="flex items-center justify-center w-slide-height h-slide-height">
-      {props.children}
+import React from 'react'
+import { cn } from '@/utils/functions/mergeClasses'
+
+const Slide = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ children, className }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'p-16 rounded-slide bg-white shadow-material w-full max-h-slide-height h-full',
+        className
+      )}
+    >
+      {children}
     </div>
-  </Material>
-)
+  )
+})
 
 Slide.displayName = 'Slide'
 

@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@import '@fontsource/domine/index.css';
+
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @theme {
   /* Colors */
   --color-material: rgba(255, 255, 255, 0.55);
@@ -8,29 +16,34 @@
   --color-button-material-hover: rgba(255, 255, 255, 0.25);
   --color-button-elements: rgba(26, 56, 84, 1);
 
+  --color-black-200: rgba(0, 0, 0, 0.2);
+  --color-black-400: rgba(0, 0, 0, 0.4);
+  --color-black-800: rgba(0, 0, 0, 0.8);
+
   --color-slide: rgba(255, 255, 255, 0.8);
 
+  /* Shadows */
+  --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
 
   /* Border radius */
   --radius-material: 30px;
   --radius-slide: 50px;
 
-  /* Background Blur */
-  --blur-material: 45px;
-  --blur-slide: 40px;
-
-  /* Shadows */
-  --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
 
   /* Spacings */
   --spacing-slide-height: 796px;
   --spacing-slide-width: 1192px;
 
   /* Grid */
-  --grid-template-cols-main-layout: 20% 1fr 20%;
+  --grid-template-cols-main-layout: 15% 1fr 15%;
+
+  /* Fonts-Family */
+  --font-domine: 'Domine', Georgia, serif;
 }
 
 body {
   width: 100vw;
   height: 100vh;
 }
+
+

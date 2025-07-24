@@ -6,6 +6,9 @@ const prisma = new PrismaClient()
 export async function GET() {
   try {
     const menu = await prisma.menu.findMany({
+      orderBy: {
+        id: 'asc',
+      },
       include: {
         content: true,
       },
