@@ -4,6 +4,7 @@ import { cn } from '@/utils/functions/mergeClasses'
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation'
 import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes'
 import { QUERY_STATE_WORKS } from '@/utils/constants/paths'
+import { SCREEN_HEIGHT } from '@/utils/constants/styled'
 
 interface SlideStackProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -23,11 +24,10 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
     const [activeIndex, setActiveIndex] = useState(0)
     const [previousIndex, setPreviousIndex] = useState(0)
 
-    const SCREEN_HEIGHT = typeof window !== 'undefined' ? window.innerHeight : 0
-
     const OFFSET_Y = 55
     const SCALE_STEP = 0.1
     const FLIP_DURATION = 0.5
+    const FLIPPING_THRESHOLD = 5
 
     const handleNext = useCallback(() => {
       setActiveIndex((prev) => {
@@ -105,16 +105,16 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
 
           if (Math.abs(previousIndex - activeIndex) > 1) {
             delay = Math.abs(
-              Math.round((slides.length - Math.abs(relativeIndex) - 1) * 10) /
-                100
+              Math.round(
+                (slides.length - Math.abs(relativeIndex) - 1) *
+                  FLIPPING_THRESHOLD
+              ) / 100
             )
           }
 
           if (relativeIndex >= 0) {
             if (relativeIndex < 3) {
               yOffset = OFFSET_Y * relativeIndex
-            }
-            if (relativeIndex < 3) {
               scale = 1 - SCALE_STEP * relativeIndex
             } else {
               scale = 0.8

@@ -1,6 +1,16 @@
 @import "tailwindcss";
-
 @import '@fontsource/domine/index.css';
+
+@font-face {
+  font-family: 'SF Pro';
+  src: url('./fonts/SF-Pro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@utility font-sf-pro {
+  font-family: 'SF Pro', sans-serif;
+}
 
 @utility scrollbar-hidden {
   &::-webkit-scrollbar {
@@ -18,7 +28,12 @@
 
   --color-black-200: rgba(0, 0, 0, 0.2);
   --color-black-400: rgba(0, 0, 0, 0.4);
+  --color-black-600: rgba(0, 0, 0, 0.6);
   --color-black-800: rgba(0, 0, 0, 0.8);
+
+  --color-white-300: rgba(255, 255, 255, 0.3);
+
+  --color-blue-dark: rgba(45, 79, 110, 1);
 
   --color-slide: rgba(255, 255, 255, 0.8);
 

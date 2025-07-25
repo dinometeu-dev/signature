@@ -11,7 +11,7 @@ const Slide = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'p-16 rounded-slide bg-white shadow-material w-full max-h-slide-height h-full',
+        'relative p-16 rounded-slide bg-white shadow-material w-full max-h-slide-height h-full',
         className
       )}
     >

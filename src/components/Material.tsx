@@ -1,4 +1,7 @@
+'use client'
+
 import React, { useEffect, useRef, useState, useId } from 'react'
+import { cn } from '@/utils/functions/mergeClasses'
 
 export interface GlassSurfaceProps {
   children?: React.ReactNode
@@ -93,6 +96,10 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const gaussianBlurRef = useRef<SVGFEGaussianBlurElement>(null)
 
   const isDarkMode = useDarkMode()
+  const [isClient, setIsClient] = useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const generateDisplacementMap = () => {
     const rect = containerRef.current?.getBoundingClientRect()
@@ -295,6 +302,23 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     }
   }
 
+  const baseStyles: React.CSSProperties = {
+    ...style,
+    width: typeof width === 'number' ? `${width}px` : width,
+    height: typeof height === 'number' ? `${height}px` : height,
+    borderRadius: `${borderRadius}px`,
+    '--glass-frost': backgroundOpacity,
+    '--glass-saturation': saturation,
+  } as React.CSSProperties
+
+  const fallbackContainerStyles: React.CSSProperties = {
+    ...baseStyles,
+    background: 'rgba(255, 255, 255, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    boxShadow:
+      'inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)',
+  }
+
   const glassSurfaceClasses =
     'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out'
 
@@ -305,8 +329,8 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`${glassSurfaceClasses} ${focusVisibleClasses} ${className}`}
-      style={getContainerStyles()}
+      className={cn(`${glassSurfaceClasses} ${focusVisibleClasses}`, className)}
+      style={isClient ? getContainerStyles() : fallbackContainerStyles}
     >
       <svg
         className="w-full h-full pointer-events-none absolute inset-0 opacity-0 -z-10"
@@ -393,7 +417,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         </defs>
       </svg>
 
-      <div className="w-full h-full flex items-center justify-center p-2 rounded-[inherit] relative z-10">
+      <div className="w-full h-full flex items-center justify-center p-0 rounded-[inherit] relative z-10">
         {children}
       </div>
     </div>
