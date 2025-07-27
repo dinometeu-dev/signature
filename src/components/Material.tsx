@@ -58,7 +58,7 @@ const useDarkMode = () => {
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
 
-  return isDark
+  return true
 }
 
 const GlassSurface: React.FC<GlassSurfaceProps> = ({
@@ -236,7 +236,6 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         background: isDarkMode
           ? `hsl(0 0% 0% / ${backgroundOpacity})`
           : `hsl(0 0% 100% / ${backgroundOpacity})`,
-        backdropFilter: `url(#${filterId}) saturate(${saturation})`,
         boxShadow: isDarkMode
           ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
              0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
@@ -269,11 +268,17 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
           return {
             ...baseStyles,
             background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.2)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
+            backdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
+            WebkitBackdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
+            border: '0.5px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+                       0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+                       0px 4px 16px rgba(17, 17, 26, 0.05),
+                       0px 8px 24px rgba(17, 17, 26, 0.05),
+                       0px 16px 56px rgba(17, 17, 26, 0.05),
+                       0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+                       0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+                       0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
           }
         }
       } else {
@@ -292,10 +297,14 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
             backdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
             WebkitBackdropFilter: 'blur(12px) saturate(1.8) brightness(1.1)',
             border: '1px solid rgba(255, 255, 255, 0.3)',
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                        0 2px 16px 0 rgba(31, 38, 135, 0.1),
-                        inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.2)`,
+            boxShadow: `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
+                       0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset,
+                       0px 4px 16px rgba(17, 17, 26, 0.05),
+                       0px 8px 24px rgba(17, 17, 26, 0.05),
+                       0px 16px 56px rgba(17, 17, 26, 0.05),
+                       0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+                       0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+                       0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
           }
         }
       }

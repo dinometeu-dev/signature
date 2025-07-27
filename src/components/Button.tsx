@@ -33,7 +33,6 @@ const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
           greenOffset={glass?.greenOffset ?? 5}
           blueOffset={glass?.blueOffset ?? 10}
           {...glass}
-          {...glass}
         >
           <span
             className={cn(

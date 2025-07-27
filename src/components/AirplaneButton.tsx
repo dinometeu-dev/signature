@@ -35,23 +35,23 @@ const AirplaneButton = React.forwardRef<
         .then(() => {
           controlSecondAirplane.start({
             y: -SCREEN_HEIGHT + 200,
-            rotateZ: [-90, -92, -86, -90],
-            rotateX: [0, 14, 0],
-            scale: [30, 28, 30],
+            rotateZ: [-90, -92, -90],
+            rotateX: [0, 14, 6],
+            scale: [58, 56, 58],
             transition: {
               type: 'keyframes',
               duration: SECOND_AIRPLANE_DURATION,
               ease: 'easeIn',
               rotateX: {
-                duration: SECOND_AIRPLANE_DURATION,
+                duration: SECOND_AIRPLANE_DURATION * 2,
                 ease: 'easeInOut',
               },
               scale: {
-                duration: SECOND_AIRPLANE_DURATION,
+                duration: SECOND_AIRPLANE_DURATION * 2,
                 ease: 'easeInOut',
               },
               rotateZ: {
-                duration: SECOND_AIRPLANE_DURATION,
+                duration: SECOND_AIRPLANE_DURATION * 2,
                 ease: 'easeInOut',
               },
             },
@@ -141,7 +141,7 @@ const AirplaneButton = React.forwardRef<
           initial={{ y: SCREEN_HEIGHT * 2, scale: 30 }}
           animate={controlSecondAirplane}
           className={
-            'absolute transform-3d top-1/2 left-1/2 -translate-x-1/2 z-40 blur-[0.2px]'
+            'absolute transform-3d top-1/2 left-1/2 -translate-x-1/2 z-[99999] blur-[0.5px]'
           }
         >
           <Image

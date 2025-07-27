@@ -26,7 +26,6 @@ const SlideContentClient = React.forwardRef<
   return (
     <SlideStack ref={ref}>
       <SignatureSlide aria-label={QUERY_STATE_SIGNATURE} />
-
       <ProfileSlide aria-label={QUERY_STATE_PROFILE} />
       {workItems.map((item) => (
         <Slide

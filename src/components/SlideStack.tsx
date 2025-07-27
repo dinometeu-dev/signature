@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { cn } from '@/utils/functions/mergeClasses'
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation'
 import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes'
@@ -21,13 +21,29 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
       React.HTMLAttributes<HTMLDivElement>
     >[]
 
-    const [activeIndex, setActiveIndex] = useState(0)
-    const [previousIndex, setPreviousIndex] = useState(0)
+    const slideByQuery = slides.findIndex((slide) => {
+      const slideState = slide.props['aria-label']
+
+      if (slideState === QUERY_STATE_WORKS) {
+        return (
+          activeWorkItem === slide.props['id'] && slideState === activeState
+        )
+      }
+      return slideState === activeState
+    })
+
+    const [activeIndex, setActiveIndex] = useState(slideByQuery ?? 0)
+
+    const [previousIndex, setPreviousIndex] = useState(slideByQuery ?? 0)
+    const [smoothIndex, setSmoothIndex] = useState(0)
+
+    const gapBetweenSlides = activeIndex - previousIndex
 
     const OFFSET_Y = 55
     const SCALE_STEP = 0.1
     const FLIP_DURATION = 0.5
-    const FLIPPING_THRESHOLD = 5
+    const BOUNCE = 0.25
+    const TIMEOUT_DURATION_Of_FLIPPING_MULTIPLY_SLIDES = 80
 
     const handleNext = useCallback(() => {
       setActiveIndex((prev) => {
@@ -64,6 +80,25 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
     }, [handleNext, handlePrev])
 
     useEffect(() => {
+      if (gapBetweenSlides > 1) {
+        for (let i = previousIndex; i <= activeIndex; i++) {
+          setTimeout(() => {
+            setSmoothIndex(i)
+          }, i * TIMEOUT_DURATION_Of_FLIPPING_MULTIPLY_SLIDES)
+        }
+      } else if (gapBetweenSlides < -1) {
+        for (let i = previousIndex; i >= activeIndex; i--) {
+          setTimeout(
+            () => {
+              setSmoothIndex(i)
+            },
+            (previousIndex - i) * TIMEOUT_DURATION_Of_FLIPPING_MULTIPLY_SLIDES
+          )
+        }
+      } else {
+        setSmoothIndex(activeIndex)
+      }
+
       setQueryParam({
         [QUERY_STATE]: slides[activeIndex]?.props['aria-label'],
         [QUERY_WORK_ITEM]: slides[activeIndex]?.props['id'],
@@ -72,16 +107,8 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
 
     useEffect(() => {
       if (!activeState) return
-      const target = slides.findIndex((slide) => {
-        const slideState = slide.props['aria-label']
+      const target = slideByQuery
 
-        if (slideState === QUERY_STATE_WORKS) {
-          return (
-            activeWorkItem === slide.props['id'] && slideState === activeState
-          )
-        }
-        return slideState === activeState
-      })
       if (target !== -1 && target !== activeIndex) {
         setActiveIndex((prev) => {
           setPreviousIndex(prev)
@@ -96,51 +123,49 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
         className={cn('relative w-full h-full', className)}
         {...props}
       >
-        {slides.map((child, index) => {
-          const relativeIndex = index - activeIndex
+        <AnimatePresence>
+          {slides.map((child, index) => {
+            const relativeIndex = index - smoothIndex
 
-          let yOffset = 0
-          let scale = 1
-          let delay = 0
+            const threshold = SCREEN_HEIGHT + OFFSET_Y * 2
 
-          if (Math.abs(previousIndex - activeIndex) > 1) {
-            delay = Math.abs(
-              Math.round(
-                (slides.length - Math.abs(relativeIndex) - 1) *
-                  FLIPPING_THRESHOLD
-              ) / 100
-            )
-          }
+            if (relativeIndex > 3 || relativeIndex < -1) return null
 
-          if (relativeIndex >= 0) {
-            if (relativeIndex < 3) {
-              yOffset = OFFSET_Y * relativeIndex
-              scale = 1 - SCALE_STEP * relativeIndex
+            let yOffset = 0
+            let scale = 1
+
+            if (relativeIndex >= 0) {
+              if (relativeIndex < 3) {
+                yOffset = OFFSET_Y * relativeIndex
+                scale = 1 - SCALE_STEP * relativeIndex
+              } else {
+                scale = 0.8
+              }
             } else {
-              scale = 0.8
+              yOffset -= threshold
             }
-          } else {
-            yOffset -= SCREEN_HEIGHT + OFFSET_Y * 2
-          }
 
-          return (
-            <motion.div
-              key={index}
-              className="absolute w-full h-full flex justify-center items-center"
-              aria-label={child.props['aria-label']}
-              id={child.props['id']}
-              style={{ zIndex: slides.length - relativeIndex }}
-              initial={{ y: yOffset, scale }}
-              animate={{ y: yOffset, scale }}
-              transition={{
-                duration: FLIP_DURATION,
-                delay,
-              }}
-            >
-              {child}
-            </motion.div>
-          )
-        })}
+            return (
+              <motion.div
+                layout
+                key={index}
+                className="absolute w-full h-full flex justify-center items-center"
+                aria-label={child.props['aria-label']}
+                id={child.props['id']}
+                style={{ zIndex: slides.length - relativeIndex }}
+                initial={{ y: yOffset, scale }}
+                animate={{ y: yOffset, scale }}
+                transition={{
+                  type: 'spring',
+                  visualDuration: FLIP_DURATION,
+                  bounce: BOUNCE,
+                }}
+              >
+                {child}
+              </motion.div>
+            )
+          })}
+        </AnimatePresence>
       </div>
     )
   }
