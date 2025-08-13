@@ -18,6 +18,22 @@
   }
 }
 
+@utility progressive-backdrop-blur {
+   mask: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+}
+
+@layer base {
+  html {
+    font-family: 'SF Pro', sans-serif;
+  }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+
 @theme {
   /* Colors */
   --color-material: rgba(255, 255, 255, 0.55);
@@ -28,6 +44,9 @@
 
   --color-slide: rgba(255, 255, 255, 0.8);
 
+  --color-white-300: rgba(255, 255, 255, 0.3);
+  --color-white-800: rgba(255, 255, 255, 0.8);
+
   --color-black-200: rgba(0, 0, 0, 0.2);
   --color-black-400: rgba(0, 0, 0, 0.4);
   --color-black-600: rgba(0, 0, 0, 0.6);
@@ -36,16 +55,16 @@
   --color-black-800: rgba(0, 0, 0, 0.8);
   --color-black-900: rgba(0, 0, 0, 0.9);
 
-  --color-white-300: rgba(255, 255, 255, 0.3);
-
   --color-gray-150: rgba(196, 196, 196, 0.15);
 
   --color-green-250: rgba(80, 182, 73, 0.80);
+  --color-dark-green-0: rgba(4, 54, 65, 0);
+  --color-dark-green: rgba(5, 63, 73, 1);
+  --color-darker-green: rgba(9, 41, 43, 1);
 
   --color-red-250: rgba(212, 94, 94, 0.80);
 
   --color-blue-dark: rgba(45, 79, 110, 1);
-
 
   /* Shadows */
   --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
@@ -59,16 +78,13 @@
   --spacing-slide-height: 796px;
   --spacing-slide-width: 1192px;
 
+  --spacing-profile-card-width: 296px;
+  --spacing-profile-card-height: 486px;
+
   /* Grid */
   --grid-template-cols-main-layout: 15% 1fr 15%;
 
   /* Fonts-Family */
   --font-domine: 'Domine', Georgia, serif;
 }
-
-body {
-  width: 100vw;
-  height: 100vh;
-}
-
 
