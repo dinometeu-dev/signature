@@ -1,25 +1,78 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { cn } from '@/utils/functions/mergeClasses'
+import React from 'react';
+import { cn } from '@/utils/functions/mergeClasses';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Button } from '@/components/Button';
+import { ChevronLeft } from 'lucide-react';
 
-const Slide = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ children, className }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        'relative p-16 rounded-slide bg-white shadow-material w-full max-h-slide-height h-full',
-        className
-      )}
-    >
-      {children}
-    </div>
-  )
-})
+interface SlideProps extends React.HTMLAttributes<HTMLDivElement> {
+  open?: boolean;
+  setOverlowHidden?: boolean;
+  backButtonOnClick?: () => void;
+}
 
-Slide.displayName = 'Slide'
+const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
+  ({ children, open, setOverlowHidden, backButtonOnClick, className }, ref) => {
+    const openWidth =
+      typeof window !== 'undefined' ? window.innerWidth - 200 : 0;
+    const openHeight =
+      typeof window !== 'undefined' ? window.innerHeight - 20 : 0;
 
-export { Slide }
+    return (
+      <motion.div
+        ref={ref}
+        className={cn(
+          `absolute rounded-slide bg-white shadow-material w-slide-width ${setOverlowHidden && 'overflow-hidden'}`
+        )}
+        initial={{
+          height: 'var(--spacing-slide-height)',
+        }}
+        animate={{
+          ...(open
+            ? {
+                width: openWidth,
+                height: openHeight,
+                transition: { type: 'spring', bounce: 0.5, duration: 1 },
+              }
+            : {
+                width: 'var(--spacing-slide-width)',
+                height: 'var(--spacing-slide-height)',
+                transition: { type: 'spring', bounce: 0.3, duration: 1 },
+              }),
+        }}
+      >
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              className="absolute top-0 left-0 w-full bg-black-100 p-8 z-40"
+              key="modal"
+              exit={{ opacity: 0 }}
+            >
+              <div className="absolute left-0 top-0 h-full w-full progressive-backdrop-blur-reverse backdrop-blur-lg" />
+              <div className="absolute left-0 top-0 h-full w-full  bg-gradient-to-b from-white to-transparent" />
+              <Button
+                contentClassName={'bg-white-300'}
+                onClick={backButtonOnClick}
+              >
+                <ChevronLeft size={14} /> Back
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.div
+          className={cn(
+            `w-full h-full relative transition-[padding] p-16 ${open && 'overflow-y-scroll overflow-x-hidden pt-28'}`,
+            className
+          )}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    );
+  }
+);
+
+Slide.displayName = 'Slide';
+
+export { Slide };

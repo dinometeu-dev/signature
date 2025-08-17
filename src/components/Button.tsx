@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 
-import { cn } from '@/utils/functions/mergeClasses'
-import Material, { GlassSurfaceProps } from '@/components/Material'
-import { motion, HTMLMotionProps } from 'framer-motion'
+import { cn } from '@/utils/functions/mergeClasses';
+import Material, { GlassSurfaceProps } from '@/components/Material';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'div'>, 'onDrag'> {
-  children: React.ReactNode
-  contentClassName?: string
-  glass?: GlassSurfaceProps
+  children: React.ReactNode;
+  contentClassName?: string;
+  glass?: GlassSurfaceProps;
 }
 
 const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
@@ -17,7 +17,7 @@ const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
     return (
       <motion.div
         ref={ref}
-        className={cn('cursor-pointer', className)}
+        className={cn('cursor-pointer w-fit', className)}
         whileTap={{ scale: 0.95 }}
         {...props}
       >
@@ -44,9 +44,9 @@ const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
           </span>
         </Material>
       </motion.div>
-    )
+    );
   }
-)
-Button.displayName = 'Button'
+);
+Button.displayName = 'Button';
 
-export { Button }
+export { Button };

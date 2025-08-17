@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import { SendHorizontal } from 'lucide-react'
-import { Button } from '@/components/Button'
-import Image from 'next/image'
-import PaperAirplane from '@/../public/PaperAirplane.png'
-import { motion, useAnimationControls } from 'framer-motion'
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled'
-import { useSetQueryParam } from '@/utils/hooks/navigation'
-import { QUERY_STATE } from '@/utils/constants/routes'
-import { QUERY_STATE_CONTACT } from '@/utils/constants/paths'
-import { cn } from '@/utils/functions/mergeClasses'
+import React, { useEffect, useState } from 'react';
+import { SendHorizontal } from 'lucide-react';
+import { Button } from '@/components/Button';
+import Image from 'next/image';
+import PaperAirplane from '@/../public/PaperAirplane.png';
+import { motion, useAnimationControls } from 'framer-motion';
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
+import { useSetQueryParam } from '@/utils/hooks/navigation';
+import { QUERY_STATE } from '@/utils/constants/routes';
+import { QUERY_STATE_CONTACT } from '@/utils/constants/paths';
+import { cn } from '@/utils/functions/mergeClasses';
 
 const AirplaneButton = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const setQueryParam = useSetQueryParam()
+  const setQueryParam = useSetQueryParam();
 
-  const controls = useAnimationControls()
-  const controlSecondAirplane = useAnimationControls()
-  const [buttonIsHovered, setButtonIsHovered] = useState(false)
-  const [isClick, setIsClick] = useState(false)
+  const controls = useAnimationControls();
+  const controlSecondAirplane = useAnimationControls();
+  const [buttonIsHovered, setButtonIsHovered] = useState(false);
+  const [isClick, setIsClick] = useState(false);
 
-  const SECOND_AIRPLANE_DURATION = 0.8
+  const SECOND_AIRPLANE_DURATION = 0.8;
 
   useEffect(() => {
     if (isClick) {
@@ -35,8 +35,8 @@ const AirplaneButton = React.forwardRef<
         .then(() => {
           controlSecondAirplane.start({
             y: -SCREEN_HEIGHT + 200,
-            rotateZ: [-90, -92, -90],
-            rotateX: [0, 14, 6],
+            rotateZ: [-90],
+            rotateX: [0, 2, 4],
             scale: [58, 56, 58],
             transition: {
               type: 'keyframes',
@@ -55,16 +55,16 @@ const AirplaneButton = React.forwardRef<
                 ease: 'easeInOut',
               },
             },
-          })
+          });
 
           setTimeout(() => {
-            setQueryParam(QUERY_STATE, QUERY_STATE_CONTACT)
-          }, SECOND_AIRPLANE_DURATION * 800)
+            setQueryParam(QUERY_STATE, QUERY_STATE_CONTACT);
+          }, SECOND_AIRPLANE_DURATION * 800);
 
-          setTimeout(() => setIsClick(false), SECOND_AIRPLANE_DURATION * 2000)
-        })
+          setTimeout(() => setIsClick(false), SECOND_AIRPLANE_DURATION * 2000);
+        });
 
-      return
+      return;
     }
     if (buttonIsHovered) {
       controls
@@ -90,18 +90,18 @@ const AirplaneButton = React.forwardRef<
               repeat: Infinity,
               repeatType: 'mirror',
             },
-          })
-        })
+          });
+        });
     } else {
-      controls.stop()
+      controls.stop();
       controls.start({
         x: -36,
         y: 4,
         scale: 0.3,
         rotateX: 0,
-      })
+      });
     }
-  }, [buttonIsHovered, isClick, controls])
+  }, [buttonIsHovered, isClick, controls]);
 
   return (
     <div
@@ -118,7 +118,7 @@ const AirplaneButton = React.forwardRef<
         onMouseEnter={() => setButtonIsHovered(true)}
         onMouseLeave={() => setButtonIsHovered(false)}
         onClick={() => {
-          if (!isClick) setIsClick(true)
+          if (!isClick) setIsClick(true);
         }}
       >
         <SendHorizontal size={18} /> {`Let's talk`}
@@ -152,9 +152,9 @@ const AirplaneButton = React.forwardRef<
         </motion.div>
       )}
     </div>
-  )
-})
+  );
+});
 
-AirplaneButton.displayName = 'AirplaneButton'
+AirplaneButton.displayName = 'AirplaneButton';
 
-export { AirplaneButton }
+export { AirplaneButton };

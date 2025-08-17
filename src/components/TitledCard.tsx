@@ -1,34 +1,32 @@
-import type { SpringOptions } from 'framer-motion'
-import { useRef, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
-import { cn } from '@/utils/functions/mergeClasses'
-import Material, { GlassSurfaceProps } from './Material'
+import type { SpringOptions } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import {
+  PROFILE_CARD_DESCRIPTION,
+  PROFILE_CARD_NAME,
+  PROFILE_CARD_STATUS,
+} from '@/utils/constants/content';
 
 interface TiltedCardProps {
-  imageSrc: React.ComponentProps<'img'>['src']
-  altText?: string
-  captionText?: string
-  containerHeight?: React.CSSProperties['height']
-  containerWidth?: React.CSSProperties['width']
-  imageHeight?: React.CSSProperties['height']
-  imageWidth?: React.CSSProperties['width']
-  scaleOnHover?: number
-  rotateAmplitude?: number
-  showMobileWarning?: boolean
-  showTooltip?: boolean
-  overlayContent?: React.ReactNode
-  displayOverlayContent?: boolean
-  glass?: GlassSurfaceProps
+  altText?: string;
+  captionText?: string;
+  containerHeight?: React.CSSProperties['height'];
+  containerWidth?: React.CSSProperties['width'];
+  imageHeight?: React.CSSProperties['height'];
+  imageWidth?: React.CSSProperties['width'];
+  scaleOnHover?: number;
+  rotateAmplitude?: number;
+  showMobileWarning?: boolean;
+  showTooltip?: boolean;
 }
 
 const springValues: SpringOptions = {
   damping: 30,
-  stiffness: 100,
-  mass: 2,
-}
+  stiffness: 50,
+  mass: 1,
+};
 
 export default function TiltedCard({
-  imageSrc,
   altText = 'Tilted card image',
   captionText = '',
   containerHeight = '300px',
@@ -39,57 +37,54 @@ export default function TiltedCard({
   rotateAmplitude = 14,
   showMobileWarning = true,
   showTooltip = true,
-  overlayContent = null,
-  displayOverlayContent = false,
-  glass,
 }: Readonly<TiltedCardProps>) {
-  const ref = useRef<HTMLElement>(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const rotateX = useSpring(useMotionValue(0), springValues)
-  const rotateY = useSpring(useMotionValue(0), springValues)
-  const scale = useSpring(1, springValues)
-  const opacity = useSpring(0)
+  const ref = useRef<HTMLElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useMotionValue(0), springValues);
+  const rotateY = useSpring(useMotionValue(0), springValues);
+  const scale = useSpring(1, springValues);
+  const opacity = useSpring(0);
   const rotateFigcaption = useSpring(0, {
     stiffness: 350,
     damping: 30,
     mass: 1,
-  })
+  });
 
-  const [lastY, setLastY] = useState(0)
+  const [lastY, setLastY] = useState(0);
 
   function handleMouse(e: React.MouseEvent<HTMLElement>) {
-    if (!ref.current) return
+    if (!ref.current) return;
 
-    const rect = ref.current.getBoundingClientRect()
-    const offsetX = e.clientX - rect.left - rect.width / 2
-    const offsetY = e.clientY - rect.top - rect.height / 2
+    const rect = ref.current.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left - rect.width / 2;
+    const offsetY = e.clientY - rect.top - rect.height / 2;
 
-    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude
-    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude
+    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
+    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
 
-    rotateX.set(rotationX)
-    rotateY.set(rotationY)
+    rotateX.set(rotationX);
+    rotateY.set(rotationY);
 
-    x.set(e.clientX - rect.left)
-    y.set(e.clientY - rect.top)
+    x.set(e.clientX - rect.left);
+    y.set(e.clientY - rect.top);
 
-    const velocityY = offsetY - lastY
-    rotateFigcaption.set(-velocityY * 0.6)
-    setLastY(offsetY)
+    const velocityY = offsetY - lastY;
+    rotateFigcaption.set(-velocityY * 0.6);
+    setLastY(offsetY);
   }
 
   function handleMouseEnter() {
-    scale.set(scaleOnHover)
-    opacity.set(1)
+    scale.set(scaleOnHover);
+    opacity.set(1);
   }
 
   function handleMouseLeave() {
-    opacity.set(0)
-    scale.set(1)
-    rotateX.set(0)
-    rotateY.set(0)
-    rotateFigcaption.set(0)
+    opacity.set(0);
+    scale.set(1);
+    rotateX.set(0);
+    rotateY.set(0);
+    rotateFigcaption.set(0);
   }
 
   return (
@@ -111,7 +106,7 @@ export default function TiltedCard({
       )}
 
       <motion.div
-        className="relative [transform-style:preserve-3d] flex items-end"
+        className="relative [transform-style:preserve-3d] flex items-end rounded-[36px]"
         style={{
           width: imageWidth,
           height: imageHeight,
@@ -120,39 +115,31 @@ export default function TiltedCard({
           scale,
         }}
       >
-        {/*<Material*/}
-        {/*  className={cn(*/}
-        {/*    `p-1 max-w-profile-card-width max-h-profile-card-height`*/}
-        {/*  )}*/}
-        {/*  borderRadius={glass?.borderRadius ?? 40}*/}
-        {/*  width={glass?.width ?? '100%'}*/}
-        {/*  height={glass?.height ?? '100%'}*/}
-        {/*  distortionScale={glass?.distortionScale ?? -80}*/}
-        {/*  opacity={glass?.opacity ?? 0.5}*/}
-        {/*  blur={glass?.opacity ?? 20}*/}
-        {/*  displace={glass?.displace ?? 3}*/}
-        {/*  redOffset={glass?.redOffset ?? 0}*/}
-        {/*  greenOffset={glass?.greenOffset ?? 5}*/}
-        {/*  blueOffset={glass?.blueOffset ?? 10}*/}
-        {/*  {...glass}*/}
-        {/*  {...props}*/}
-        {/*>*/}
         <motion.img
-          src={imageSrc}
+          src={'/ProfileImg.png'}
           alt={altText}
-          className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
+          className="absolute top-0 left-0 object-cover rounded-[36px] will-change-transform [transform:translateZ(0)]"
           style={{
             width: imageWidth,
             height: imageHeight,
           }}
         />
-
-        {displayOverlayContent && overlayContent && (
-          <motion.div className="absolute z-[2] will-change-transform [transform:translateZ(30px)] flex flex-col items-center justify-end rounded-[36px] overflow-hidden">
-            {overlayContent}
+        <motion.div className="relative bg-gradient-to-t from-dark-green to-dark-green-0 w-full z-10 h-1/2 flex flex-col items-start justify-end  pb-6 gap-2.5 [transform-style:preserve-3d] rounded-[36px] ">
+          <motion.div className="absolute z-[2] will-change-transform [transform:translateZ(30px)] scale-85 flex flex-col items-center justify-end overflow-hidden gap-2.5">
+            <div className="text-white flex flex-col gap-1">
+              <h2 className="text-2xl font-sf-pro font-stretch-extra-expanded font-medium">
+                {PROFILE_CARD_NAME}
+              </h2>
+              <h5 className="text-sm font-sf-pro font-stretch-extra-expanded font-medium">
+                {PROFILE_CARD_STATUS}
+              </h5>
+            </div>
+            <p className="text-sm  text-white-800 font-sf-pro font-light">
+              {PROFILE_CARD_DESCRIPTION}
+            </p>
           </motion.div>
-        )}
-        {/*</Material>*/}
+        </motion.div>
+        <div className="absolute h-1/2 w-full progressive-backdrop-blur backdrop-blur-sm rounded-[36px]" />
       </motion.div>
 
       {showTooltip && (
@@ -169,5 +156,5 @@ export default function TiltedCard({
         </motion.figcaption>
       )}
     </figure>
-  )
+  );
 }

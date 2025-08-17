@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { SlideStack } from '@/components/SlideStack'
-import { Slide } from '@/components/Slide'
-import { WorkItem } from '@/types/api'
-import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide'
+import React from 'react';
+import { SlideStack } from '@/components/SlideStack';
+import { Slide } from '@/components/Slide';
+import { WorkItem } from '@/types/api';
+import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide';
 import {
   QUERY_STATE_CONTACT,
   QUERY_STATE_PROFILE,
   QUERY_STATE_SIGNATURE,
   QUERY_STATE_WORKS,
-} from '@/utils/constants/paths'
-import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide'
-import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide'
+} from '@/utils/constants/paths';
+import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide/ProfileSlide';
+import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide';
 
 interface SlideComponentsClientProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  workItems: WorkItem[]
+  workItems: WorkItem[];
 }
 
 const SlideContentClient = React.forwardRef<
@@ -40,9 +40,9 @@ const SlideContentClient = React.forwardRef<
       ))}
       <ContactSlide aria-label={QUERY_STATE_CONTACT} />
     </SlideStack>
-  )
-})
+  );
+});
 
-SlideContentClient.displayName = 'SlideContentClient'
+SlideContentClient.displayName = 'SlideContentClient';
 
-export { SlideContentClient }
+export { SlideContentClient };
