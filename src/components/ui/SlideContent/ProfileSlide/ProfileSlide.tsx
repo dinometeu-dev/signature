@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Slide } from '@/components/Slide';
 import { PROFILE_TITLE } from '@/utils/constants/content';
 import { ProfileCard } from '@/components/ProfileCard';
