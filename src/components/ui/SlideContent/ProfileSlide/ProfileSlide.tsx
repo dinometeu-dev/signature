@@ -10,6 +10,7 @@ import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/componen
 import {
   useAddQueryParam,
   useDeleteQueryParam,
+  useGetQueryParams,
 } from '@/utils/hooks/navigation';
 import { QUERY_SLIDE_OPEN } from '@/utils/constants/routes';
 
@@ -19,16 +20,14 @@ const ProfileSlide = React.forwardRef<
 >((props, ref) => {
   const addQueryParam = useAddQueryParam();
   const deleteQueryParam = useDeleteQueryParam();
-
-  const [isOpen, setIsOpen] = useState(false);
+  const getQueryParam = useGetQueryParams();
+  const isOpenSlide = getQueryParam(QUERY_SLIDE_OPEN);
 
   const handleOpenSlide = () => {
-    setIsOpen(true);
     addQueryParam(QUERY_SLIDE_OPEN, 'open');
   };
 
   const handleCloseSlide = () => {
-    setIsOpen(false);
     deleteQueryParam(QUERY_SLIDE_OPEN);
   };
 
@@ -37,7 +36,6 @@ const ProfileSlide = React.forwardRef<
       ref={ref}
       setOverlowHidden
       className={`flex flex-col gap-12`}
-      open={isOpen}
       backButtonOnClick={() => handleCloseSlide()}
       {...props}
     >
@@ -48,7 +46,7 @@ const ProfileSlide = React.forwardRef<
       </div>
       <div className="relative z-20 w-full flex justify-center items-center">
         <AnimatePresence>
-          {!isOpen && (
+          {!isOpenSlide && (
             <Button
               exit={{
                 position: 'absolute',
@@ -69,17 +67,18 @@ const ProfileSlide = React.forwardRef<
           )}
         </AnimatePresence>
       </div>
-      {isOpen && <OpenSlideContent />}
+      {isOpenSlide && <OpenSlideContent />}
       <motion.div
         layout
-        className={`absolute z-10 bg-[url('/WaterBg.png')] bg-cover bg-no-repeat w-full h-full  left-0 bottom-0`}
-        initial={{ top: isOpen ? '57%' : '62%' }}
-        animate={{ top: isOpen ? '57%' : '62%' }}
+        className={`absolute z-10 bg-[url('/WaterBg.png')] bg-cover bg-no-repeat w-full h-full left-0 bottom-0`}
+        initial={{ top: isOpenSlide ? '57%' : '62%' }}
+        animate={{ top: isOpenSlide ? '57%' : '62%' }}
         transition={{
           type: 'spring',
           duration: 0.5,
         }}
       />
+      <div className="w-full bg-blue-full-900 h-full absolute top-full left-0" />
     </Slide>
   );
 });

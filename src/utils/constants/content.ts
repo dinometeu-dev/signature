@@ -9,4 +9,6 @@ export const PROFILE_CARD_STATUS = 'Front End Developer';
 export const PROFILE_CARD_DESCRIPTION =
   'Crafts high-performance, accessible, and user-friendly web experiences.';
 
-export const PROFILE_WORK_EXPERIENCE = 'Work-Experience';
+export const PROFILE_WORK_EXPERIENCE = 'Work Experience';
+export const PROFILE_WHO_I_AM = 'Who I am?';
+export const PROFILE_CERTIFICATES = 'Certificates';

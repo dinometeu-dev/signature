@@ -1,6 +1,8 @@
 import React from 'react';
 import { cn } from '@/utils/functions/mergeClasses';
 import WorkExperience from '@/components/ui/SlideContent/ProfileSlide/components/WorkExperience';
+import WhoIAm from '@/components/ui/SlideContent/ProfileSlide/components/WhoIAm';
+import Certificates from '@/components/ui/SlideContent/ProfileSlide/components/Certificates';
 
 const OpenSlideContent = React.forwardRef<
   HTMLDivElement,
@@ -9,10 +11,13 @@ const OpenSlideContent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('w-full flex z-20 text-white mt-24', className)}
+      className={cn('w-full flex z-20 text-white mt-24 gap-36', className)}
       {...props}
     >
-      <div className={'w-full'} />
+      <div className={'w-[90%] flex flex-col gap-32 mt-64'}>
+        <WhoIAm />
+        <Certificates />
+      </div>
       <WorkExperience />
     </div>
   );

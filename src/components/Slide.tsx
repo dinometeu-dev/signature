@@ -5,15 +5,21 @@ import { cn } from '@/utils/functions/mergeClasses';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/Button';
 import { ChevronLeft } from 'lucide-react';
+import { useGetQueryParams } from '@/utils/hooks/navigation';
+import { QUERY_SLIDE_OPEN } from '@/utils/constants/routes';
 
 interface SlideProps extends React.HTMLAttributes<HTMLDivElement> {
-  open?: boolean;
   setOverlowHidden?: boolean;
   backButtonOnClick?: () => void;
 }
 
 const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
-  ({ children, open, setOverlowHidden, backButtonOnClick, className }, ref) => {
+  ({ children, setOverlowHidden, backButtonOnClick, className }, ref) => {
+    const getQueryParam = useGetQueryParams();
+    const isOpen = getQueryParam(QUERY_SLIDE_OPEN);
+
+    console.log(isOpen);
+
     const openWidth =
       typeof window !== 'undefined' ? window.innerWidth - 200 : 0;
     const openHeight =
@@ -23,13 +29,14 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
       <motion.div
         ref={ref}
         className={cn(
-          `absolute rounded-slide bg-white shadow-material w-slide-width ${setOverlowHidden && 'overflow-hidden'}`
+          `absolute rounded-slide bg-white shadow-material w-slide-width `,
+          setOverlowHidden && 'overflow-hidden'
         )}
         initial={{
           height: 'var(--spacing-slide-height)',
         }}
         animate={{
-          ...(open
+          ...(isOpen
             ? {
                 width: openWidth,
                 height: openHeight,
@@ -43,7 +50,7 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
         }}
       >
         <AnimatePresence>
-          {open && (
+          {isOpen && (
             <motion.div
               className="absolute top-0 left-0 w-full bg-black-100 p-8 z-40"
               key="modal"
@@ -62,7 +69,8 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
         </AnimatePresence>
         <motion.div
           className={cn(
-            `w-full h-full relative transition-[padding] p-16 ${open && 'overflow-y-scroll overflow-x-hidden pt-28'}`,
+            `w-full h-full relative transition-[padding] p-16 `,
+            isOpen && 'overflow-y-scroll overflow-x-hidden pt-28',
             className
           )}
         >

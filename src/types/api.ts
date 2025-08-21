@@ -23,7 +23,7 @@ export type ApiResponse<T> = {
 };
 
 export type ExperienceBlockType = ExperienceBlockPrisma & {
-  period: ExperiencePeriodPrisma[];
+  periods: ExperiencePeriodPrisma[];
 };
 
 export type ExperiencePeriodType = ExperiencePeriodPrisma;

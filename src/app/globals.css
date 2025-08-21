@@ -74,6 +74,7 @@
   --color-red-250: rgba(212, 94, 94, 0.80);
 
   --color-blue-dark: rgba(45, 79, 110, 1);
+  --color-blue-full-900: rgba(0, 7, 18, 1);
 
   /* Shadows */
   --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);

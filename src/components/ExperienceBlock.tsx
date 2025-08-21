@@ -27,8 +27,8 @@ const ExperiencePeriod = React.forwardRef<
   const to = dayjs(endDate).format('MMM YYYY');
   const periodOfWork =
     dayjs(endDate).diff(startDate, 'year') > 1
-      ? `${dayjs(endDate).diff(startDate, 'year')} y`
-      : `${dayjs(endDate).diff(startDate, 'month')} m`;
+      ? `${dayjs(endDate).diff(startDate, 'year')} yrs`
+      : `${dayjs(endDate).diff(startDate, 'month')} mo`;
 
   return (
     <div ref={ref} className={cn('flex gap-3.5', className)} {...props}>
@@ -52,8 +52,6 @@ const ExperiencePeriod = React.forwardRef<
 
 const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
   ({ periods, imgPath, imageAlt, companyName, location, className }, ref) => {
-    console.log(imgPath);
-
     return (
       <Material
         ref={ref}
@@ -61,8 +59,11 @@ const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
         height="100%"
         displace={3}
         borderRadius={26}
+        style={{
+          overflow: 'unset',
+        }}
         contentClassName={cn(
-          'flex-col gap-7 items-start h-full p-6 bg-black-150',
+          'flex w-full flex-col gap-8 items-start p-6 bg-black-150',
           className
         )}
       >
@@ -78,7 +79,7 @@ const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
             {companyName}
           </h2>
         </header>
-        <div>
+        <div className={'flex flex-col gap-6'}>
           {periods?.map(({ id, position, startDate, endDate }) => (
             <ExperiencePeriod
               key={id}
@@ -88,7 +89,9 @@ const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
             />
           ))}
         </div>
-        <p className="text-white-800 text-base">{location}</p>
+        <p className="text-white-800 text-base text-center w-full">
+          {location}
+        </p>
       </Material>
     );
   }

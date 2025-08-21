@@ -11,7 +11,6 @@ const ProfileCard = React.forwardRef<
     <div className={cn('', className)} ref={ref} {...props}>
       <TiltedCard
         altText="Petrov Dmitri - Front End Developer"
-        captionText="Petrov Dmitri - Front End Developer"
         containerHeight="486px"
         containerWidth="296px"
         imageHeight="486px"
@@ -19,7 +18,7 @@ const ProfileCard = React.forwardRef<
         rotateAmplitude={12}
         scaleOnHover={1.2}
         showMobileWarning={false}
-        showTooltip={true}
+        showTooltip={false}
       />
     </div>
   );
