@@ -14,6 +14,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model ExperienceBlock {
+  id          Int                @id @default(autoincrement())
+  companyName String
+  imgPath     String
+  imageAlt    String
+  location    String
+  periods     ExperiencePeriod[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExperiencePeriod {
+  id        Int      @id @default(autoincrement())
+  position  String
+  startDate DateTime
+  endDate   DateTime
+
+  experienceBlock   ExperienceBlock @relation(fields: [experienceBlockId], references: [id])
+  experienceBlockId Int
+}
+
 model WorkItem {
   id           Int          @id @default(autoincrement())
   title        String

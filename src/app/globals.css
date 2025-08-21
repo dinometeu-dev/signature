@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import '@fontsource/domine/index.css';
+@import '@fontsource-variable/funnel-display';
 
 @font-face {
   font-family: 'SF Pro';
@@ -48,10 +49,12 @@
 
   --color-slide: rgba(255, 255, 255, 0.8);
 
-    --color-white-200: rgba(255, 255, 255, 0.2);
+  --color-white-200: rgba(255, 255, 255, 0.2);
   --color-white-300: rgba(255, 255, 255, 0.3);
+  --color-white-600: rgba(255, 255, 255, 0.6);
   --color-white-800: rgba(255, 255, 255, 0.8);
 
+  --color-black-150: rgba(0, 0, 0, 0.15);
   --color-black-200: rgba(0, 0, 0, 0.2);
   --color-black-400: rgba(0, 0, 0, 0.4);
   --color-black-600: rgba(0, 0, 0, 0.6);
@@ -90,6 +93,6 @@
   --grid-template-cols-main-layout: 15% 1fr 15%;
 
   /* Fonts-Family */
-  --font-domine: 'Domine', Georgia, serif;
+  --font-domine: 'Funnel Display Variable', system-ui;
 }
 

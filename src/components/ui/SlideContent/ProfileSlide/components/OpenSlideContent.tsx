@@ -1,10 +1,21 @@
 import React from 'react';
+import { cn } from '@/utils/functions/mergeClasses';
+import WorkExperience from '@/components/ui/SlideContent/ProfileSlide/components/WorkExperience';
 
 const OpenSlideContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->((props, ref) => {
-  return <div ref={ref} {...props}></div>;
+>(({ className, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn('w-full flex z-20 text-white mt-24', className)}
+      {...props}
+    >
+      <div className={'w-full'} />
+      <WorkExperience />
+    </div>
+  );
 });
 
 OpenSlideContent.displayName = 'OpenSlideContent';

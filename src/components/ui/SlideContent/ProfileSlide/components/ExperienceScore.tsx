@@ -16,6 +16,8 @@ const timeStats = [
     value: years,
     label: 'years',
     className: 'text-xl text-black-400',
+    fontSize: 18,
+    textColor: '--color-black-400',
     duration: 0.5,
   },
   {
@@ -23,6 +25,8 @@ const timeStats = [
     value: months,
     label: 'months',
     className: 'text-[22px] text-black-600',
+    textColor: '--color-black-600',
+    fontSize: 22,
     duration: 0.5,
   },
   {
@@ -30,6 +34,8 @@ const timeStats = [
     value: weeks,
     label: 'weeks',
     className: 'text-[26px] text-black-700',
+    textColor: '--color-black-700',
+    fontSize: 26,
     duration: 0.5,
   },
   {
@@ -37,6 +43,8 @@ const timeStats = [
     value: days,
     label: 'days',
     className: 'text-[32px] text-black-800',
+    textColor: '--color-black-800',
+    fontSize: 32,
     duration: 0.5,
   },
   {
@@ -44,6 +52,8 @@ const timeStats = [
     value: hours,
     label: 'hours',
     className: 'text-[36px] text-black-900',
+    textColor: '--color-black-900',
+    fontSize: 36,
     duration: 1,
   },
 ];
@@ -52,10 +62,6 @@ const ExperienceScore = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const handleGetStoredValue = (key: string) => {
-    return typeof window !== 'undefined' && localStorage.getItem(key);
-  };
-
   return (
     <div
       ref={ref}
@@ -67,13 +73,7 @@ const ExperienceScore = React.forwardRef<
     >
       {timeStats.map(({ key, value, label, className, duration }) => (
         <div key={key} className={className}>
-          <Counter
-            from={handleGetStoredValue(key) ? value : 0}
-            to={value}
-            duration={duration}
-            direction="up"
-            onEnd={() => localStorage.setItem(key, String(value))}
-          />{' '}
+          <Counter from={value} to={value} duration={duration} direction="up" />{' '}
           {label}
         </div>
       ))}
