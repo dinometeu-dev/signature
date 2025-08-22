@@ -1,5 +1,4 @@
 import React from 'react';
-import Material from '@/components/Material';
 import Image from 'next/image';
 import { cn } from '@/utils/functions/mergeClasses';
 import dayjs from 'dayjs';
