@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+
+spinner() {
+  local pid=$1
+  local message=$2
+  local delay=0.1
+  local spin_chars='|/-\'
+  local i=0
+
+  while kill -0 "$pid" 2>/dev/null; do
+    printf "\r${CYAN}%s ${WHITE}%s" "$message" "${spin_chars:i++%${#spin_chars}:1}"
+    sleep $delay
+  done
+  printf "\r"
+}
+
+echo ""
+npx eslint src --ext .js,.ts,.tsx & pid=$!
+spinner $pid "Linting project..."
+wait $pid || exit 1
+echo "${GREEN}✅ ESLint passed${WHITE}"
+
+npx tsc --noEmit & pid=$!
+spinner $pid "Type checking project..."
+wait $pid || exit 1
+echo "${GREEN}✅ TypeScript check passed${WHITE}"
+
+echo ""
+echo "${CYAN}[MESSAGE]${YELLOW} All checks successfully passed.${WHITE}"
