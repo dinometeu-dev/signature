@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useId } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useId,
+  useMemo,
+  useCallback,
+} from 'react';
 import { cn } from '@/utils/functions/mergeClasses';
 
 export interface GlassSurfaceProps {
@@ -71,9 +78,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   ref,
 }) => {
   const uniqueId = useId().replace(/:/g, '-');
-  const filterId = `glass-filter-${uniqueId}`;
-  const redGradId = `red-grad-${uniqueId}`;
-  const blueGradId = `blue-grad-${uniqueId}`;
+  const filterId = useMemo(() => `glass-filter-${uniqueId}`, [uniqueId]);
+  const redGradId = useMemo(() => `red-grad-${uniqueId}`, [uniqueId]);
+  const blueGradId = useMemo(() => `blue-grad-${uniqueId}`, [uniqueId]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const feImageRef = useRef<SVGFEImageElement>(null);
@@ -83,17 +90,15 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const gaussianBlurRef = useRef<SVGFEGaussianBlurElement>(null);
 
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
-  const generateDisplacementMap = () => {
+  const generateDisplacementMap = useCallback(() => {
     const rect = containerRef.current?.getBoundingClientRect();
     const actualWidth = rect?.width || 400;
     const actualHeight = rect?.height || 200;
     const edgeSize = Math.min(actualWidth, actualHeight) * (borderWidth * 0.5);
 
-    const svgContent = `
+    return `data:image/svg+xml,${encodeURIComponent(`
       <svg viewBox="0 0 ${actualWidth} ${actualHeight}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="${redGradId}" x1="100%" y1="0%" x2="0%" y2="0%">
@@ -110,17 +115,23 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         <rect x="0" y="0" width="${actualWidth}" height="${actualHeight}" rx="${borderRadius}" fill="url(#${blueGradId})" style="mix-blend-mode: ${mixBlendMode}" />
         <rect x="${edgeSize}" y="${edgeSize}" width="${actualWidth - edgeSize * 2}" height="${actualHeight - edgeSize * 2}" rx="${borderRadius}" fill="hsl(0 0% ${brightness}% / ${opacity})" style="filter:blur(${blur}px)" />
       </svg>
-    `;
+    `)}`;
+  }, [
+    borderRadius,
+    borderWidth,
+    brightness,
+    opacity,
+    blur,
+    redGradId,
+    blueGradId,
+    mixBlendMode,
+  ]);
 
-    return `data:image/svg+xml,${encodeURIComponent(svgContent)}`;
-  };
-
-  const updateDisplacementMap = () => {
+  const updateDisplacementMap = useCallback(() => {
     feImageRef.current?.setAttribute('href', generateDisplacementMap());
-  };
+  }, [generateDisplacementMap]);
 
-  useEffect(() => {
-    updateDisplacementMap();
+  const updateChannelAttributes = useCallback(() => {
     [
       { ref: redChannelRef, offset: redOffset },
       { ref: greenChannelRef, offset: greenOffset },
@@ -138,6 +149,19 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
 
     gaussianBlurRef.current?.setAttribute('stdDeviation', displace.toString());
   }, [
+    distortionScale,
+    redOffset,
+    greenOffset,
+    blueOffset,
+    xChannel,
+    yChannel,
+    displace,
+  ]);
+
+  useEffect(() => {
+    updateDisplacementMap();
+    updateChannelAttributes();
+  }, [
     width,
     height,
     borderRadius,
@@ -153,69 +177,35 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     xChannel,
     yChannel,
     mixBlendMode,
+    updateDisplacementMap,
+    updateChannelAttributes,
   ]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0);
+      requestAnimationFrame(updateDisplacementMap);
     });
 
     resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, [updateDisplacementMap]);
 
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+  const baseStyles = useMemo(
+    () =>
+      ({
+        ...style,
+        width: typeof width === 'number' ? `${width}px` : width,
+        height: typeof height === 'number' ? `${height}px` : height,
+        borderRadius: `${borderRadius}px`,
+        '--glass-frost': backgroundOpacity,
+        '--glass-saturation': saturation,
+      }) as React.CSSProperties,
+    [style, width, height, borderRadius, backgroundOpacity, saturation]
+  );
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0);
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    setTimeout(updateDisplacementMap, 0);
-  }, [width, height]);
-
-  const supportsSVGFilters = () => {
-    const isWebkit =
-      /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-    const isFirefox = /Firefox/.test(navigator.userAgent);
-
-    if (isWebkit || isFirefox) {
-      return false;
-    }
-
-    const div = document.createElement('div');
-    div.style.backdropFilter = `url(#${filterId})`;
-    return div.style.backdropFilter !== '';
-  };
-
-  const supportsBackdropFilter = () => {
-    if (typeof window === 'undefined') return false;
-    return CSS.supports('backdrop-filter', 'blur(10px)');
-  };
-
-  const getContainerStyles = (): React.CSSProperties => {
-    const baseStyles: React.CSSProperties = {
-      ...style,
-      width: typeof width === 'number' ? `${width}px` : width,
-      height: typeof height === 'number' ? `${height}px` : height,
-      borderRadius: `${borderRadius}px`,
-      '--glass-frost': backgroundOpacity,
-      '--glass-saturation': saturation,
-    } as React.CSSProperties;
-
+  const getContainerStyles = useCallback((): React.CSSProperties => {
     const svgSupported = supportsSVGFilters();
     const backdropFilterSupported = supportsBackdropFilter();
 
@@ -225,13 +215,13 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         background: `hsl(0 0% 100% / ${backgroundOpacity})`,
         backdropFilter: `url(#${filterId}) saturate(${saturation})`,
         boxShadow: `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
-             0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
-             0px 4px 16px rgba(17, 17, 26, 0.05),
-             0px 8px 24px rgba(17, 17, 26, 0.05),
-             0px 16px 56px rgba(17, 17, 26, 0.05),
-             0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-             0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-             0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
+                    0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+                    0px 4px 16px rgba(17, 17, 26, 0.05),
+                    0px 8px 24px rgba(17, 17, 26, 0.05),
+                    0px 16px 56px rgba(17, 17, 26, 0.05),
+                    0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+                    0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+                    0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
       };
     }
 
@@ -240,62 +230,50 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         ...baseStyles,
         background: 'rgba(0, 0, 0, 0.4)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: `inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                        inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)`,
-      };
-    } else {
-      return {
-        ...baseStyles,
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
-        WebkitBackdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
-        border: '0.5px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
-                       0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
-                       0px 4px 16px rgba(17, 17, 26, 0.05),
-                       0px 8px 24px rgba(17, 17, 26, 0.05),
-                       0px 16px 56px rgba(17, 17, 26, 0.05),
-                       0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-                       0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-                       0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
+        boxShadow:
+          'inset 0 1px 0 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 0 rgba(255, 255, 255, 0.1)',
       };
     }
-  };
 
-  const baseStyles: React.CSSProperties = {
-    ...style,
-    width: typeof width === 'number' ? `${width}px` : width,
-    height: typeof height === 'number' ? `${height}px` : height,
-    borderRadius: `${borderRadius}px`,
-    '--glass-frost': backgroundOpacity,
-    '--glass-saturation': saturation,
-  } as React.CSSProperties;
+    return {
+      ...baseStyles,
+      background: 'rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
+      WebkitBackdropFilter: 'blur(4px) saturate(1.8) brightness(1.2)',
+      border: '0.5px solid rgba(255, 255, 255, 0.2)',
+      boxShadow: `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+                  0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+                  0px 4px 16px rgba(17, 17, 26, 0.05),
+                  0px 8px 24px rgba(17, 17, 26, 0.05),
+                  0px 16px 56px rgba(17, 17, 26, 0.05),
+                  0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+                  0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+                  0px 16px 56px rgba(17, 17, 26, 0.05) inset`,
+    };
+  }, [baseStyles, filterId, backgroundOpacity, saturation]);
 
-  const fallbackContainerStyles: React.CSSProperties = {
-    ...baseStyles,
-    background: 'rgba(255, 255, 255, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.3)',
-    boxShadow:
-      'inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)',
-  };
-
-  const glassSurfaceClasses =
-    'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out';
-
-  const focusVisibleClasses =
-    'focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2';
+  const fallbackContainerStyles = useMemo(
+    (): React.CSSProperties => ({
+      ...baseStyles,
+      background: 'rgba(255, 255, 255, 0.4)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      boxShadow:
+        'inset 0 1px 0 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 0 rgba(255, 255, 255, 0.3)',
+    }),
+    [baseStyles]
+  );
 
   return (
     <div
       ref={(node) => {
         containerRef.current = node;
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          ref.current = node;
-        }
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
       }}
-      className={cn(`${glassSurfaceClasses} ${focusVisibleClasses}`, className)}
+      className={cn(
+        'relative flex items-center justify-center overflow-hidden transition-opacity duration-[260ms] ease-out focus-visible:outline-2 focus-visible:outline-[#0A84FF] focus-visible:outline-offset-2',
+        className
+      )}
       style={isClient ? getContainerStyles() : fallbackContainerStyles}
     >
       <svg
@@ -320,7 +298,6 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
               preserveAspectRatio="none"
               result="map"
             />
-
             <feDisplacementMap
               ref={redChannelRef}
               in="SourceGraphic"
@@ -331,13 +308,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
             <feColorMatrix
               in="dispRed"
               type="matrix"
-              values="1 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
+              values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
               result="red"
             />
-
             <feDisplacementMap
               ref={greenChannelRef}
               in="SourceGraphic"
@@ -348,13 +321,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
             <feColorMatrix
               in="dispGreen"
               type="matrix"
-              values="0 0 0 0 0
-                      0 1 0 0 0
-                      0 0 0 0 0
-                      0 0 0 1 0"
+              values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0"
               result="green"
             />
-
             <feDisplacementMap
               ref={blueChannelRef}
               in="SourceGraphic"
@@ -365,13 +334,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
             <feColorMatrix
               in="dispBlue"
               type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1 0"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0"
               result="blue"
             />
-
             <feBlend in="red" in2="green" mode="screen" result="rg" />
             <feBlend in="rg" in2="blue" mode="screen" result="output" />
             <feGaussianBlur
@@ -393,6 +358,23 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
       </div>
     </div>
   );
+};
+
+const supportsSVGFilters = () => {
+  const isWebkit =
+    /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  const isFirefox = /Firefox/.test(navigator.userAgent);
+
+  if (isWebkit || isFirefox) return false;
+
+  const div = document.createElement('div');
+  div.style.backdropFilter = 'url(#test)';
+  return div.style.backdropFilter !== '';
+};
+
+const supportsBackdropFilter = () => {
+  if (typeof window === 'undefined') return false;
+  return CSS.supports('backdrop-filter', 'blur(10px)');
 };
 
 export default GlassSurface;

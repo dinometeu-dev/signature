@@ -53,19 +53,12 @@ const ExperiencePeriod = React.forwardRef<
 const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
   ({ periods, imgPath, imageAlt, companyName, location, className }, ref) => {
     return (
-      <Material
-        ref={ref}
-        width="100%"
-        height="100%"
-        displace={3}
-        borderRadius={26}
-        style={{
-          overflow: 'unset',
-        }}
-        contentClassName={cn(
-          'flex w-full flex-col gap-8 items-start p-6 bg-black-150',
+      <div
+        className={cn(
+          'flex w-full flex-col gap-8 items-start p-6 backdrop-blur-sm rounded-3xl border border-white-200 bg-black-200',
           className
         )}
+        ref={ref}
       >
         <header className="w-full flex items-center gap-4">
           <Image
@@ -92,7 +85,7 @@ const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
         <p className="text-white-800 text-base text-center w-full">
           {location}
         </p>
-      </Material>
+      </div>
     );
   }
 );

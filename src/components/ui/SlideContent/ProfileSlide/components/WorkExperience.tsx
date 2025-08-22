@@ -46,27 +46,14 @@ const WorkExperience = React.forwardRef<
               />
             )
           )}
-        <Material
-          ref={ref}
-          width="100%"
-          height="100%"
-          displace={3}
-          borderRadius={26}
-          style={{
-            overflow: 'unset',
-          }}
-          contentClassName={cn(
-            'flex w-full flex-col gap-8 items-start p-6 bg-black-150',
-            className
-          )}
-        >
+        <div className="flex w-full flex-col gap-8 items-start p-6 backdrop-blur-sm rounded-3xl border border-white-200 bg-black-200">
           <h2 className="text-4xl font-stretch-extra-expanded font-medium text-center w-full">
             Here I start
           </h2>
           <p className="w-full text-center text-white-600 text-base">
             I was 16
           </p>
-        </Material>
+        </div>
       </div>
     </div>
   );
