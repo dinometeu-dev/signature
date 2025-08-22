@@ -7,7 +7,6 @@ import Heading from '@/components/Heading';
 import { ExperienceBlock } from '@/components/ExperienceBlock';
 import { getExperiences } from '@/lib/api/experience';
 import { ExperienceBlockType } from '@/types/api';
-import Material from '@/components/Material';
 
 const WorkExperience = React.forwardRef<
   HTMLDivElement,
