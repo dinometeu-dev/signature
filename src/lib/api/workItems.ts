@@ -1,6 +1,7 @@
 import type { ApiResponse, WorkItem } from '@/types/api';
+import { BASE_API_URL } from '@/utils/constants/api';
 
-const BASE_URL = `/api/workItems`;
+const BASE_URL = `${BASE_API_URL}/api/workItems`;
 
 export async function getWorkItems(): Promise<ApiResponse<WorkItem[]>> {
   const res = await fetch(BASE_URL, { cache: 'no-store' });

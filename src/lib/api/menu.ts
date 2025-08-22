@@ -1,6 +1,7 @@
 import type { MenuWithContent, ApiResponse } from '@/types/api';
+import { BASE_API_URL } from '@/utils/constants/api';
 
-const BASE_URL = `/api/menu`;
+const BASE_URL = `${BASE_API_URL}/api/menu`;
 
 export async function getMenu(): Promise<ApiResponse<MenuWithContent[]>> {
   const res = await fetch(BASE_URL, { cache: 'no-store' });

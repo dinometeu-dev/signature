@@ -1,6 +1,7 @@
 import type { ApiResponse, ExperienceBlockType } from '@/types/api';
+import { BASE_API_URL } from '@/utils/constants/api';
 
-const BASE_URL = `/api/experience`;
+const BASE_URL = `${BASE_API_URL}/api/experience`;
 
 export async function getExperiences(): Promise<
   ApiResponse<ExperienceBlockType[]>
