@@ -13,7 +13,6 @@ import { QUERY_STATE } from '@/utils/constants/routes';
 import { Waves } from '@/components/Waves';
 import { cn } from '@/utils/functions/mergeClasses';
 import { QUERY_STATE_PROFILE } from '@/utils/constants/paths';
-import SocialLinks from '@/components/SocialLinks';
 import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
 import { useSlide } from '@/utils/providers/useSlideOpen';
 
@@ -63,11 +62,11 @@ const ProfileSlide = React.forwardRef<
         </AnimatePresence>
       </div>
       {isOpen && <OpenSlideContent />}
-      <SocialLinks className={'-translate-y-1/2'} />
+      {/*<SocialLinks className={'-translate-y-1/2'} />*/}
       <div
         className={cn(
           'absolute z-10 w-full left-0 bottom-0 h-[calc(100%-400px)]',
-          isOpen ? 'h-[calc(100%-400px)]' : 'h-full translate-y-[46%]'
+          isOpen ? 'h-[calc(100%-340px)]' : 'h-full translate-y-[50%]'
         )}
       >
         <Waves

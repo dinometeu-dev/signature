@@ -33,6 +33,7 @@ const Waves: FC<WaveProps> = ({
         className={cn('absolute h-full', className)}
         key={index}
         fill="url(#gradient)"
+        filter="url(#blur)"
         paused={paused}
         options={{
           height: 100,
@@ -43,6 +44,9 @@ const Waves: FC<WaveProps> = ({
         {...props}
       >
         <defs>
+          <filter id="blur">
+            <feGaussianBlur stdDeviation="0.5" />
+          </filter>
           <linearGradient id="gradient" gradientTransform="rotate(90)">
             <stop offset="10%" stopColor={startColor} />
             <stop offset={offsetEnd} stopColor={baseEndGradient} />

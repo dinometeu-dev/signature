@@ -72,6 +72,7 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
           <div
             className={cn(
               'w-full min-h-slide-height relative transition-[padding] p-16',
+              isOpen && 'pt-0',
               className
             )}
           >
