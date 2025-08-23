@@ -1,17 +1,17 @@
 'use client';
 
-import React from 'react';
-import { SlideStack } from '@/components/SlideStack';
 import { Slide } from '@/components/Slide';
 import { WorkItem } from '@/types/api';
-import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide';
+import React from 'react';
 import {
   QUERY_STATE_CONTACT,
   QUERY_STATE_PROFILE,
   QUERY_STATE_SIGNATURE,
   QUERY_STATE_WORKS,
 } from '@/utils/constants/paths';
+import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide';
 import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide/ProfileSlide';
+import { SlideStack } from '@/components/SlideStack';
 import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide';
 
 interface SlideComponentsClientProps

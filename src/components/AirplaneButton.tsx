@@ -113,8 +113,7 @@ const AirplaneButton = React.forwardRef<
       {...props}
     >
       <Button
-        contentClassName={'text-blue-dark'}
-        className={'z-10'}
+        className={'z-10 text-blue-dark'}
         onMouseEnter={() => setButtonIsHovered(true)}
         onMouseLeave={() => setButtonIsHovered(false)}
         onClick={() => {

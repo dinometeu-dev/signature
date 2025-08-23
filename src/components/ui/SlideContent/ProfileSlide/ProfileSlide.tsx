@@ -8,42 +8,31 @@ import { Button } from '@/components/Button';
 import { Bubbles } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import ExperienceScore from '@/components/ui/SlideContent/ProfileSlide/components/ExperienceScore';
-import {
-  useAddQueryParam,
-  useDeleteQueryParam,
-  useGetQueryParams,
-} from '@/utils/hooks/navigation';
-import { QUERY_SLIDE_OPEN, QUERY_STATE } from '@/utils/constants/routes';
+import { useGetQueryParams } from '@/utils/hooks/navigation';
+import { QUERY_STATE } from '@/utils/constants/routes';
 import { Waves } from '@/components/Waves';
 import { cn } from '@/utils/functions/mergeClasses';
 import { QUERY_STATE_PROFILE } from '@/utils/constants/paths';
 import SocialLinks from '@/components/SocialLinks';
 import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
+import { useSlide } from '@/utils/providers/useSlideOpen';
 
 const ProfileSlide = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >((props, ref) => {
-  const addQueryParam = useAddQueryParam();
-  const deleteQueryParam = useDeleteQueryParam();
+  const { isOpen, close, open } = useSlide();
+
   const getQueryParam = useGetQueryParams();
   const currentSlide = getQueryParam(QUERY_STATE);
-  const isOpenSlide = getQueryParam(QUERY_SLIDE_OPEN);
-
-  const handleOpenSlide = () => {
-    addQueryParam(QUERY_SLIDE_OPEN, 'open');
-  };
-
-  const handleCloseSlide = () => {
-    deleteQueryParam(QUERY_SLIDE_OPEN);
-  };
 
   return (
     <Slide
       ref={ref}
+      isOpen={isOpen}
       setOverlowHidden
       className={`flex flex-col gap-12`}
-      backButtonOnClick={() => handleCloseSlide()}
+      backButtonOnClick={() => close()}
       {...props}
     >
       <div className="relative flex flex-col justify-start gap-12 w-full">
@@ -53,7 +42,7 @@ const ProfileSlide = React.forwardRef<
       </div>
       <div className="relative z-30 w-full flex justify-center items-center">
         <AnimatePresence>
-          {!isOpenSlide && (
+          {!isOpen && (
             <Button
               exit={{
                 position: 'absolute',
@@ -64,9 +53,8 @@ const ProfileSlide = React.forwardRef<
                   ease: 'easeInOut',
                 },
               }}
-              glass={{ backgroundOpacity: 0.3 }}
               className="text-darker-green translate-y-1/5"
-              onClick={() => handleOpenSlide()}
+              onClick={() => open()}
             >
               <Bubbles size={18} />
               Let’s dive deeper
@@ -74,18 +62,18 @@ const ProfileSlide = React.forwardRef<
           )}
         </AnimatePresence>
       </div>
-      {isOpenSlide && <OpenSlideContent />}
+      {isOpen && <OpenSlideContent />}
       <SocialLinks className={'-translate-y-1/2'} />
       <div
         className={cn(
           'absolute z-10 w-full left-0 bottom-0 h-[calc(100%-400px)]',
-          isOpenSlide ? 'h-[calc(100%-400px)]' : 'h-full translate-y-[46%]'
+          isOpen ? 'h-[calc(100%-400px)]' : 'h-full translate-y-[46%]'
         )}
       >
         <Waves
           paused={currentSlide !== QUERY_STATE_PROFILE}
-          baseEndGradient={isOpenSlide ? '#00101e' : '#001d35'}
-          offsetEnd={isOpenSlide ? '65%' : '100%'}
+          baseEndGradient={isOpen ? '#00101e' : '#001d35'}
+          offsetEnd={isOpen ? '65%' : '100%'}
         />
       </div>
     </Slide>

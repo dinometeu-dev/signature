@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
+import { SlideProvider } from '@/utils/providers/useSlideOpen';
 
 export const metadata: Metadata = {
   title: 'Signature',
@@ -15,9 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children} <SpeedInsights /> <Analytics />
-      </body>
+      <SlideProvider>
+        <body>
+          {children} <SpeedInsights /> <Analytics />
+        </body>
+      </SlideProvider>
     </html>
   );
 }
