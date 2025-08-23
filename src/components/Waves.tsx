@@ -8,6 +8,7 @@ interface WaveProps extends React.HTMLAttributes<SVGPathElement> {
   speed?: number;
   count?: number;
   offsetEnd?: string;
+  paused?: boolean;
 }
 
 const Waves: FC<WaveProps> = ({
@@ -17,22 +18,27 @@ const Waves: FC<WaveProps> = ({
   offsetEnd = '65%',
   count = 5,
   speed = 0.03,
+  paused = false,
   ...props
 }) => {
-  return Array.from({ length: count }).map((_, index) => {
-    const startColor = `${baseStartGradient}${50 + index * 6}`;
+  const settingsArray = Array.from({ length: count }, (_, index) => ({
+    startColor: `${baseStartGradient}${50 + index * 6}`,
+    speed: speed * (index + 2),
+    points: Math.floor(Math.random() * (5 - 3 + 1)) + 3,
+  }));
 
+  return settingsArray.map(({ startColor, speed, points }, index) => {
     return (
       <Wave
         className={cn('absolute h-full', className)}
         key={index}
         fill="url(#gradient)"
-        paused={false}
+        paused={paused}
         options={{
           height: 100,
           amplitude: 40,
-          speed: speed * (index + 2),
-          points: Math.floor(Math.random() * (5 - 3 + 1)) + 3,
+          speed,
+          points,
         }}
         {...props}
       >

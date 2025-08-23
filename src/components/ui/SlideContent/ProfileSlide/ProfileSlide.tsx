@@ -8,15 +8,17 @@ import { Button } from '@/components/Button';
 import { Bubbles } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import ExperienceScore from '@/components/ui/SlideContent/ProfileSlide/components/ExperienceScore';
-import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
 import {
   useAddQueryParam,
   useDeleteQueryParam,
   useGetQueryParams,
 } from '@/utils/hooks/navigation';
-import { QUERY_SLIDE_OPEN } from '@/utils/constants/routes';
+import { QUERY_SLIDE_OPEN, QUERY_STATE } from '@/utils/constants/routes';
 import { Waves } from '@/components/Waves';
 import { cn } from '@/utils/functions/mergeClasses';
+import { QUERY_STATE_PROFILE } from '@/utils/constants/paths';
+import SocialLinks from '@/components/SocialLinks';
+import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
 
 const ProfileSlide = React.forwardRef<
   HTMLDivElement,
@@ -25,6 +27,7 @@ const ProfileSlide = React.forwardRef<
   const addQueryParam = useAddQueryParam();
   const deleteQueryParam = useDeleteQueryParam();
   const getQueryParam = useGetQueryParams();
+  const currentSlide = getQueryParam(QUERY_STATE);
   const isOpenSlide = getQueryParam(QUERY_SLIDE_OPEN);
 
   const handleOpenSlide = () => {
@@ -48,7 +51,7 @@ const ProfileSlide = React.forwardRef<
         <ExperienceScore />
         <ProfileCard className="z-20 absolute left-full -translate-x-full" />
       </div>
-      <div className="relative z-20 w-full flex justify-center items-center">
+      <div className="relative z-30 w-full flex justify-center items-center">
         <AnimatePresence>
           {!isOpenSlide && (
             <Button
@@ -72,14 +75,15 @@ const ProfileSlide = React.forwardRef<
         </AnimatePresence>
       </div>
       {isOpenSlide && <OpenSlideContent />}
-
+      <SocialLinks className={'-translate-y-1/2'} />
       <div
         className={cn(
           'absolute z-10 w-full left-0 bottom-0 h-[calc(100%-400px)]',
-          isOpenSlide ? 'h-[calc(100%-400px)]' : 'h-full translate-y-1/2'
+          isOpenSlide ? 'h-[calc(100%-400px)]' : 'h-full translate-y-[46%]'
         )}
       >
         <Waves
+          paused={currentSlide !== QUERY_STATE_PROFILE}
           baseEndGradient={isOpenSlide ? '#00101e' : '#001d35'}
           offsetEnd={isOpenSlide ? '65%' : '100%'}
         />
