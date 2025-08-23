@@ -9,7 +9,7 @@ const WhoIAm = React.forwardRef<
   return (
     <div ref={ref} {...props} className={'w-full flex flex-col gap-11'}>
       <Heading text={PROFILE_WHO_I_AM} minFontSize={68} />
-      <p className="text-base leading-8 tracking-wide text-white-800">
+      <p className="text-xl leading-8 tracking-wide text-white-800">
         I’m a thoughtful and proactive Front-End Developer with a strong focus
         on building reliable, user-centered interfaces and improving the quality
         of both code and processes. I approach development not just as a task,

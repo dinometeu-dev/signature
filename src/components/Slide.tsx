@@ -18,8 +18,6 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
     const getQueryParam = useGetQueryParams();
     const isOpen = getQueryParam(QUERY_SLIDE_OPEN);
 
-    console.log(isOpen);
-
     const openWidth =
       typeof window !== 'undefined' ? window.innerWidth - 200 : 0;
     const openHeight =
@@ -29,7 +27,7 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
       <motion.div
         ref={ref}
         className={cn(
-          `absolute rounded-slide bg-white shadow-material w-slide-width `,
+          `absolute rounded-slide bg-white shadow-material w-slide-width`,
           setOverlowHidden && 'overflow-hidden'
         )}
         initial={{
@@ -69,12 +67,17 @@ const Slide = React.forwardRef<HTMLDivElement, SlideProps>(
         </AnimatePresence>
         <motion.div
           className={cn(
-            `w-full h-full relative transition-[padding] p-16 `,
-            isOpen && 'overflow-y-scroll overflow-x-hidden pt-28',
-            className
+            isOpen && `overflow-y-scroll overflow-x-hidden pt-28 h-full`
           )}
         >
-          {children}
+          <div
+            className={cn(
+              'w-full min-h-slide-height relative transition-[padding] p-16',
+              className
+            )}
+          >
+            {children}
+          </div>
         </motion.div>
       </motion.div>
     );

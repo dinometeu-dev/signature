@@ -1,10 +1,12 @@
+'use client';
+
 import React from 'react';
 import { Slide } from '@/components/Slide';
 import { PROFILE_TITLE } from '@/utils/constants/content';
 import { ProfileCard } from '@/components/ProfileCard';
 import { Button } from '@/components/Button';
 import { Bubbles } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import ExperienceScore from '@/components/ui/SlideContent/ProfileSlide/components/ExperienceScore';
 import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
 import {
@@ -13,6 +15,8 @@ import {
   useGetQueryParams,
 } from '@/utils/hooks/navigation';
 import { QUERY_SLIDE_OPEN } from '@/utils/constants/routes';
+import { Waves } from '@/components/Waves';
+import { cn } from '@/utils/functions/mergeClasses';
 
 const ProfileSlide = React.forwardRef<
   HTMLDivElement,
@@ -68,17 +72,18 @@ const ProfileSlide = React.forwardRef<
         </AnimatePresence>
       </div>
       {isOpenSlide && <OpenSlideContent />}
-      <motion.div
-        layout
-        className={`absolute z-10 bg-[url('/WaterBg.png')] bg-cover bg-no-repeat w-full h-full left-0 bottom-0`}
-        initial={{ top: isOpenSlide ? '57%' : '62%' }}
-        animate={{ top: isOpenSlide ? '57%' : '62%' }}
-        transition={{
-          type: 'spring',
-          duration: 0.5,
-        }}
-      />
-      <div className="w-full bg-blue-full-900 h-full absolute top-full left-0" />
+
+      <div
+        className={cn(
+          'absolute z-10 w-full left-0 bottom-0 h-[calc(100%-400px)]',
+          isOpenSlide ? 'h-[calc(100%-400px)]' : 'h-full translate-y-1/2'
+        )}
+      >
+        <Waves
+          baseEndGradient={isOpenSlide ? '#00101e' : '#001d35'}
+          offsetEnd={isOpenSlide ? '65%' : '100%'}
+        />
+      </div>
     </Slide>
   );
 });

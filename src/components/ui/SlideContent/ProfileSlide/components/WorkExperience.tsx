@@ -22,8 +22,6 @@ const WorkExperience = React.forwardRef<
     fetchData();
   }, []);
 
-  console.log(data);
-
   return (
     <div
       ref={ref}

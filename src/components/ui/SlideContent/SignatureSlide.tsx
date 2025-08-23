@@ -18,7 +18,8 @@ const SignatureSlide = React.forwardRef<
   return (
     <Slide
       ref={ref}
-      className="bg-[url('/svg/Signature.svg')] bg-cover bg-position-[center_top_1em] bg-no-repeat flex flex-col justify-between items-center pb-9 overflow-visible"
+      className="bg-[url('/svg/Signature.svg')] bg-cover bg-position-[center_top_1em] bg-no-repeat flex flex-col justify-between items-center  overflow-visible"
+      {...props}
     >
       <div className="flex flex-col items-center gap-9 text-center pt-24 z-10">
         <h1 className="font-domine text-5xl font-bold text-center leading-normal">
