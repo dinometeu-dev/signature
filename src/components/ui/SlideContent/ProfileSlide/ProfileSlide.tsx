@@ -14,7 +14,7 @@ import { Waves } from '@/components/Waves';
 import { cn } from '@/utils/functions/mergeClasses';
 import { QUERY_STATE_PROFILE } from '@/utils/constants/paths';
 import OpenSlideContent from '@/components/ui/SlideContent/ProfileSlide/components/OpenSlideContent';
-import { useSlide } from '@/utils/providers/useSlideOpen';
+import { useSlide } from '@/utils/providers/SlideOpenProvider';
 
 const ProfileSlide = React.forwardRef<
   HTMLDivElement,

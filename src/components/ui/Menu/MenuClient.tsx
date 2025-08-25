@@ -1,40 +1,49 @@
 'use client';
 
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, useState } from 'react';
 import { MenuWithContent } from '@/types/api';
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
 import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
 import { TransitionLine } from '@/components/TransitionLine';
+import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
 type MenuClientProps = {
   menu: MenuWithContent[];
 };
 
 export const MenuClient: FC<MenuClientProps> = ({ menu }) => {
+  const { setActiveSlideByAriaLabel } = useSlideStack();
+
   const setQueryParam = useSetQueryParam();
   const getQueryParams = useGetQueryParams();
 
-  const activeIndex = menu.findIndex(({ link }) =>
+  const activeIndex = menu.find(({ link }) =>
     getQueryParams(QUERY_STATE)
       ? link === getQueryParams(QUERY_STATE)
       : link === ''
   );
 
+  const [activeMenuItem, setActiveMenuItem] = useState(activeIndex?.id ?? 0);
+
+  const handleClick = (link: string, id: number, contentId?: string) => {
+    setActiveSlideByAriaLabel(link, contentId);
+    setActiveMenuItem(id);
+    setQueryParam({
+      [QUERY_STATE]: link,
+      [QUERY_WORK_ITEM]: contentId,
+    });
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
       {menu?.map(({ id, title, link, content }, idx) => {
-        const isActive = idx === activeIndex;
-        const isAboveActive = idx === activeIndex - 1;
+        const isActive = id === activeMenuItem;
+        const isAboveActive = id === activeMenuItem - 1;
 
         return (
           <Fragment key={id}>
             <button
-              onClick={() =>
-                setQueryParam({
-                  [QUERY_STATE]: link,
-                  [QUERY_WORK_ITEM]: content[0]?.id.toString(),
-                })
-              }
+              onClick={() => handleClick(link, id, content[0]?.id.toString())}
               className={`cursor-pointer text-base font-domine transition hover:text-black-800 ${isActive ? 'text-black font-bold' : 'text-black-400 '}`}
             >
               {title}
