@@ -7,7 +7,7 @@ import { ProfileCard } from '@/components/ProfileCard';
 import { Button } from '@/components/Button';
 import { Bubbles } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
-import ExperienceScore from '@/components/ui/SlideContent/ProfileSlide/components/ExperienceScore';
+import { ExperienceScore } from '@/components/ui/SlideContent/ProfileSlide/components/ExperienceScore';
 import { useGetQueryParams } from '@/utils/hooks/navigation';
 import { QUERY_STATE } from '@/utils/constants/routes';
 import { Waves } from '@/components/Waves';
@@ -35,7 +35,7 @@ const ProfileSlide = React.forwardRef<
       {...props}
     >
       <div className="relative flex flex-col justify-start gap-12 w-full">
-        <h2 className="text-[40px] font-domine font-bold">{PROFILE_TITLE}</h2>
+        <h2 className="text-[40px] font-headings font-bold">{PROFILE_TITLE}</h2>
         <ExperienceScore />
         <ProfileCard className="z-20 absolute left-full -translate-x-full" />
       </div>

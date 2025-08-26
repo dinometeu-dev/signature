@@ -44,7 +44,7 @@ export const MenuClient: FC<MenuClientProps> = ({ menu }) => {
           <Fragment key={id}>
             <button
               onClick={() => handleClick(link, id, content[0]?.id.toString())}
-              className={`cursor-pointer text-base font-domine transition hover:text-black-800 ${isActive ? 'text-black font-bold' : 'text-black-400 '}`}
+              className={`cursor-pointer text-base font-headings transition hover:text-black-800 ${isActive ? 'text-black font-bold' : 'text-black-400 '}`}
             >
               {title}
             </button>

@@ -22,12 +22,10 @@ const SignatureSlide = React.forwardRef<
       {...props}
     >
       <div className="flex flex-col items-center gap-9 text-center pt-24 z-10">
-        <h1 className="font-domine text-5xl font-bold text-center leading-normal">
+        <h1 className="font-headings text-5xl font-bold text-center leading-normal">
           {TITLE}
         </h1>
-        <p className="text-base font-normal text-black-600 font-sf-pro">
-          {SUBTITLE}
-        </p>
+        <p className="text-base font-normal text-black-600 ">{SUBTITLE}</p>
       </div>
       <AirplaneButton className="top-1/2 -translate-y-1/4 z-50" />
       <div className="w-full flex  items-center justify-between text-[12px] text-black-400 italic">

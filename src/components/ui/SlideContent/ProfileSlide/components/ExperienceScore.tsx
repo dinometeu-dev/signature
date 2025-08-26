@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Counter from '@/components/Counter';
 import dayjs from 'dayjs';
 import { cn } from '@/utils/functions/mergeClasses';
+import TechIconStack from '@/components/ui/SlideContent/ProfileSlide/components/TechIconStack';
+import SocialIconStack from '@/components/ui/SlideContent/ProfileSlide/components/SocialIconStack';
 
 const start = dayjs('2019-01-01', 'YYYY-MM-DD');
 const years = dayjs().diff(start, 'year');
@@ -15,50 +17,38 @@ const timeStats = [
     key: 'years',
     value: years,
     label: 'years',
-    className: 'text-xl text-black-400',
-    fontSize: 18,
-    textColor: '--color-black-400',
-    duration: 0.5,
+    more: 'Next.js • React • UI Engineering',
   },
   {
     key: 'months',
     value: months,
     label: 'months',
-    className: 'text-[22px] text-black-600',
-    textColor: '--color-black-600',
-    fontSize: 22,
-    duration: 0.5,
+    more: 'Improving performance up to 60%',
   },
   {
     key: 'weeks',
     value: weeks,
     label: 'weeks',
-    className: 'text-[26px] text-black-700',
-    textColor: '--color-black-700',
-    fontSize: 26,
-    duration: 0.5,
+    more: '20+ projects delivered',
   },
   {
     key: 'days',
     value: days,
     label: 'days',
-    className: 'text-[32px] text-black-800',
-    textColor: '--color-black-800',
-    fontSize: 32,
-    duration: 0.5,
+    more: <TechIconStack />,
   },
   {
     key: 'hours',
     value: hours,
     label: 'hours',
-    className: 'text-[36px] text-black-900',
-    textColor: '--color-black-900',
-    fontSize: 36,
-    duration: 1,
+    more: <SocialIconStack />,
   },
 ];
 
-const ExperienceScore = React.forwardRef<
+const MIN_FONT_SIZE = 20;
+const STEP_FONT_SIZE = 6;
+
+export const ExperienceScore = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
@@ -66,21 +56,35 @@ const ExperienceScore = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        'flex flex-col justify-start gap-3.5 font-stretch-extra-expanded',
+        'flex flex-col justify-start  relative leading-none',
         className
       )}
       {...props}
     >
-      {timeStats.map(({ key, value, label, className, duration }) => (
-        <div key={key} className={className}>
-          <Counter from={value} to={value} duration={duration} direction="up" />{' '}
-          {label}
-        </div>
-      ))}
-      <h1 className="text-[64px]">Of experience</h1>
+      <div className="flex flex-col justify-start gap-3 max-w-2/3 tracking-wide z-50">
+        {timeStats.map(({ key, value, label, more }, idx) => {
+          const fontSize = MIN_FONT_SIZE + idx * STEP_FONT_SIZE;
+          return (
+            <Fragment key={key}>
+              <div
+                style={{ fontSize }}
+                className="w-full flex justify-between items-center"
+              >
+                <div>
+                  <Counter from={0} to={value} duration={2} direction="up" />{' '}
+                  {label}
+                </div>
+                <div className="text-sm italic text-black">{more}</div>
+              </div>
+              <div className="w-full h-px rounded-full bg-gradient-to-r from-transparent to-black/20" />
+            </Fragment>
+          );
+        })}
+      </div>
+      <h1 className="text-[118px]">Of experience</h1>
+      {/*<div className="absolute inset-0 bg-gradient-to-b from-white/80  to-white/10 to-70%" />*/}
     </div>
   );
 });
 
 ExperienceScore.displayName = 'ExperienceScore';
-export default ExperienceScore;
