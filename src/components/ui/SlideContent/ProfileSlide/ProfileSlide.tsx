@@ -62,7 +62,6 @@ const ProfileSlide = React.forwardRef<
         </AnimatePresence>
       </div>
       {isOpen && <OpenSlideContent />}
-      {/*<SocialLinks className={'-translate-y-1/2'} />*/}
       <div
         className={cn(
           'absolute z-10 w-full left-0 bottom-0 h-[calc(100%-400px)]',

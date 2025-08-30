@@ -126,7 +126,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
                       alt={alt}
                       width={size}
                       height={size}
-                      className="rounded-full"
+                      className="rounded-xs"
                     />
                     <p>{alt}</p>
                   </div>

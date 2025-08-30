@@ -27,3 +27,5 @@ export type ExperienceBlockType = ExperienceBlockPrisma & {
 };
 
 export type ExperiencePeriodType = ExperiencePeriodPrisma;
+
+export type TechnologyType = TechnologyPrisma;

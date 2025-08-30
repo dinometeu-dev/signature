@@ -47,6 +47,8 @@ const timeStats = [
 
 const MIN_FONT_SIZE = 20;
 const STEP_FONT_SIZE = 6;
+const START_COLOR_INTERVAL = 0.4;
+const END_COLOR_INTERVAL = 0.9;
 
 export const ExperienceScore = React.forwardRef<
   HTMLDivElement,
@@ -61,14 +63,19 @@ export const ExperienceScore = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex flex-col justify-start gap-3 max-w-2/3 tracking-wide z-50">
+      <div className="flex flex-col justify-start gap-3 max-w-2/3 tracking-wide z-20">
         {timeStats.map(({ key, value, label, more }, idx) => {
           const fontSize = MIN_FONT_SIZE + idx * STEP_FONT_SIZE;
+          const step =
+            (END_COLOR_INTERVAL - START_COLOR_INTERVAL) /
+            (timeStats.length - 1);
+          const colorInterval = START_COLOR_INTERVAL + idx * step;
+
           return (
             <Fragment key={key}>
               <div
-                style={{ fontSize }}
-                className="w-full flex justify-between items-center"
+                style={{ fontSize, color: `rgba(0, 0, 0, ${colorInterval})` }}
+                className={cn('w-full flex justify-between items-center ')}
               >
                 <div>
                   <Counter from={0} to={value} duration={2} direction="up" />{' '}

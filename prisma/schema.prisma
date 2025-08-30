@@ -53,6 +53,7 @@ model Link {
   id         Int      @id @default(autoincrement())
   url        String
   label      String?
+  imgPath    String?
   workItem   WorkItem @relation(fields: [workItemId], references: [id])
   workItemId Int
 }
@@ -60,6 +61,7 @@ model Link {
 model Technology {
   id        Int        @id @default(autoincrement())
   name      String     @unique
+  iconPath  String
   workItems WorkItem[] @relation("WorkItemTechnologies")
 }
 
