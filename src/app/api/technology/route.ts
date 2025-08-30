@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -18,9 +18,9 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, icon } = body;
+    const { name, iconPath } = body;
 
-    if (!name || !icon) {
+    if (!name || !iconPath) {
       return NextResponse.json(
         { error: 'Name and icon are required' },
         { status: 400 }
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const technology = await prisma.technology.create({
       data: {
         name,
-        icon,
+        iconPath,
       },
     });
 
@@ -46,9 +46,9 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, icon } = body;
+    const { id, name, iconPath } = body;
 
-    if (!id || (!name && !icon)) {
+    if (!id || (!name && !iconPath)) {
       return NextResponse.json(
         { error: 'Invalid update data' },
         { status: 400 }
@@ -59,7 +59,7 @@ export async function PATCH(request: Request) {
       where: { id },
       data: {
         ...(name && { name }),
-        ...(icon && { icon }),
+        ...(iconPath && { iconPath }),
       },
     });
 
