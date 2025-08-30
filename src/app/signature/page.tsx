@@ -1,6 +1,6 @@
-import { Menu } from '@/components/ui/Menu/Menu'
-import { SlideContent } from '@/components/ui/SlideContent/SlideContent'
-import { Logo } from '@/components/Logo'
+import { SlideContent } from '@/components/ui/SlideContent/SlideContent';
+import { Logo } from '@/components/Logo';
+import { Menu } from '@/components/ui/Menu/Menu';
 
 export default function Home() {
   return (
@@ -13,5 +13,5 @@ export default function Home() {
         <Logo />
       </div>
     </div>
-  )
+  );
 }

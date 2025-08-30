@@ -43,7 +43,7 @@ const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
           propId: props['id'] ?? '',
         });
       });
-    }, [slides]);
+    }, [slides.length]);
 
     return (
       <AnimatePresence>

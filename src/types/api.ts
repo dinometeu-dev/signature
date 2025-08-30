@@ -1,18 +1,18 @@
 import type {
   Menu as MenuPrisma,
   WorkItem as WorkItemPrisma,
-  Link as LinkPrisma,
+  WorkItemLink as WorkItemLinkPrisma,
   Technology as TechnologyPrisma,
   ExperienceBlock as ExperienceBlockPrisma,
   ExperiencePeriod as ExperiencePeriodPrisma,
 } from '@/generated/prisma';
 
-export type MenuWithContent = MenuPrisma & {
+export type MenuType = MenuPrisma & {
   content: WorkItemPrisma[];
 };
 
-export type WorkItem = WorkItemPrisma & {
-  links: LinkPrisma[];
+export type WorkItemType = WorkItemPrisma & {
+  links: WorkItemLinkPrisma[];
   menu: MenuPrisma;
   technologies: TechnologyPrisma[];
 };
@@ -30,4 +30,4 @@ export type ExperiencePeriodType = ExperiencePeriodPrisma;
 
 export type TechnologyType = TechnologyPrisma;
 
-export type LinkType = LinkPrisma;
+export type LinkType = WorkItemLinkPrisma;

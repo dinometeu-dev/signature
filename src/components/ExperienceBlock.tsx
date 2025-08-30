@@ -7,7 +7,7 @@ import { ExperiencePeriodType } from '@/types/api';
 interface ExperiencePeriodProps extends React.HTMLAttributes<HTMLDivElement> {
   position: string;
   startDate: Date;
-  endDate: Date;
+  endDate: Date | null;
 }
 
 interface ExperienceBlockProps extends React.HTMLAttributes<HTMLDivElement> {

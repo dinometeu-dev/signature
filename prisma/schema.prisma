@@ -17,8 +17,8 @@ datasource db {
 model ExperienceBlock {
   id          Int                @id @default(autoincrement())
   companyName String
-  imgPath     String
-  imageAlt    String
+  iconPath    String
+  alt         String
   location    String
   periods     ExperiencePeriod[]
 
@@ -27,35 +27,52 @@ model ExperienceBlock {
 }
 
 model ExperiencePeriod {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   position  String
   startDate DateTime
-  endDate   DateTime
+  endDate   DateTime?
 
   experienceBlock   ExperienceBlock @relation(fields: [experienceBlockId], references: [id])
   experienceBlockId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model WorkItem {
-  id           Int          @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   title        String
   description  String
-  image        String
+  iconPath     String
   menuId       Int
-  menu         Menu         @relation(fields: [menuId], references: [id])
-  links        Link[]
-  technologies Technology[] @relation("WorkItemTechnologies")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  menu         Menu           @relation(fields: [menuId], references: [id])
+  links        WorkItemLink[]
+  technologies Technology[]   @relation("WorkItemTechnologies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Link {
+model WorkItemLink {
   id         Int      @id @default(autoincrement())
   url        String
   label      String?
-  imgPath    String?
+  iconPath   String?
   workItem   WorkItem @relation(fields: [workItemId], references: [id])
   workItemId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialLink {
+  id       Int    @id @default(autoincrement())
+  url      String
+  iconPath String
+  alt      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Technology {
@@ -63,13 +80,17 @@ model Technology {
   name      String     @unique
   iconPath  String
   workItems WorkItem[] @relation("WorkItemTechnologies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Menu {
-  id        Int        @id @default(autoincrement())
-  title     String
-  link      String
-  content   WorkItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id      Int        @id @default(autoincrement())
+  title   String
+  link    String
+  content WorkItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

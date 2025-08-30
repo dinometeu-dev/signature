@@ -1,26 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { PROFILE_WORK_EXPERIENCE } from '@/utils/constants/content';
 import { cn } from '@/utils/functions/mergeClasses';
 import Heading from '@/components/Heading';
 import { ExperienceBlock } from '@/components/ExperienceBlock';
-import { getExperiences } from '@/lib/api/experience';
-import { ExperienceBlockType } from '@/types/api';
+
+import { useExperienceBlocks } from '@/lib/api/experienceBlock';
 
 const WorkExperience = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const [data, setData] = useState<null | ExperienceBlockType[]>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      const experiences = await getExperiences();
-      setData(experiences.data);
-    }
-    fetchData();
-  }, []);
+  const { blocks } = useExperienceBlocks();
 
   return (
     <div
@@ -30,19 +22,18 @@ const WorkExperience = React.forwardRef<
     >
       <Heading text={PROFILE_WORK_EXPERIENCE} minFontSize={68} />
       <div className={'w-full flex flex-col gap-11'}>
-        {data &&
-          data.map(
-            ({ id, companyName, imgPath, imageAlt, location, periods }) => (
-              <ExperienceBlock
-                key={id}
-                companyName={companyName}
-                imgPath={imgPath}
-                imageAlt={imageAlt}
-                location={location}
-                periods={periods}
-              />
-            )
-          )}
+        {blocks?.map(
+          ({ id, companyName, iconPath, alt, location, periods }) => (
+            <ExperienceBlock
+              key={id}
+              companyName={companyName}
+              imgPath={iconPath}
+              imageAlt={alt}
+              location={location}
+              periods={periods}
+            />
+          )
+        )}
         <div className="flex w-full flex-col gap-8 items-start p-6 backdrop-blur-sm rounded-3xl border border-white-200 bg-black-200">
           <h2 className="text-4xl font-stretch-extra-expanded font-medium text-center w-full">
             Here I start
