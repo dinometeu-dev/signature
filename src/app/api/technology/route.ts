@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const technologies = await prisma.technology.findMany();
-    return NextResponse.json(technologies);
+    return NextResponse.json({ technologies });
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to fetch technologies ${error}` },
