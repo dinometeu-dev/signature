@@ -16,7 +16,7 @@ export function useMenus() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(menu),
     });
-    mutate(BASE_URL);
+    await mutate(BASE_URL);
   };
 
   const updateMenu = async (
@@ -31,12 +31,12 @@ export function useMenus() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, ...menu }),
     });
-    mutate(BASE_URL);
+    await mutate(BASE_URL);
   };
 
   const deleteMenu = async (id: number) => {
     await fetch(`${BASE_URL}?id=${id}`, { method: 'DELETE' });
-    mutate(BASE_URL);
+    await mutate(BASE_URL);
   };
 
   return {

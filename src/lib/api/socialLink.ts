@@ -2,12 +2,16 @@
 
 import useSWR, { mutate } from 'swr';
 import { BASE_API_URL } from '@/utils/constants/api';
+import { SocialLinkType } from '@/types/api';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const BASE_URL = `${BASE_API_URL}/api/social-link`;
 
 export function useSocialLinks() {
-  const { data, error, isLoading } = useSWR(BASE_URL, fetcher);
+  const { data, error, isLoading } = useSWR<SocialLinkType[]>(
+    BASE_URL,
+    fetcher
+  );
 
   const createSocialLink = async (link: {
     url: string;

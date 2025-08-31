@@ -8,16 +8,16 @@ import {
   QUERY_STATE_SIGNATURE,
   QUERY_STATE_WORKS,
 } from '@/utils/constants/paths';
-import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide';
+import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide/SignatureSlide';
 import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide/ProfileSlide';
 import { SlideStack } from '@/components/SlideStack';
-import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide';
+import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide/ContactSlide';
 import { useWorkItems } from '@/lib/api/workItem';
 
 const SlideContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->((props, ref) => {
+>((_, ref) => {
   const { workItems } = useWorkItems();
 
   return (

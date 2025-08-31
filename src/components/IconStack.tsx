@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode } from 'react';
+import React, { FC, Fragment, ReactNode } from 'react';
 import { cn } from '@/utils/functions/mergeClasses';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -9,20 +9,39 @@ import {
   HoverCardTrigger,
 } from '@/components/hover-card';
 import Link from 'next/link';
+import Skeleton from '@/components/Skeleton';
 
 interface IconStackProps extends Omit<React.HTMLProps<HTMLDivElement>, 'size'> {
   size?: number;
   iconCount?: number;
   hoverScale?: number;
   showFull?: boolean;
+  isLoading?: boolean;
   icons?: {
     src: string;
     alt: string;
-    link?: string;
+    url?: string;
   }[];
 }
 
 const BASE_HOVER_SHADOW = '0 4px 14px rgba(0, 0, 0, 0.2)';
+
+const LoadingIconStack: FC<{ size: number; marginLeft: string }> = ({
+  size,
+  marginLeft,
+}) => {
+  return [...Array(4)].map((_, idx) => (
+    <Skeleton
+      key={idx}
+      className="rounded-full"
+      style={{
+        marginLeft: marginLeft,
+        width: size + 12,
+        height: size + 12,
+      }}
+    />
+  ));
+};
 
 const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
   (
@@ -33,6 +52,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
       iconCount = 4,
       hoverScale = 1.15,
       showFull,
+      isLoading,
       ...props
     },
     ref
@@ -54,16 +74,24 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
       return children;
     };
 
+    if (isLoading && !showedIcons) {
+      return (
+        <div ref={ref} className={cn('flex', className)} {...props}>
+          <LoadingIconStack size={size} marginLeft={marginLeft} />
+        </div>
+      );
+    }
+
     return (
       <div ref={ref} className={cn('flex', className)} {...props}>
-        {showedIcons?.map(({ src, alt, link }, idx) => {
+        {showedIcons?.map(({ src, alt, url }, idx) => {
           return (
             <Tooltip key={src + alt}>
               <TooltipTrigger asChild>
                 <motion.div
                   className={cn(
                     'p-1.5 bg-white shadow-sm rounded-full inline-block',
-                    link && 'cursor-pointer'
+                    url && 'cursor-pointer'
                   )}
                   style={{
                     zIndex: idx,
@@ -85,7 +113,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
                       height={size}
                       className="rounded-full"
                     />,
-                    link
+                    url
                   )}
                 </motion.div>
               </TooltipTrigger>
@@ -95,7 +123,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
             </Tooltip>
           );
         })}
-        {icons!.length > iconCount && hiddenIcons && !showFull && (
+        {icons && icons.length > iconCount && hiddenIcons && !showFull && (
           <HoverCard openDelay={300}>
             <HoverCardTrigger asChild>
               <motion.div
@@ -105,7 +133,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
                 style={{
                   minWidth: `${size + 12}px`,
                   minHeight: `${size + 12}px`,
-                  zIndex: icons!.length,
+                  zIndex: icons.length,
                   marginLeft,
                 }}
                 whileHover={{
@@ -114,7 +142,7 @@ const IconStack = React.forwardRef<HTMLDivElement, IconStackProps>(
                   transition: { duration: 0.3, bounce: 0 },
                 }}
               >
-                +{icons!.length - iconCount}
+                +{hiddenIcons.length}
               </motion.div>
             </HoverCardTrigger>
             <HoverCardContent className="w-fit flex flex-col gap-2 items-start">

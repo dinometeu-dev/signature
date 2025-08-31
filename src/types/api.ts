@@ -3,6 +3,7 @@ import type {
   WorkItem as WorkItemPrisma,
   WorkItemLink as WorkItemLinkPrisma,
   Technology as TechnologyPrisma,
+  SocialLink as SocialLinkPrisma,
   ExperienceBlock as ExperienceBlockPrisma,
   ExperiencePeriod as ExperiencePeriodPrisma,
 } from '@/generated/prisma';
@@ -17,11 +18,6 @@ export type WorkItemType = WorkItemPrisma & {
   technologies: TechnologyPrisma[];
 };
 
-export type ApiResponse<T> = {
-  data: T | null;
-  error?: string;
-};
-
 export type ExperienceBlockType = ExperienceBlockPrisma & {
   periods: ExperiencePeriodPrisma[];
 };
@@ -30,4 +26,4 @@ export type ExperiencePeriodType = ExperiencePeriodPrisma;
 
 export type TechnologyType = TechnologyPrisma;
 
-export type LinkType = WorkItemLinkPrisma;
+export type SocialLinkType = SocialLinkPrisma;

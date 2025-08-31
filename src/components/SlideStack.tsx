@@ -6,7 +6,7 @@ import { cn } from '@/utils/functions/mergeClasses';
 import { SCREEN_HEIGHT } from '@/utils/constants/styled';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
-interface SlideStackProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
+export interface SlideStackProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
   children: React.ReactNode;
 }
 

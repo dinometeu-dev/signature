@@ -1,12 +1,13 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
 import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
 import { TransitionLine } from '@/components/TransitionLine';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useMenus } from '@/lib/api/menu';
+import { QUERY_STATE_WORKS } from '@/utils/constants/paths';
 
 const Menu = React.forwardRef<
   HTMLDivElement,
@@ -14,20 +15,12 @@ const Menu = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { menus } = useMenus();
 
-  console.log(menus);
-
   const { setActiveSlideByAriaLabel } = useSlideStack();
 
   const setQueryParam = useSetQueryParam();
   const getQueryParams = useGetQueryParams();
 
-  const activeIndex = menus?.find(({ link }) =>
-    getQueryParams(QUERY_STATE)
-      ? link === getQueryParams(QUERY_STATE)
-      : link === ''
-  );
-
-  const [activeMenuItem, setActiveMenuItem] = useState(activeIndex?.id ?? 0);
+  const [activeMenuItem, setActiveMenuItem] = useState(0);
 
   const handleClick = (link: string, id: number, contentId?: string) => {
     setActiveSlideByAriaLabel(link, contentId);
@@ -37,6 +30,18 @@ const Menu = React.forwardRef<
       [QUERY_WORK_ITEM]: contentId,
     });
   };
+
+  useEffect(() => {
+    const activeItem = menus?.find(({ link }) =>
+      getQueryParams(QUERY_STATE)
+        ? link === getQueryParams(QUERY_STATE)
+        : link === ''
+    );
+
+    if (activeItem) {
+      setActiveMenuItem(activeItem.id);
+    }
+  }, [menus]);
 
   return (
     <div
@@ -50,6 +55,8 @@ const Menu = React.forwardRef<
       {menus?.map(({ id, title, link, content }, idx) => {
         const isActive = id === activeMenuItem;
         const isAboveActive = id === activeMenuItem - 1;
+
+        if (link === QUERY_STATE_WORKS && !content?.length) return null;
 
         return (
           <Fragment key={id}>

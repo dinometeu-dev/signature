@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
     const menus = await prisma.menu.findMany({
-      include: { content: true }, // includes related WorkItems
+      include: { content: true },
     });
+
     return NextResponse.json(menus);
   } catch (error) {
     return NextResponse.json(

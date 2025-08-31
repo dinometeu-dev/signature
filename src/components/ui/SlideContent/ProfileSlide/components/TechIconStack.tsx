@@ -8,9 +8,9 @@ const TechIconStack = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const { technologies } = useTechnologies();
+  const { technologies, isLoading } = useTechnologies();
 
-  return technologies ? (
+  return (
     <div
       ref={ref}
       className={cn('flex justify-center items-center gap-8', className)}
@@ -18,14 +18,13 @@ const TechIconStack = React.forwardRef<
     >
       <p>Stack</p>
       <IconStack
+        isLoading={isLoading}
         icons={technologies?.map(({ name, iconPath }) => ({
           src: `${BASE_TECHNOLOGY_LOGOS}/${iconPath}`,
           alt: name,
         }))}
       />
     </div>
-  ) : (
-    <div>Loading</div>
   );
 });
 
