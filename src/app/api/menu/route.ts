@@ -78,7 +78,7 @@ export async function DELETE(req: Request) {
     }
 
     await prisma.menu.delete({ where: { id: Number(id) } });
-    return NextResponse.json({ message: 'Menu deleted' });
+    return NextResponse.json({ message: 'menu deleted' });
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to delete menu: ${error}` },

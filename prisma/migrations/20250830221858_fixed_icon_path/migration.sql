@@ -1,11 +1,11 @@
 /*
   Warnings:
 
-  - You are about to drop the column `imgPath` on the `SocialLink` table. All the data in the column will be lost.
-  - You are about to drop the column `img` on the `WorkItem` table. All the data in the column will be lost.
-  - You are about to drop the column `imgPath` on the `WorkItemLink` table. All the data in the column will be lost.
-  - Added the required column `iconPath` to the `SocialLink` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `iconPath` to the `WorkItem` table without a default value. This is not possible if the table is not empty.
+  - You are about to drop the column `imgPath` on the `social-link` table. All the data in the column will be lost.
+  - You are about to drop the column `img` on the `work-item` table. All the data in the column will be lost.
+  - You are about to drop the column `imgPath` on the `work-item-link` table. All the data in the column will be lost.
+  - Added the required column `iconPath` to the `social-link` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `iconPath` to the `work-item` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterTable

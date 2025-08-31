@@ -78,7 +78,7 @@ export async function DELETE(req: Request) {
     }
 
     await prisma.technology.delete({ where: { id: Number(id) } });
-    return NextResponse.json({ message: 'Technology deleted' });
+    return NextResponse.json({ message: 'technology deleted' });
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to delete technology: ${error}` },
