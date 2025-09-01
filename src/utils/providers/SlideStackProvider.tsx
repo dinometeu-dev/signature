@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useGetQueryParams } from '@/utils/hooks/navigation';
+import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
 import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
 import { QUERY_STATE_WORKS } from '@/utils/constants/paths';
 
@@ -46,6 +46,7 @@ export function SlideStackProvider({
   children,
 }: Readonly<SlideStackProviderProps>) {
   const getQueryParams = useGetQueryParams();
+  const setQueryParams = useSetQueryParam();
   const activeState = getQueryParams(QUERY_STATE);
   const activeWorkItem = getQueryParams(QUERY_WORK_ITEM);
 
@@ -122,8 +123,17 @@ export function SlideStackProvider({
   const isActive = useCallback((id: number) => id === activeId, [activeId]);
 
   useEffect(() => {
-    setActiveSlideById(querySlideId ?? 0);
-  }, [querySlideId]);
+    if (slideStack[activeId]?.ariaLabel === QUERY_STATE_WORKS) {
+      setQueryParams({
+        [QUERY_STATE]: slideStack[activeId]?.ariaLabel,
+        [QUERY_WORK_ITEM]: slideStack[activeId]?.propId,
+      });
+    } else {
+      setQueryParams({
+        [QUERY_STATE]: slideStack[activeId]?.ariaLabel,
+      });
+    }
+  }, [activeId]);
 
   const value = useMemo<SlideStackContextValue>(
     () => ({

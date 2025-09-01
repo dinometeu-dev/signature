@@ -3,7 +3,7 @@
 import React from 'react';
 import { Slide } from '@/components/Slide';
 import { PROFILE_TITLE } from '@/utils/constants/content';
-import { ProfileCard } from '@/components/ProfileCard';
+import { ProfileCard } from '@/components/ui/SlideContent/ProfileSlide/components/ProfileCard';
 import { Button } from '@/components/Button';
 import { Bubbles } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';

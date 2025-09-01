@@ -1,6 +1,6 @@
 import React from 'react';
 import { Slide } from '@/components/Slide';
-import { AirplaneButton } from '@/components/AirplaneButton';
+import { AirplaneButton } from '@/components/ui/SlideContent/SignatureSlide/components/AirplaneButton';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { Switcher } from '@/components/Switcher';
 import { Volume2 } from 'lucide-react';

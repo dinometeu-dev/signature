@@ -2,10 +2,17 @@ import type { SpringOptions } from 'framer-motion';
 import React, { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import {
-  PROFILE_CARD_DESCRIPTION,
   PROFILE_CARD_NAME,
   PROFILE_CARD_STATUS,
 } from '@/utils/constants/content';
+import { Badge } from '@/components/Badge';
+import {
+  GraduationCap,
+  Microchip,
+  Scaling,
+  Sparkles,
+  Sprout,
+} from 'lucide-react';
 
 interface TiltedCardProps {
   altText?: string;
@@ -126,17 +133,31 @@ export default function TiltedCard({
         />
         <motion.div className="relative bg-gradient-to-t from-dark-green to-dark-green-0 w-full z-10 h-1/2 flex flex-col items-start justify-end  pb-6 gap-2.5 [transform-style:preserve-3d] rounded-[36px] ">
           <motion.div className="absolute z-[2] will-change-transform [transform:translateZ(30px)] scale-85 flex flex-col items-center justify-end overflow-hidden gap-2.5">
-            <div className="text-white flex flex-col gap-1">
-              <h2 className="text-2xl  font-stretch-extra-expanded font-medium">
+            <div className="text-white w-full flex flex-col items-start gap-1">
+              <h2 className="text-4xl font-stretch-extra-expanded font-medium">
                 {PROFILE_CARD_NAME}
               </h2>
-              <h5 className="text-sm  font-stretch-extra-expanded font-medium">
+              <h5 className="text-xl text-white/80 font-stretch-extra-expanded font-medium">
                 {PROFILE_CARD_STATUS}
               </h5>
             </div>
-            <p className="text-sm  text-white-800  font-light">
-              {PROFILE_CARD_DESCRIPTION}
-            </p>
+            <div className="w-full flex items-start gap-1 flex-wrap">
+              <Badge>
+                <Sparkles /> Creative
+              </Badge>
+              <Badge className="bg-blue-500 ">
+                <Microchip /> Detail-oriented
+              </Badge>
+              <Badge variant="secondary">
+                <Scaling /> Efficient
+              </Badge>
+              <Badge className="bg-amber-600">
+                <Sprout /> User-focused
+              </Badge>
+              <Badge className="bg-purple-800 ">
+                <GraduationCap /> Versatile
+              </Badge>
+            </div>
           </motion.div>
         </motion.div>
         <div className="absolute h-1/2 w-full progressive-backdrop-blur backdrop-blur-sm rounded-[36px]" />

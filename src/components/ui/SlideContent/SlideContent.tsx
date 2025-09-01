@@ -10,7 +10,7 @@ import {
 } from '@/utils/constants/paths';
 import { SignatureSlide } from '@/components/ui/SlideContent/SignatureSlide/SignatureSlide';
 import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide/ProfileSlide';
-import { SlideStack } from '@/components/SlideStack';
+import { SlideStack } from '@/components/ui/SlideContent/components/SlideStack';
 import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide/ContactSlide';
 import { useWorkItems } from '@/lib/api/workItem';
 

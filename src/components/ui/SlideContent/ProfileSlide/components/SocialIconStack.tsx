@@ -13,10 +13,9 @@ const SocialIconStack = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('flex justify-center items-center gap-8', className)}
+      className={cn('flex justify-center items-center gap-4', className)}
       {...props}
     >
-      <p>Socials</p>
       <IconStack
         isLoading={isLoading}
         icons={socialLinks?.map(({ url, alt, iconPath }) => ({
@@ -26,6 +25,7 @@ const SocialIconStack = React.forwardRef<
         }))}
         showFull
       />
+      <p>Socials</p>
     </div>
   );
 });
