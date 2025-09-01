@@ -1,6 +1,6 @@
 import { cn } from '@/utils/functions/mergeClasses';
 
-import TiltedCard from '@/components/TitledCard';
+import TiltedCard from '@/components/ui/SlideContent/ProfileSlide/components/TitledCard';
 import React from 'react';
 
 const ProfileCard = React.forwardRef<

@@ -13,9 +13,10 @@ const TechIconStack = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('flex justify-center items-center gap-4', className)}
+      className={cn('flex justify-center items-center gap-8', className)}
       {...props}
     >
+      <p>Stack</p>
       <IconStack
         isLoading={isLoading}
         icons={technologies?.map(({ name, iconPath }) => ({
@@ -23,7 +24,6 @@ const TechIconStack = React.forwardRef<
           alt: name,
         }))}
       />
-      <p>Stack</p>
     </div>
   );
 });

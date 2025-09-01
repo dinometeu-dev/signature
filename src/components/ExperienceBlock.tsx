@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/utils/functions/mergeClasses';
 import dayjs from 'dayjs';
 import { ExperiencePeriodType } from '@/types/api';
+import ColorThief from 'colorthief';
+import SpotlightCard from '@/components/SpotlightCard';
 
 interface ExperiencePeriodProps extends React.HTMLAttributes<HTMLDivElement> {
   position: string;
@@ -18,16 +20,22 @@ interface ExperienceBlockProps extends React.HTMLAttributes<HTMLDivElement> {
   periods?: ExperiencePeriodType[];
 }
 
+const BASE_ICON_SIZE = 40;
+
 const ExperiencePeriod = React.forwardRef<
   HTMLDivElement,
   ExperiencePeriodProps
 >(({ className, position, endDate, startDate, ...props }, ref) => {
-  const from = dayjs(startDate).format('MMM YYYY');
-  const to = dayjs(endDate).format('MMM YYYY');
+  const initialFrom = dayjs(startDate);
+  const initialTo = endDate ? dayjs(endDate) : dayjs();
+
+  const from = initialFrom.format('MMM YYYY');
+  const to = initialTo.format('MMM YYYY');
+
   const periodOfWork =
-    dayjs(endDate).diff(startDate, 'year') > 1
-      ? `${dayjs(endDate).diff(startDate, 'year')} yrs`
-      : `${dayjs(endDate).diff(startDate, 'month')} mo`;
+    initialTo.diff(startDate, 'year') > 1
+      ? `${initialTo.diff(startDate, 'year')} yrs`
+      : `${initialTo.diff(startDate, 'month')} mo`;
 
   return (
     <div ref={ref} className={cn('flex gap-3.5', className)} {...props}>
@@ -49,45 +57,73 @@ const ExperiencePeriod = React.forwardRef<
   );
 });
 
-const ExperienceBlock = React.forwardRef<HTMLDivElement, ExperienceBlockProps>(
-  ({ periods, imgPath, imageAlt, companyName, location, className }, ref) => {
-    return (
-      <div
-        className={cn(
-          'flex w-full flex-col gap-8 items-start p-6 backdrop-blur-sm rounded-3xl border border-white-200 bg-black-200',
-          className
-        )}
-        ref={ref}
-      >
-        <header className="w-full flex items-center gap-4">
-          <Image
-            src={`/${imgPath}`}
-            alt={imageAlt}
-            width={40}
-            height={40}
-            className={'size-10 rounded-full'}
+const ExperienceBlock: FC<ExperienceBlockProps> = ({
+  periods,
+  imgPath,
+  imageAlt,
+  companyName,
+  location,
+  className,
+}) => {
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const [bgColor, setBgColor] = useState<string | null>(null);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+
+    const handleLoad = () => {
+      try {
+        const colorThief = new ColorThief();
+        const [r, g, b] = colorThief.getColor(img);
+        setBgColor(`${r}, ${g}, ${b}`);
+      } catch (err) {
+        console.error('ColorThief failed:', err);
+      }
+    };
+
+    if (img.complete) {
+      handleLoad();
+    } else {
+      img.addEventListener('load', handleLoad);
+      return () => img.removeEventListener('load', handleLoad);
+    }
+  }, []);
+
+  return (
+    <SpotlightCard
+      spotlightColor={`rgba(${bgColor}, 0.6)`}
+      className={cn(
+        'flex relative w-full overflow-hidden flex-col gap-8 items-start p-6 backdrop-blur-sm rounded-3xl border border-white-200',
+        className
+      )}
+    >
+      <header className="w-full flex items-center gap-4">
+        <Image
+          ref={imgRef}
+          src={imgPath}
+          alt={imageAlt}
+          width={BASE_ICON_SIZE}
+          height={BASE_ICON_SIZE}
+          unoptimized
+          className={'size-10 rounded-full'}
+        />
+        <h2 className="text-4xl font-medium  font-headings">{companyName}</h2>
+      </header>
+      <div className={'flex flex-col gap-6'}>
+        {periods?.map(({ id, position, startDate, endDate }) => (
+          <ExperiencePeriod
+            key={id}
+            position={position}
+            startDate={startDate}
+            endDate={endDate}
           />
-          <h2 className="text-4xl font-stretch-extra-expanded font-medium">
-            {companyName}
-          </h2>
-        </header>
-        <div className={'flex flex-col gap-6'}>
-          {periods?.map(({ id, position, startDate, endDate }) => (
-            <ExperiencePeriod
-              key={id}
-              position={position}
-              startDate={startDate}
-              endDate={endDate}
-            />
-          ))}
-        </div>
-        <p className="text-white-800 text-base text-center w-full">
-          {location}
-        </p>
+        ))}
       </div>
-    );
-  }
-);
+      <p className="text-white-800 text-base text-center w-full">{location}</p>
+    </SpotlightCard>
+  );
+};
 
 ExperiencePeriod.displayName = 'ExperiencePeriod';
 ExperienceBlock.displayName = 'ExperienceBlock';

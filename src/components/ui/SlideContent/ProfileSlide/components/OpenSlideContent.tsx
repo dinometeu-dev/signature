@@ -9,7 +9,7 @@ const OpenSlideContent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('w-full flex z-20 text-white mt-24 gap-36', className)}
+      className={cn('w-full flex z-20 text-white  gap-36', className)}
       {...props}
     >
       <div className={'w-[90%] flex flex-col gap-32 mt-64'}>

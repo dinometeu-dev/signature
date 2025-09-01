@@ -134,27 +134,27 @@ export default function TiltedCard({
         <motion.div className="relative bg-gradient-to-t from-dark-green to-dark-green-0 w-full z-10 h-1/2 flex flex-col items-start justify-end  pb-6 gap-2.5 [transform-style:preserve-3d] rounded-[36px] ">
           <motion.div className="absolute z-[2] will-change-transform [transform:translateZ(30px)] scale-85 flex flex-col items-center justify-end overflow-hidden gap-2.5">
             <div className="text-white w-full flex flex-col items-start gap-1">
-              <h2 className="text-4xl font-stretch-extra-expanded font-medium">
+              <h2 className="text-4xl font-medium  font-headings">
                 {PROFILE_CARD_NAME}
               </h2>
-              <h5 className="text-xl text-white/80 font-stretch-extra-expanded font-medium">
+              <h5 className="text-xl text-white/80 font-headings">
                 {PROFILE_CARD_STATUS}
               </h5>
             </div>
             <div className="w-full flex items-start gap-1 flex-wrap">
-              <Badge>
+              <Badge className="bg-black/30">
                 <Sparkles /> Creative
               </Badge>
-              <Badge className="bg-blue-500 ">
+              <Badge className="bg-black/30">
                 <Microchip /> Detail-oriented
               </Badge>
-              <Badge variant="secondary">
+              <Badge className="bg-black/30">
                 <Scaling /> Efficient
               </Badge>
-              <Badge className="bg-amber-600">
+              <Badge className="bg-black/30">
                 <Sprout /> User-focused
               </Badge>
-              <Badge className="bg-purple-800 ">
+              <Badge className="bg-black/30">
                 <GraduationCap /> Versatile
               </Badge>
             </div>

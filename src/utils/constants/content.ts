@@ -6,8 +6,6 @@ export const PROFILE_TITLE = 'Shall we get acquainted?';
 
 export const PROFILE_CARD_NAME = 'Petrov Dmitri';
 export const PROFILE_CARD_STATUS = 'Front End Developer';
-export const PROFILE_CARD_DESCRIPTION =
-  'Crafts high-performance, accessible, and user-friendly web experiences.';
 
 export const PROFILE_WORK_EXPERIENCE = 'Work Experience';
 export const PROFILE_WHO_I_AM = 'Who I am?';

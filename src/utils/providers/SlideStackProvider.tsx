@@ -123,6 +123,13 @@ export function SlideStackProvider({
   const isActive = useCallback((id: number) => id === activeId, [activeId]);
 
   useEffect(() => {
+    if (querySlideId !== -1) {
+      setActiveId(querySlideId);
+    }
+  }, [querySlideId]);
+
+  useEffect(() => {
+    if (slideStack.length === 0) return;
     if (slideStack[activeId]?.ariaLabel === QUERY_STATE_WORKS) {
       setQueryParams({
         [QUERY_STATE]: slideStack[activeId]?.ariaLabel,
