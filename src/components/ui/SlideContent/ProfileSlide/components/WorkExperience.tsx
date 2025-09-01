@@ -3,7 +3,6 @@
 import React from 'react';
 import { PROFILE_WORK_EXPERIENCE } from '@/utils/constants/content';
 import { cn } from '@/utils/functions/mergeClasses';
-import Heading from '@/components/Heading';
 import { ExperienceBlock } from '@/components/ExperienceBlock';
 
 import { useExperienceBlocks } from '@/lib/api/experienceBlock';
@@ -20,7 +19,7 @@ const WorkExperience = React.forwardRef<
       className={cn('flex flex-col items-end w-full gap-8', className)}
       {...props}
     >
-      <Heading text={PROFILE_WORK_EXPERIENCE} minFontSize={68} />
+      <h2 className={'text-[68px] font-headings'}>{PROFILE_WORK_EXPERIENCE}</h2>
       <div className={'w-full flex flex-col gap-11'}>
         {blocks?.map(
           ({ id, companyName, iconPath, alt, location, periods }) => (

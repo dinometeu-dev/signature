@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/utils/functions/mergeClasses';
+import WorkExperience from '@/components/ui/SlideContent/ProfileSlide/components/WorkExperience';
 
 const OpenSlideContent = React.forwardRef<
   HTMLDivElement,
@@ -12,10 +13,9 @@ const OpenSlideContent = React.forwardRef<
       {...props}
     >
       <div className={'w-[90%] flex flex-col gap-32 mt-64'}>
-        {/*<WhoIAm />*/}
-        {/*<Certificates />*/}
+        <div></div>
       </div>
-      {/*<WorkExperience />*/}
+      <WorkExperience />
     </div>
   );
 });

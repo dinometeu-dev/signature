@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ExperiencePeriodType } from '@/types/api';
 
 // GET all experience blocks
 export async function GET() {
@@ -17,28 +18,27 @@ export async function GET() {
 }
 
 // POST create a new experience block
-export async function POST(req: Request) {
-  try {
-    const { companyName, iconPath, alt, location } = await req.json();
+export async function POST(request: Request) {
+  const { companyName, iconPath, alt, location, periods } =
+    await request.json();
 
-    if (!companyName || !iconPath || !alt || !location) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
-    }
+  const experienceBlock = await prisma.experienceBlock.create({
+    data: {
+      companyName,
+      iconPath,
+      alt,
+      location,
+      periods: {
+        create: periods.map((p: ExperiencePeriodType) => ({
+          position: p.position,
+          startDate: new Date(p.startDate),
+          endDate: p.endDate ? new Date(p.endDate) : null,
+        })),
+      },
+    },
+  });
 
-    const block = await prisma.experienceBlock.create({
-      data: { companyName, iconPath, alt, location },
-    });
-
-    return NextResponse.json(block, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: `Failed to create experience block: ${error}` },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(experienceBlock);
 }
 
 // PATCH update an existing experience block
