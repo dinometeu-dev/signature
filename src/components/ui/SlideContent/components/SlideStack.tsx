@@ -1,93 +1,117 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion';
+import React, {
+  ComponentProps,
+  FC,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import { AnimatePresence, motion, usePresenceData } from 'framer-motion';
 import { cn } from '@/utils/functions/mergeClasses';
 import { SCREEN_HEIGHT } from '@/utils/constants/styled';
-import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
-export interface SlideStackProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
-  children: React.ReactNode;
-}
+type MoveDirection = 1 | -1;
 
-const OFFSET_Y = 55;
-const SCALE_STEP = 0.1;
+const DEFAULT_SCALE = 0.9;
+const EXIT_DURATION = 0.25;
 const FLIP_DURATION = 0.5;
 const BOUNCE = 0.25;
 
-const SlideStack = React.forwardRef<HTMLDivElement, SlideStackProps>(
-  ({ className, children, ...props }, ref) => {
-    const { register, next, prev, activeIndex } = useSlideStack();
+const AnimSlide: FC<ComponentProps<'div'>> = ({ children, ref }) => {
+  const direction = usePresenceData();
+  const dirUp = direction > 0;
 
-    const slides = React.Children.toArray(children) as React.ReactElement<
-      React.HTMLAttributes<HTMLDivElement>
-    >[];
+  return (
+    <motion.div
+      ref={ref}
+      className={cn('absolute w-full flex justify-center items-center')}
+      initial={{
+        scale: DEFAULT_SCALE,
+        y: dirUp ? 0 : -SCREEN_HEIGHT,
+        zIndex: dirUp ? 0 : 1,
+      }}
+      animate={{ scale: 1, y: 0 }}
+      exit={{
+        y: dirUp ? -SCREEN_HEIGHT : 0,
+        scale: DEFAULT_SCALE,
+        zIndex: dirUp ? 1 : 0,
+        transition: {
+          type: 'keyframes',
+          duration: EXIT_DURATION,
+        },
+      }}
+      transition={{
+        type: 'spring',
+        visualDuration: FLIP_DURATION,
+        bounce: BOUNCE,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
+  const slides = React.Children.toArray(children) as React.ReactElement<
+    React.HTMLAttributes<HTMLDivElement>
+  >[];
 
-    useEffect(() => {
-      const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'ArrowUp') {
-          next();
-        } else if (e.key === 'ArrowDown') {
-          prev();
+  const [selectedItem, setSelectedItem] = useState(0);
+  const [direction, setDirection] = useState<MoveDirection>(1);
+  const [lastCallTime, setLastCallTime] = useState(0);
+
+  const handleItems = useCallback(
+    (increment: MoveDirection, itemsLength: number, selectedItem: number) => {
+      if (increment > 0) {
+        if (selectedItem + increment < itemsLength) {
+          return selectedItem + increment;
         }
-      };
-      window.addEventListener('keydown', onKeyDown);
-      return () => window.removeEventListener('keydown', onKeyDown);
-    }, [prev, next]);
+        return itemsLength - 1;
+      } else {
+        if (selectedItem + increment >= 0) {
+          return selectedItem + increment;
+        }
+        return 0;
+      }
+    },
+    []
+  );
 
-    useEffect(() => {
-      slides.forEach(({ props }, index) => {
-        register({
-          id: index,
-          ariaLabel: props['aria-label'] ?? '',
-          propId: props['id'] ?? '',
-        });
-      });
-    }, [slides.length]);
+  const setSlide = useCallback(
+    (newDirection: MoveDirection) => {
+      const now = Date.now();
 
-    return (
-      <AnimatePresence>
-        {slides.map((child, index) => {
-          let yOffset = (index - activeIndex) * OFFSET_Y;
-          const scale = 1 - Math.abs(index - activeIndex) * SCALE_STEP;
-          const zIndex = slides.length - (index - activeIndex);
+      if (
+        direction === newDirection ||
+        now - lastCallTime > EXIT_DURATION * 1000
+      ) {
+        const nextItem = handleItems(newDirection, slides.length, selectedItem);
+        setSelectedItem(nextItem);
+        setDirection(newDirection);
+        setLastCallTime(now);
+      }
+    },
+    [direction, lastCallTime, slides.length, selectedItem]
+  );
 
-          if (index - activeIndex < 0) {
-            yOffset = -SCREEN_HEIGHT;
-          } else if (Math.abs(index - activeIndex) > 2) {
-            return null;
-          }
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowUp') {
+        setSlide(1);
+      } else if (e.key === 'ArrowDown') {
+        setSlide(-1);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [setSlide]);
 
-          return (
-            <motion.div
-              layout
-              ref={ref}
-              key={`${child.props['aria-label']}${index}`}
-              className={cn(
-                'absolute w-full flex justify-center items-center',
-                className
-              )}
-              aria-label={child.props['aria-label']}
-              id={child.props['id']}
-              style={{ zIndex }}
-              initial={{ y: yOffset, scale }}
-              animate={{ y: yOffset, scale }}
-              exit={{ y: yOffset - OFFSET_Y, zIndex: zIndex - 1 }}
-              transition={{
-                type: 'spring',
-                visualDuration: FLIP_DURATION,
-                bounce: BOUNCE,
-              }}
-              {...props}
-            >
-              {child}
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    );
-  }
-);
-
+  return (
+    <AnimatePresence custom={direction} initial={true}>
+      <AnimSlide key={selectedItem}>{slides[selectedItem]}</AnimSlide>
+    </AnimatePresence>
+  );
+};
+AnimSlide.displayName = 'AnimSlide';
 SlideStack.displayName = 'SlideStack';
 export { SlideStack };

@@ -9,8 +9,8 @@ import React, {
   useState,
 } from 'react';
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
-import { QUERY_STATE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
-import { QUERY_STATE_WORKS } from '@/utils/constants/paths';
+import { QUERY_SLIDE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
+import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 
 type SlideProp = {
   id: number;
@@ -47,7 +47,7 @@ export function SlideStackProvider({
 }: Readonly<SlideStackProviderProps>) {
   const getQueryParams = useGetQueryParams();
   const setQueryParams = useSetQueryParam();
-  const activeState = getQueryParams(QUERY_STATE);
+  const activeState = getQueryParams(QUERY_SLIDE);
   const activeWorkItem = getQueryParams(QUERY_WORK_ITEM);
 
   const [slideStack, setSlideStack] = useState<SlideProp[]>([]);
@@ -55,7 +55,7 @@ export function SlideStackProvider({
 
   const querySlideId = useMemo(() => {
     return slideStack.findIndex((slide) => {
-      if (slide.ariaLabel === QUERY_STATE_WORKS) {
+      if (slide.ariaLabel === QUERY_SLIDE_VALUES.WORKS) {
         return (
           activeWorkItem === slide.propId && slide.ariaLabel === activeState
         );
@@ -130,14 +130,14 @@ export function SlideStackProvider({
 
   useEffect(() => {
     if (slideStack.length === 0) return;
-    if (slideStack[activeId]?.ariaLabel === QUERY_STATE_WORKS) {
+    if (slideStack[activeId]?.ariaLabel === QUERY_SLIDE_VALUES.WORKS) {
       setQueryParams({
-        [QUERY_STATE]: slideStack[activeId]?.ariaLabel,
+        [QUERY_SLIDE]: slideStack[activeId]?.ariaLabel,
         [QUERY_WORK_ITEM]: slideStack[activeId]?.propId,
       });
     } else {
       setQueryParams({
-        [QUERY_STATE]: slideStack[activeId]?.ariaLabel,
+        [QUERY_SLIDE]: slideStack[activeId]?.ariaLabel,
       });
     }
   }, [activeId]);

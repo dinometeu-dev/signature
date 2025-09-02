@@ -1,17 +1,24 @@
+'use client';
+
 import { SlideContent } from '@/components/ui/SlideContent/SlideContent';
 import { Logo } from '@/components/Logo';
-import { Menu } from '@/components/ui/Menu/Menu';
+import { LongPress } from '@/components/ui/Menu/LongPress';
 
 export default function Home() {
+  const handleLongPress = (): void => {
+    console.log('Pressed and held for more than 2 seconds!');
+  };
+
   return (
-    <div className="h-full w-full grid grid-cols-(--grid-template-cols-main-layout) overflow-hidden">
-      <Menu />
-      <div className="relative h-full w-full flex flex-col justify-center items-center">
-        <SlideContent />
+    <LongPress onLongPress={handleLongPress}>
+      <div className="h-full w-full overflow-hidden">
+        <div className="relative h-full w-full flex flex-col justify-center items-center">
+          <SlideContent />
+        </div>
+        <div className="absolute top-full -translate-y-full left-full -translate-x-full pr-5">
+          <Logo />
+        </div>
       </div>
-      <div className="flex justify-end items-end px-8">
-        <Logo />
-      </div>
-    </div>
+    </LongPress>
   );
 }

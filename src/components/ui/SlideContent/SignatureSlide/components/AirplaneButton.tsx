@@ -7,7 +7,7 @@ import Image from 'next/image';
 import PaperAirplane from '../../../../../../public/PaperAirplane.png';
 import { motion, useAnimationControls } from 'framer-motion';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
-import { QUERY_STATE_CONTACT } from '@/utils/constants/paths';
+import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
@@ -57,7 +57,7 @@ const AirplaneButton = React.forwardRef<
             });
 
           setTimeout(() => {
-            setActiveSlideByAriaLabel(QUERY_STATE_CONTACT);
+            setActiveSlideByAriaLabel(QUERY_SLIDE_VALUES.CONTACT);
           }, SECOND_AIRPLANE_DURATION * 800);
         });
     }
