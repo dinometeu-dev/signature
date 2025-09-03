@@ -1,22 +1,24 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { HTMLMotionProps, motion, useAnimationControls } from 'framer-motion';
 import { SendHorizontal } from 'lucide-react';
-import { Button } from '@/components/Button';
 import Image from 'next/image';
-import PaperAirplane from '../../../../../../public/PaperAirplane.png';
-import { motion, useAnimationControls } from 'framer-motion';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
+import React, { FC, useEffect, useState } from 'react';
+
+import { Button } from '@/components/Button';
 import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
+import PaperAirplane from '../../../../../../public/PaperAirplane.png';
+
 const SECOND_AIRPLANE_DURATION = 0.8;
 
-const AirplaneButton = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
+  className,
+  ...props
+}) => {
   const { setActiveSlideByAriaLabel } = useSlideStack();
 
   const controls = useAnimationControls();
@@ -102,8 +104,7 @@ const AirplaneButton = React.forwardRef<
   }, [buttonIsHovered]);
 
   return (
-    <div
-      ref={ref}
+    <motion.div
       className={cn(
         'absolute flex justify-center items-center translate-y-16',
         className
@@ -158,10 +159,8 @@ const AirplaneButton = React.forwardRef<
           />
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
-});
-
-AirplaneButton.displayName = 'AirplaneButton';
+};
 
 export { AirplaneButton };

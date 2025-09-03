@@ -1,10 +1,13 @@
-import type { Metadata } from 'next';
 import './globals.css';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
-import { Suspense } from 'react';
-import { SlideStackProvider } from '@/utils/providers/SlideStackProvider';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import React, { Suspense } from 'react';
+
+import { FirstSlideAnimationProvider } from '@/utils/providers/FirstSlideAnimationProvider';
 import { SlideProvider } from '@/utils/providers/SlideOpenProvider';
+import { SlideStackProvider } from '@/utils/providers/SlideStackProvider';
+
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Signature',
@@ -20,9 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Suspense fallback={null}>
-          <SlideStackProvider>
-            <SlideProvider>{children}</SlideProvider>
-          </SlideStackProvider>
+          <FirstSlideAnimationProvider>
+            <SlideStackProvider>
+              <SlideProvider>{children}</SlideProvider>
+            </SlideStackProvider>
+          </FirstSlideAnimationProvider>
         </Suspense>
         <SpeedInsights /> <Analytics />
       </body>

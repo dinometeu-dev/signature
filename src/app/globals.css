@@ -6,16 +6,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@utility font-sf-pro {
-  font-family: 'SF Pro', sans-serif;
-}
-
-@utility scrollbar-hidden {
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
 @utility progressive-backdrop-blur {
    mask: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
 }
@@ -32,6 +22,7 @@
   body {
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
   }
 
   p, h1, h2, h3, h4, h5, h6 {

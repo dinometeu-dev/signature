@@ -1,5 +1,6 @@
 'use client';
 
+import { AnimatePresence, motion, usePresenceData } from 'framer-motion';
 import React, {
   ComponentProps,
   FC,
@@ -7,9 +8,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { AnimatePresence, motion, usePresenceData } from 'framer-motion';
-import { cn } from '@/utils/functions/mergeClasses';
+
 import { SCREEN_HEIGHT } from '@/utils/constants/styled';
+import { cn } from '@/utils/functions/mergeClasses';
+import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
 
 type MoveDirection = 1 | -1;
 
@@ -19,18 +21,24 @@ const FLIP_DURATION = 0.5;
 const BOUNCE = 0.25;
 
 const AnimSlide: FC<ComponentProps<'div'>> = ({ children, ref }) => {
+  const { firstSlideAnimation } = useFirstSlideAnimation();
+
   const direction = usePresenceData();
   const dirUp = direction > 0;
 
   return (
     <motion.div
       ref={ref}
-      className={cn('absolute w-full flex justify-center items-center')}
-      initial={{
-        scale: DEFAULT_SCALE,
-        y: dirUp ? 0 : -SCREEN_HEIGHT,
-        zIndex: dirUp ? 0 : 1,
-      }}
+      className={cn('absolute w-full h-full flex items-center justify-center')}
+      initial={
+        !firstSlideAnimation
+          ? {
+              scale: DEFAULT_SCALE,
+              y: dirUp ? 0 : -SCREEN_HEIGHT,
+              zIndex: dirUp ? 0 : 1,
+            }
+          : undefined
+      }
       animate={{ scale: 1, y: 0 }}
       exit={{
         y: dirUp ? -SCREEN_HEIGHT : 0,
@@ -52,6 +60,8 @@ const AnimSlide: FC<ComponentProps<'div'>> = ({ children, ref }) => {
   );
 };
 const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
+  const { firstSlideAnimation } = useFirstSlideAnimation();
+
   const slides = React.Children.toArray(children) as React.ReactElement<
     React.HTMLAttributes<HTMLDivElement>
   >[];
@@ -82,8 +92,9 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
       const now = Date.now();
 
       if (
-        direction === newDirection ||
-        now - lastCallTime > EXIT_DURATION * 1000
+        !firstSlideAnimation &&
+        (direction === newDirection ||
+          now - lastCallTime > EXIT_DURATION * 1000)
       ) {
         const nextItem = handleItems(newDirection, slides.length, selectedItem);
         setSelectedItem(nextItem);
@@ -91,7 +102,7 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
         setLastCallTime(now);
       }
     },
-    [direction, lastCallTime, slides.length, selectedItem]
+    [direction, lastCallTime, slides.length, selectedItem, firstSlideAnimation]
   );
 
   useEffect(() => {

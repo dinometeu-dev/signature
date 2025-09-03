@@ -1,13 +1,10 @@
-import React from 'react'
-import { Slide } from '@/components/Slide'
+import { HTMLMotionProps } from 'framer-motion';
+import React, { FC } from 'react';
 
-const ContactSlide = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->((props, ref) => {
-  return <Slide ref={ref}>Contact Slide</Slide>
-})
+import { Slide } from '@/components/Slide';
 
-ContactSlide.displayName = 'ContactSlide'
+const ContactSlide: FC<HTMLMotionProps<'div'>> = (props) => {
+  return <Slide {...props}>Contact Slide</Slide>;
+};
 
-export { ContactSlide }
+export { ContactSlide };
