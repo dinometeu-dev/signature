@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Signature',
-  description: 'My personal collection of all my professional life',
+  description: 'My personal collection of all my professional life...',
 };
 
 export default function RootLayout({

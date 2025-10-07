@@ -9,6 +9,7 @@ import { AirplaneButton } from '@/components/ui/SlideContent/SignatureSlide/comp
 import SignatureBg from '@/components/ui/SlideContent/SignatureSlide/components/SignatureBg';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
+import { GuideWrapper } from '@/components/ui/SlideContent/SignatureSlide/components/Guide';
 
 const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
   const { firstSlideAnimation, setFirstSlideAnimation } =
@@ -82,19 +83,14 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
             }}
             transition={{ delay: 0.3, duration: 0.5 }}
           />
-          <motion.div
-            className="w-full flex items-center justify-between text-black/40"
-            initial={{ opacity: 0, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, filter: 'blur(0px)' }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
+          <GuideWrapper>
             <div className="flex justify-center items-center gap-6 z-10">
               text
             </div>
             <div className="flex items-center justify-center gap-2 relative mr-32 z-10">
               down
             </div>
-          </motion.div>
+          </GuideWrapper>
         </div>
       )}
 
