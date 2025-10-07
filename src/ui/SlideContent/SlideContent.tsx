@@ -2,10 +2,10 @@
 
 import React, { ComponentProps, FC } from 'react';
 
-import { SlideStack } from '@/components/ui/SlideContent/components/SlideStack';
-import { ContactSlide } from '@/components/ui/SlideContent/ContactSlide/ContactSlide';
-import { ProfileSlide } from '@/components/ui/SlideContent/ProfileSlide/ProfileSlide';
-import SignatureSlide from '@/components/ui/SlideContent/SignatureSlide/SignatureSlide';
+import { SlideStack } from '@/ui/SlideContent/components/SlideStack';
+import { ContactSlide } from '@/ui/SlideContent/ContactSlide/ContactSlide';
+import { ProfileSlide } from '@/ui/SlideContent/ProfileSlide/ProfileSlide';
+import SignatureSlide from '@/ui/SlideContent/SignatureSlide/SignatureSlide';
 import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 
 const SlideContent: FC<ComponentProps<'div'>> = (props) => {

@@ -5,11 +5,12 @@ import React, { FC } from 'react';
 
 import { Slide } from '@/components/Slide';
 import BlurText from '@/components/TextAnimations/BlurText';
-import { AirplaneButton } from '@/components/ui/SlideContent/SignatureSlide/components/AirplaneButton';
-import SignatureBg from '@/components/ui/SlideContent/SignatureSlide/components/SignatureBg';
+import { AirplaneButton } from '@/ui/SlideContent/SignatureSlide/components/AirplaneButton';
+import { GuideWrapper } from '@/ui/SlideContent/SignatureSlide/components/Guide';
+import SignatureBg from '@/ui/SlideContent/SignatureSlide/components/SignatureBg';
+import SlideChangeInstruction from '@/ui/SlideContent/SignatureSlide/components/SlideChangeInstruction';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
-import { GuideWrapper } from '@/components/ui/SlideContent/SignatureSlide/components/Guide';
 
 const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
   const { firstSlideAnimation, setFirstSlideAnimation } =
@@ -83,13 +84,12 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
             }}
             transition={{ delay: 0.3, duration: 0.5 }}
           />
-          <GuideWrapper>
-            <div className="flex justify-center items-center gap-6 z-10">
-              text
+          <GuideWrapper className="z-10">
+            <div className="flex justify-center items-center w-full">
+              <SlideChangeInstruction />
             </div>
-            <div className="flex items-center justify-center gap-2 relative mr-32 z-10">
-              down
-            </div>
+            <p className="w-full text-center">Quick guide</p>
+            <div className="flex items-center justify-center w-full">down</div>
           </GuideWrapper>
         </div>
       )}

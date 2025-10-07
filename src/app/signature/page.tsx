@@ -1,8 +1,8 @@
 'use client';
 
 import { Logo } from '@/components/Logo';
-import { LongPress } from '@/components/ui/Menu/LongPress';
-import { SlideContent } from '@/components/ui/SlideContent/SlideContent';
+import { LongPress } from '@/ui/Menu/LongPress';
+import { SlideContent } from '@/ui/SlideContent/SlideContent';
 
 export default function Home() {
   const handleLongPress = (): void => {

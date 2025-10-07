@@ -11,7 +11,7 @@ import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
 
-import PaperAirplane from '../../../../../../public/PaperAirplane.png';
+import PaperAirplane from '../../../../../public/PaperAirplane.png';
 
 const SECOND_AIRPLANE_DURATION = 0.8;
 
