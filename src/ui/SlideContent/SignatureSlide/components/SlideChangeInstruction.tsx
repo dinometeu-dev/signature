@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion';
-import { ComponentProps, FC } from 'react';
 
 const DEFAULT_ANIMATION_DURATION = 3.5;
-const DEFAULT_ANIMATION_DELAY = 1.5;
+const DEFAULT_ANIMATION_DELAY = 1.8;
 
-const SlideChangeInstruction: FC<ComponentProps<'svg'>> = () => {
+const SlideChangeInstruction = () => {
   const arrowDownRectX = 238;
   const arrowDownRectY = 85;
   const arrowDownRectWidth = 53;

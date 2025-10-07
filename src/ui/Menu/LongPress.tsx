@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 const DEFAULT_CIRCLE_DELAY = 200;
 const DEFAULT_MENU_OPEN_DELAY = 1000;

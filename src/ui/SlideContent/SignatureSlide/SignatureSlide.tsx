@@ -11,6 +11,7 @@ import SignatureBg from '@/ui/SlideContent/SignatureSlide/components/SignatureBg
 import SlideChangeInstruction from '@/ui/SlideContent/SignatureSlide/components/SlideChangeInstruction';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
+import OpenMenuInstruction from '@slides/SignatureSlide/components/OpenMenuInstruction';
 
 const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
   const { firstSlideAnimation, setFirstSlideAnimation } =
@@ -89,7 +90,9 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
               <SlideChangeInstruction />
             </div>
             <p className="w-full text-center">Quick guide</p>
-            <div className="flex items-center justify-center w-full">down</div>
+            <div className="flex items-center justify-center w-full">
+              <OpenMenuInstruction />
+            </div>
           </GuideWrapper>
         </div>
       )}
