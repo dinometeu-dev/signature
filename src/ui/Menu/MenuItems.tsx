@@ -1,13 +1,35 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useMenus } from '@/lib/api/menu';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
 import { useMenuProvider } from '@/utils/providers/MenuProvider';
 
+const menus = [
+  {
+    id: 1,
+    title: 'Signature',
+    link: 'signature',
+  },
+  {
+    id: 2,
+    title: 'Profile',
+    link: 'profile',
+  },
+  {
+    id: 3,
+    title: 'Works',
+    link: 'works',
+  },
+  {
+    id: 4,
+    title: 'Contact',
+    link: 'contact',
+  },
+];
+
 const MenuItems = () => {
-  const { menus, isLoading } = useMenus();
+  const isLoading = false;
   const getQuery = useGetQueryParams();
   const setQuery = useSetQueryParam();
   const currentSlide = getQuery(QUERY_SLIDE);
