@@ -1,8 +1,9 @@
 'use client';
 
 import useSWR, { mutate } from 'swr';
-import { BASE_API_URL } from '@/utils/constants/api';
+
 import { MenuType } from '@/types/api';
+import { BASE_API_URL } from '@/utils/constants/api';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const BASE_URL = `${BASE_API_URL}/api/menu`;

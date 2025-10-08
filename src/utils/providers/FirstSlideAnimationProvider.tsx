@@ -16,8 +16,6 @@ export const FirstSlideAnimationProvider: React.FC<React.PropsWithChildren> = ({
 }) => {
   const [firstSlideAnimation, setFirstSlideAnimation] = useState(true);
 
-  console.log(firstSlideAnimation);
-
   const value = useMemo<FirstSlideAnimationContextValue>(
     () => ({ firstSlideAnimation, setFirstSlideAnimation }),
     [firstSlideAnimation, setFirstSlideAnimation]

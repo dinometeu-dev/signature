@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import React, { Suspense } from 'react';
 
 import { FirstSlideAnimationProvider } from '@/utils/providers/FirstSlideAnimationProvider';
+import { MenuProvider } from '@/utils/providers/MenuProvider';
 import { SlideProvider } from '@/utils/providers/SlideOpenProvider';
 import { SlideStackProvider } from '@/utils/providers/SlideStackProvider';
 
@@ -23,11 +24,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Suspense fallback={null}>
-          <FirstSlideAnimationProvider>
-            <SlideStackProvider>
-              <SlideProvider>{children}</SlideProvider>
-            </SlideStackProvider>
-          </FirstSlideAnimationProvider>
+          <MenuProvider>
+            <FirstSlideAnimationProvider>
+              <SlideStackProvider>
+                <SlideProvider>{children}</SlideProvider>
+              </SlideStackProvider>
+            </FirstSlideAnimationProvider>
+          </MenuProvider>
         </Suspense>
         <SpeedInsights /> <Analytics />
       </body>

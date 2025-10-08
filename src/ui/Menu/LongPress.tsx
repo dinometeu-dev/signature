@@ -3,20 +3,26 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useMenuProvider } from '@/utils/providers/MenuProvider';
+
 const DEFAULT_CIRCLE_DELAY = 200;
-const DEFAULT_MENU_OPEN_DELAY = 1000;
+const DEFAULT_MENU_OPEN_DELAY = 900;
 
 type LongPressProviderProps = {
   children: React.ReactNode;
   onLongPress: () => void;
+  disable: boolean;
   moveThreshold?: number; // px, default 50
 };
 
-export function LongPress({
+function LongPress({
   children,
   onLongPress,
+  disable = false,
   moveThreshold = 50,
 }: Readonly<LongPressProviderProps>) {
+  const { setCirclePosition: setContextCirclePosition } = useMenuProvider();
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const initialPosRef = useRef<{ x: number; y: number } | null>(null);
   const circleTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -26,6 +32,8 @@ export function LongPress({
   } | null>(null);
 
   useEffect(() => {
+    if (disable) return;
+
     const handleMouseDown = (e: MouseEvent): void => {
       const computedStyle = window.getComputedStyle(e.target as Element);
       const cursor = computedStyle.cursor;
@@ -35,6 +43,7 @@ export function LongPress({
 
       initialPosRef.current = { x: e.clientX, y: e.clientY };
       circleTimerRef.current = setTimeout(() => {
+        setContextCirclePosition({ x: e.clientX, y: e.clientY });
         setCirclePosition({ x: e.clientX, y: e.clientY });
       }, DEFAULT_CIRCLE_DELAY);
       timerRef.current = setTimeout(() => {
@@ -51,6 +60,7 @@ export function LongPress({
 
         if (deltaX <= moveThreshold && deltaY <= moveThreshold) {
           if (circlePosition) {
+            setContextCirclePosition({ x: e.clientX, y: e.clientY });
             setCirclePosition({ x: e.clientX, y: e.clientY });
           }
         } else {
@@ -92,6 +102,10 @@ export function LongPress({
         y: e.touches[0].clientY,
       };
       circleTimerRef.current = setTimeout(() => {
+        setContextCirclePosition({
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        });
         setCirclePosition({
           x: e.touches[0].clientX,
           y: e.touches[0].clientY,
@@ -111,6 +125,10 @@ export function LongPress({
 
         if (deltaX <= moveThreshold && deltaY <= moveThreshold) {
           if (circlePosition) {
+            setContextCirclePosition({
+              x: e.touches[0].clientX,
+              y: e.touches[0].clientY,
+            });
             setCirclePosition({
               x: e.touches[0].clientX,
               y: e.touches[0].clientY,
@@ -163,27 +181,69 @@ export function LongPress({
       window.removeEventListener('touchend', clearTouchTimer);
       window.removeEventListener('touchcancel', clearTouchTimer);
     };
-  }, [moveThreshold, onLongPress, circlePosition]);
+  }, [moveThreshold, onLongPress, circlePosition, disable]);
+
+  const circleSettings = [
+    {
+      size: 'size-12',
+      bg: 'bg-radial from-transparent from-60% to-accent/60',
+      initial: { opacity: 1, scale: 0.4 },
+      animate: { opacity: 1, scale: 1 },
+      delay: 0.1,
+      durationFactor: 0.0006,
+    },
+    {
+      size: 'size-16',
+      bg: 'bg-radial from-transparent from-60% to-accent/40',
+      initial: { opacity: 0, scale: 0.8 },
+      animate: { opacity: 1, scale: 1 },
+      delay: 0.2,
+      durationFactor: 0.0006,
+    },
+    {
+      size: 'size-6',
+      bg: 'bg-accent border border-border-secondary',
+      initial: { opacity: 0, scale: 0.5 },
+      animate: { opacity: 1, scale: 1 },
+      delay: 0,
+      durationFactor: 0.0006,
+    },
+  ];
 
   return (
     <>
       {children}
-      <AnimatePresence>
-        {circlePosition && (
-          <motion.div
-            className="fixed pointer-events-none -translate-x-1/2 -translate-y-1/2 size-10 rounded-full bg-accent border-px border-border-secondary z-50"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.5, transition: { duration: 0.1 } }}
-            transition={{
-              duration:
-                (DEFAULT_MENU_OPEN_DELAY - DEFAULT_CIRCLE_DELAY) * 0.001,
-              ease: 'easeInOut',
-            }}
-            style={{ left: circlePosition.x, top: circlePosition.y }}
-          />
-        )}
-      </AnimatePresence>
+      {!disable && (
+        <AnimatePresence>
+          {circlePosition &&
+            circleSettings.map((circle, i) => (
+              <motion.span
+                key={i}
+                className={`fixed pointer-events-none -translate-x-1/2 -translate-y-1/2 rounded-full z-50 ${circle.size} ${circle.bg}`}
+                initial={circle.initial}
+                animate={circle.animate}
+                exit={{
+                  opacity: 0,
+                  scale: 1.5,
+                  transition: { duration: 0.1 },
+                }}
+                transition={{
+                  duration:
+                    (DEFAULT_MENU_OPEN_DELAY - DEFAULT_CIRCLE_DELAY) *
+                    circle.durationFactor,
+                  ease: 'easeInOut',
+                  delay: circle.delay,
+                }}
+                style={{
+                  left: circlePosition.x,
+                  top: circlePosition.y,
+                }}
+              />
+            ))}
+        </AnimatePresence>
+      )}
     </>
   );
 }
+
+export default LongPress;

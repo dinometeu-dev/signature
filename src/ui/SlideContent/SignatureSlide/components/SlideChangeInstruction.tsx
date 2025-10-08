@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 
-const DEFAULT_ANIMATION_DURATION = 3.5;
-const DEFAULT_ANIMATION_DELAY = 1.8;
+const DEFAULT_ANIMATION_DURATION = 4.5;
+const DEFAULT_ANIMATION_DELAY = 1.5;
 
 const SlideChangeInstruction = () => {
   const arrowDownRectX = 238;
