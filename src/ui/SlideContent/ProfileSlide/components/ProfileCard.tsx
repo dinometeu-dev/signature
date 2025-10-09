@@ -86,23 +86,25 @@ const ProfileCard = () => {
         </StackWrapper>
         <StackWrapper className="flex-row gap-3 mt-2">
           {PROFILE_SOCIALS_STACK.map(({ id, Icon, link }, idx) => (
-            <Link key={id} href={link} target={'_blank'}>
-              <Button
-                className="p-2"
-                initial={{
-                  opacity: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                }}
-                transition={{
-                  duration: 0.3,
-                  delay: 0.05 * idx + 0.2,
-                }}
-              >
-                <Icon className="size-5 rounded-[3px]" />
-              </Button>
-            </Link>
+            <motion.div
+              key={id}
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                duration: 0.3,
+                delay: 0.05 * idx + 0.2,
+              }}
+            >
+              <Link href={link} target={'_blank'}>
+                <Button className="p-2">
+                  <Icon className="size-5 rounded-[3px]" />
+                </Button>
+              </Link>
+            </motion.div>
           ))}
         </StackWrapper>
       </div>
