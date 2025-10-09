@@ -70,17 +70,36 @@ const ProfileCard = () => {
         <StackWrapper>
           <h2 className="font-headings text-xl">{PROFILE_TECHNOLOGY_STAK}</h2>
           <div className="flex items-center justify-start gap-1.5 flex-wrap">
-            {PROFILE_TECHNOLOGY_STAK_DESCRIPTION.map(({ id, Icon, title }) => (
-              <Chip key={id}>
-                <Icon className="size-[14px] rounded-xs" /> {title}
-              </Chip>
-            ))}
+            {PROFILE_TECHNOLOGY_STAK_DESCRIPTION.map(
+              ({ id, Icon, title }, idx) => (
+                <Chip
+                  key={id}
+                  initial={{ filter: 'blur(10px)', opacity: 0 }}
+                  animate={{ filter: 'blur(0px)', opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.05 * idx + 0.5 }}
+                >
+                  <Icon className="size-[14px] rounded-xs" /> {title}
+                </Chip>
+              )
+            )}
           </div>
         </StackWrapper>
         <StackWrapper className="flex-row gap-3 mt-2">
-          {PROFILE_SOCIALS_STACK.map(({ id, Icon, link }) => (
+          {PROFILE_SOCIALS_STACK.map(({ id, Icon, link }, idx) => (
             <Link key={id} href={link} target={'_blank'}>
-              <Button className="p-2">
+              <Button
+                className="p-2"
+                initial={{
+                  opacity: 0,
+                }}
+                animate={{
+                  opacity: 1,
+                }}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.05 * idx + 0.2,
+                }}
+              >
                 <Icon className="size-5 rounded-[3px]" />
               </Button>
             </Link>
