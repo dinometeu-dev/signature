@@ -84,19 +84,21 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
             }}
             transition={{ delay: 0.3, duration: 0.5 }}
           />
+
           <GuideWrapper className="z-10">
-            <div className="flex justify-center items-center w-full">
+            <div className="flex flex-col  justify-center items-start w-full transition">
               <SlideChangeInstruction />
+              <p className="text-sm">Use arrows or scroll to switch slides</p>
             </div>
-            <p className="w-full text-center">Quick guide</p>
-            <div className="flex items-center justify-center w-full">
+            <div className="flex flex-col  justify-center items-end w-full transition">
               <OpenMenuInstruction />
+              <p className="text-sm">Press and hold anywhere to open menu</p>
             </div>
           </GuideWrapper>
         </div>
       )}
 
-      <div className="w-full h-full absolute z-0 overflow-hidden flex items-center justify-center">
+      <div className="w-full h-full absolute z-0 overflow-hidden flex items-center justify-center rounded-slide">
         <SignatureBg
           className="absolute"
           initial={{ scale: 1.2 }}
