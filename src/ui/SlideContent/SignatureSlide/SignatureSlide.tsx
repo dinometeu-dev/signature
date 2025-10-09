@@ -20,7 +20,6 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
   return (
     <Slide
       className="flex items-center justify-center"
-      setOverlowHidden
       initial={
         firstSlideAnimation
           ? {
@@ -97,12 +96,14 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
         </div>
       )}
 
-      <SignatureBg
-        className="absolute"
-        initial={{ scale: 1.2 }}
-        animate={{ scale: 1.2 }}
-        transition={{ delay: 3, duration: 0.3 }}
-      />
+      <div className="w-full h-full absolute z-0 overflow-hidden flex items-center justify-center">
+        <SignatureBg
+          className="absolute"
+          initial={{ scale: 1.2 }}
+          animate={{ scale: 1.2 }}
+          transition={{ delay: 3, duration: 0.3 }}
+        />
+      </div>
     </Slide>
   );
 };

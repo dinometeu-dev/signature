@@ -4,34 +4,21 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
-import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
-import { QUERY_SLIDE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
-import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 
-type SlideProp = {
-  id: number;
-  ariaLabel: string;
-  propId: string;
-};
+import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
+import { QUERY_SLIDE } from '@/utils/constants/routes';
+import { useGetQueryParams } from '@/utils/hooks/navigation';
+
+export type SlideNameType =
+  | (typeof QUERY_SLIDE_VALUES)[keyof typeof QUERY_SLIDE_VALUES]
+  | null;
 
 type SlideStackContextValue = {
-  activeAriaLabel: string;
-  activePropId: string;
-  activeIndex: number;
-  slideStack: SlideProp[];
-  querySlideId: number;
-
-  register: (slide: SlideProp) => void;
-  setActiveSlideById: (id: number) => void;
-  setActiveSlideByAriaLabel: (ariaLabel: string, propId?: string) => void;
-  next: () => void;
-  prev: () => void;
-
-  isActive: (id: number) => boolean;
+  setSlideStack: (slideName: SlideNameType) => void;
+  currentSlide: string | null;
 };
 
 const SlideStackContext = createContext<SlideStackContextValue | undefined>(
@@ -45,130 +32,23 @@ type SlideStackProviderProps = {
 export function SlideStackProvider({
   children,
 }: Readonly<SlideStackProviderProps>) {
-  const getQueryParams = useGetQueryParams();
-  const setQueryParams = useSetQueryParam();
-  const activeState = getQueryParams(QUERY_SLIDE);
-  const activeWorkItem = getQueryParams(QUERY_WORK_ITEM);
+  const getQuery = useGetQueryParams();
 
-  const [slideStack, setSlideStack] = useState<SlideProp[]>([]);
-  const [activeId, setActiveId] = useState<number>(0);
+  const [currentSlide, setCurrentSlide] = useState<string | null>(() => {
+    const slideParam = getQuery(QUERY_SLIDE);
+    return slideParam || QUERY_SLIDE_VALUES.SIGNATURE;
+  });
 
-  const querySlideId = useMemo(() => {
-    return slideStack.findIndex((slide) => {
-      if (slide.ariaLabel === QUERY_SLIDE_VALUES.WORKS) {
-        return (
-          activeWorkItem === slide.propId && slide.ariaLabel === activeState
-        );
-      }
-      return slide.ariaLabel === activeState;
-    });
-  }, [activeState, activeWorkItem, slideStack]);
-
-  const setActiveSlideById = useCallback((id: number) => {
-    setActiveId(id);
+  const setSlideStack = useCallback((slideName: SlideNameType) => {
+    setCurrentSlide(slideName);
   }, []);
-
-  const setActiveSlideByAriaLabel = useCallback(
-    (ariaLabel: string, propId?: string) => {
-      const index = slideStack.findIndex(
-        (slide) => slide.ariaLabel === ariaLabel
-      );
-      if (index !== -1) {
-        setActiveId(index);
-      } else if (propId) {
-        const index = slideStack.findIndex((slide) => slide.propId === propId);
-        if (index !== -1) {
-          setActiveId(index);
-        }
-      }
-    },
-    [slideStack]
-  );
-
-  const activeIndex = useMemo(() => activeId, [activeId]);
-  const activeAriaLabel = useMemo(
-    () => slideStack[activeIndex]?.ariaLabel,
-    [slideStack, activeIndex]
-  );
-  const activePropId = useMemo(
-    () => slideStack[activeIndex]?.propId,
-    [slideStack, activeIndex]
-  );
-
-  const register = useCallback((newSlide: SlideProp) => {
-    setSlideStack((prev) => {
-      if (prev.find(({ id }) => id === newSlide.id)) return prev;
-      return [...prev, newSlide];
-    });
-  }, []);
-
-  const next = useCallback(() => {
-    setActiveId((prev) => {
-      if (prev < slideStack.length - 1) {
-        return prev + 1;
-      }
-      return prev;
-    });
-  }, [slideStack.length]);
-
-  const prev = useCallback(() => {
-    setActiveId((prev) => {
-      if (prev - 1 < 0) {
-        return 0;
-      }
-      return prev - 1;
-    });
-  }, []);
-
-  const isActive = useCallback((id: number) => id === activeId, [activeId]);
-
-  useEffect(() => {
-    if (querySlideId !== -1) {
-      setActiveId(querySlideId);
-    }
-  }, [querySlideId]);
-
-  useEffect(() => {
-    if (slideStack.length === 0) return;
-    if (slideStack[activeId]?.ariaLabel === QUERY_SLIDE_VALUES.WORKS) {
-      setQueryParams({
-        [QUERY_SLIDE]: slideStack[activeId]?.ariaLabel,
-        [QUERY_WORK_ITEM]: slideStack[activeId]?.propId,
-      });
-    } else {
-      setQueryParams({
-        [QUERY_SLIDE]: slideStack[activeId]?.ariaLabel,
-      });
-    }
-  }, [activeId]);
 
   const value = useMemo<SlideStackContextValue>(
     () => ({
-      register,
-      slideStack,
-      activeAriaLabel,
-      setActiveSlideByAriaLabel,
-      activePropId,
-      activeIndex,
-      setActiveSlideById,
-      next,
-      prev,
-      isActive,
-      querySlideId,
+      setSlideStack,
+      currentSlide,
     }),
-    [
-      register,
-      slideStack,
-      activeAriaLabel,
-      setActiveSlideByAriaLabel,
-      activePropId,
-      activeIndex,
-      setActiveSlideById,
-      next,
-      prev,
-      isActive,
-      querySlideId,
-    ]
+    [setSlideStack, currentSlide]
   );
 
   return (

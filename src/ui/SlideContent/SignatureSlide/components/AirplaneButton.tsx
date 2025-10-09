@@ -19,7 +19,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
   className,
   ...props
 }) => {
-  const { setActiveSlideByAriaLabel } = useSlideStack();
+  const { setSlideStack } = useSlideStack();
 
   const controls = useAnimationControls();
   const controlSecondAirplane = useAnimationControls();
@@ -59,7 +59,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
             });
 
           setTimeout(() => {
-            setActiveSlideByAriaLabel(QUERY_SLIDE_VALUES.CONTACT);
+            setSlideStack(QUERY_SLIDE_VALUES.CONTACT);
           }, SECOND_AIRPLANE_DURATION * 800);
         });
     }

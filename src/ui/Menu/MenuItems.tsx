@@ -1,43 +1,50 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 import { cn } from '@/utils/functions/mergeClasses';
-import { useGetQueryParams, useSetQueryParam } from '@/utils/hooks/navigation';
+import { useGetQueryParams } from '@/utils/hooks/navigation';
 import { useMenuProvider } from '@/utils/providers/MenuProvider';
+import {
+  SlideNameType,
+  useSlideStack,
+} from '@/utils/providers/SlideStackProvider';
 
 const menus = [
   {
     id: 1,
     title: 'Signature',
-    link: 'signature',
+    link: QUERY_SLIDE_VALUES.SIGNATURE,
   },
   {
     id: 2,
     title: 'Profile',
-    link: 'profile',
+    link: QUERY_SLIDE_VALUES.PROFILE,
   },
-  {
-    id: 3,
-    title: 'Works',
-    link: 'works',
-  },
+  // {
+  //   id: 3,
+  //   title: 'Works',
+  //   link: QUERY_SLIDE_VALUES.WORKS,
+  // },
   {
     id: 4,
     title: 'Contact',
-    link: 'contact',
+    link: QUERY_SLIDE_VALUES.CONTACT,
   },
-];
+] as const;
 
 const MenuItems = () => {
   const isLoading = false;
   const getQuery = useGetQueryParams();
-  const setQuery = useSetQueryParam();
   const currentSlide = getQuery(QUERY_SLIDE);
+  const { setSlideStack } = useSlideStack();
 
   const { closeMenu } = useMenuProvider();
 
-  const handleItemClick = (link: string) => {
-    setQuery(QUERY_SLIDE, link);
+  const handleItemClick = (link: SlideNameType) => {
+    if (!link) return;
+
+    setSlideStack(link);
     closeMenu();
   };
 
