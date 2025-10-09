@@ -1,19 +1,19 @@
 import dayjs from 'dayjs';
 
-import FacebookLogo from '@public/svg/social-logos/facebook-logo.svg';
-import GitHubLogo from '@public/svg/social-logos/github-logo.svg';
-import LinkedInLogo from '@public/svg/social-logos/linkedin-logo.svg';
-import TelegramLogo from '@public/svg/social-logos/telegram-logo.svg';
-import UpWorkLogo from '@public/svg/social-logos/upwork-logo.svg';
-import CSS3Logo from '@public/svg/technology-logos/css3-logo.svg';
-import JavaScriptLogo from '@public/svg/technology-logos/js-logo.svg';
-import n8nLogo from '@public/svg/technology-logos/n8n-logo.svg';
-import NextJSLogo from '@public/svg/technology-logos/nextjs-logo.svg';
-import NodeJsLogo from '@public/svg/technology-logos/nodejs-logo.svg';
-import PrismaLogo from '@public/svg/technology-logos/prisma-logo.svg';
-import ReactJSLogo from '@public/svg/technology-logos/react-logo.svg';
-import TailwindLogo from '@public/svg/technology-logos/tailwindcss-logo.svg';
-import TypeScriptLogo from '@public/svg/technology-logos/typescript-logo.svg';
+import FacebookLogo from '@public/svg/social-logos/facebook-logo';
+import GitHubLogo from '@public/svg/social-logos/github-logo';
+import LinkedInLogo from '@public/svg/social-logos/linkedin-logo';
+import TelegramLogo from '@public/svg/social-logos/telegram-logo';
+import UpWorkLogo from '@public/svg/social-logos/upwork-logo';
+import CSS3Logo from '@public/svg/technology-logos/css3-logo';
+import JavaScriptLogo from '@public/svg/technology-logos/js-logo';
+import N8nLogo from '@public/svg/technology-logos/n8n-logo';
+import NextJSLogo from '@public/svg/technology-logos/nextjs-logo';
+import NodeJsLogo from '@public/svg/technology-logos/nodejs-logo';
+import PrismaLogo from '@public/svg/technology-logos/prisma-logo';
+import ReactJSLogo from '@public/svg/technology-logos/react-logo';
+import TailwindLogo from '@public/svg/technology-logos/tailwindcss-logo';
+import TypeScriptLogo from '@public/svg/technology-logos/typescript-logo';
 
 export const TITLE = 'Web developer making future via keyboard';
 export const SUBTITLE =
@@ -44,47 +44,47 @@ export const PROFILE_TECHNOLOGY_STAK_DESCRIPTION = [
   {
     id: 1,
     title: 'React JS',
-    icon: ReactJSLogo,
+    Icon: ReactJSLogo,
   },
   {
     id: 2,
     title: 'NextJs',
-    icon: NextJSLogo,
+    Icon: NextJSLogo,
   },
   {
     id: 3,
     title: 'TypeScript',
-    icon: TypeScriptLogo,
+    Icon: TypeScriptLogo,
   },
   {
     id: 4,
     title: 'Tailwind CSS',
-    icon: TailwindLogo,
+    Icon: TailwindLogo,
   },
   {
     id: 5,
     title: 'Node.js',
-    icon: NodeJsLogo,
+    Icon: NodeJsLogo,
   },
   {
     id: 6,
     title: 'CSS3',
-    icon: CSS3Logo,
+    Icon: CSS3Logo,
   },
   {
     id: 7,
     title: 'JavaScript',
-    icon: JavaScriptLogo,
+    Icon: JavaScriptLogo,
   },
   {
     id: 8,
     title: 'Prisma',
-    icon: PrismaLogo,
+    Icon: PrismaLogo,
   },
   {
     id: 9,
     title: 'n8n',
-    icon: n8nLogo,
+    Icon: N8nLogo,
   },
 ];
 
@@ -120,7 +120,3 @@ export const PROFILE_SOCIALS_STACK = [
     link: 'https://www.facebook.com/dinometeu',
   },
 ];
-
-export const PROFILE_WORK_EXPERIENCE = 'Work Experience';
-export const PROFILE_WHO_I_AM = 'Who I am?';
-export const PROFILE_CERTIFICATES = 'Certificates';

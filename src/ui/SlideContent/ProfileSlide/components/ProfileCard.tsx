@@ -15,7 +15,7 @@ import { cn } from '@/utils/functions/mergeClasses';
 import { Button } from '@components/Button';
 import Chip from '@components/Chip';
 import ProfileImg from '@public/ProfileImg.png';
-import ReactLogo from '@public/svg/ReactBitLogo.svg';
+import ReactBitLogo from '@public/svg/ReactBitLogo';
 
 const StackWrapper: FC<ComponentProps<'div'>> = ({
   children,
@@ -70,37 +70,24 @@ const ProfileCard = () => {
         <StackWrapper>
           <h2 className="font-headings text-xl">{PROFILE_TECHNOLOGY_STAK}</h2>
           <div className="flex items-center justify-start gap-1.5 flex-wrap">
-            {PROFILE_TECHNOLOGY_STAK_DESCRIPTION.map(({ id, icon, title }) => (
+            {PROFILE_TECHNOLOGY_STAK_DESCRIPTION.map(({ id, Icon, title }) => (
               <Chip key={id}>
-                <Image
-                  src={icon}
-                  alt={icon}
-                  className="size-[14px] rounded-xs"
-                />{' '}
-                {title}
+                <Icon className="size-[14px] rounded-xs" /> {title}
               </Chip>
             ))}
           </div>
         </StackWrapper>
         <StackWrapper className="flex-row gap-3 mt-2">
-          {PROFILE_SOCIALS_STACK.map(({ id, Icon, title, link }) => (
+          {PROFILE_SOCIALS_STACK.map(({ id, Icon, link }) => (
             <Link key={id} href={link} target={'_blank'}>
               <Button className="p-2">
-                <Image
-                  src={Icon}
-                  alt={title}
-                  className="size-5 rounded-[3px]"
-                />
+                <Icon className="size-5 rounded-[3px]" />
               </Button>
             </Link>
           ))}
         </StackWrapper>
       </div>
-      <Image
-        src={ReactLogo}
-        alt={'React Logo'}
-        className="absolute left-full -translate-x-[75%] translate-y-[5%] z-0"
-      />
+      <ReactBitLogo className="absolute left-full -translate-x-[75%] translate-y-[5%] z-0 select-none" />
     </motion.div>
   );
 };
