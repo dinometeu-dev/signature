@@ -57,6 +57,7 @@
     --color-black: rgba(0, 0, 0, 0.9);
 
   --color-gray-150: rgba(196, 196, 196, 0.15);
+  --color-gray-title: rgba(71, 71, 71, 1);
 
   --color-green-250: rgba(80, 182, 73, 0.80);
   --color-dark-green-0: rgba(4, 54, 65, 0);
@@ -68,6 +69,9 @@
 
   --color-blue-dark: rgba(45, 79, 110, 1);
   --color-blue-full-900: rgba(0, 7, 18, 1);
+  --color-blue-accent: rgba(43, 65, 108, 1);
+  --color-light-accent: rgba(236, 240, 243, 1);
+  --color-blue-text-accent: rgba(19, 146, 231, 1);
 
   /* Shadows */
   --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
@@ -109,6 +113,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --border-secondary: rgba(188, 228, 254, 1);
+  --border-secondary-accent: rgba(218, 218, 218, 1);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --sidebar: oklch(0.985 0 0);
@@ -143,6 +148,7 @@
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-border-secondary: var(--border-secondary);
+  --color-border-secondary-accent: var(--border-secondary-accent);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);

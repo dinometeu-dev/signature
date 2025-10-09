@@ -143,9 +143,9 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowUp') {
-        setSlide(1);
-      } else if (e.key === 'ArrowDown') {
         setSlide(-1);
+      } else if (e.key === 'ArrowDown') {
+        setSlide(1);
       }
     };
     window.addEventListener('keydown', onKeyDown);

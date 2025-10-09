@@ -38,6 +38,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@prisma/client": "^6.17.0",
+    "@svgr/webpack": "^8.1.0",
     "@types/colorthief": "^2.6.0",
     "@types/node": "^20",
     "@types/react": "^19",

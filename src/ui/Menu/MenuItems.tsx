@@ -49,7 +49,7 @@ const MenuItems = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-end justify-center overflow-hidden pb-[10px] pl-[20px]">
+    <div className="flex flex-col gap-6 items-end justify-center overflow-hidden pb-[10px] pl-[20px] ">
       {isLoading
         ? Array.from({ length: 4 }).map((_, index) => (
             <motion.div
@@ -63,7 +63,7 @@ const MenuItems = () => {
         : menus?.map(({ title, id, link }) => (
             <div
               key={id}
-              className="relative "
+              className="relative select-none"
               onClick={() => handleItemClick(link)}
             >
               <h2
