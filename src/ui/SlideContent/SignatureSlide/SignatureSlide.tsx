@@ -58,7 +58,7 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
               className="font-headings text-5xl font-bold text-center leading-normal"
             />
             <motion.p
-              className="text-black/60"
+              className="text-black/60 text-lg"
               initial={{
                 opacity: 0,
                 translateY: '-50%',

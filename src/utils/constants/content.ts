@@ -33,10 +33,10 @@ export const PROFILE_DESCRIPTION = [
 
 export const PROFILE_WORK_EXPERIENCE_TITLE = 'Work experience';
 
-export const PROFILE_CARD_NAME = 'Petrov Dmitri';
+export const PROFILE_CARD_NAME = 'Dmitri P.';
 export const PROFILE_CARD_DESCRIPTION = [
   `${dayjs().diff('2003-03-18', 'years')} yrs`,
-  'Front End Developer',
+  'FE Developer',
 ];
 
 export const PROFILE_TECHNOLOGY_STAK = 'Technology stack';

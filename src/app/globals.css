@@ -54,7 +54,7 @@
   --color-black-750: rgba(0, 0, 0, 0.75);
   --color-black-800: rgba(0, 0, 0, 0.8);
   --color-black-900: rgba(0, 0, 0, 0.9);
-    --color-black: rgba(0, 0, 0, 0.9);
+  --color-black: rgba(0, 0, 0, 0.9);
 
   --color-gray-150: rgba(196, 196, 196, 0.15);
   --color-gray-title: rgba(71, 71, 71, 1);
@@ -73,8 +73,13 @@
   --color-light-accent: rgba(236, 240, 243, 1);
   --color-blue-text-accent: rgba(19, 146, 231, 1);
 
+
+
+  --color-date-gradient: 90deg,rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 15%, rgba(255, 255, 255, 1) 85%, rgba(255, 255, 255, 0) 100%;
+
   /* Shadows */
   --shadow-material:  -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);  --shadow-slide: -6px 9px 150px -27px rgba(0, 0, 0, 0.18),  13px -9px 58px -27px rgba(0, 0, 0, 0.1), inset  -1px 1px 4px 0px rgba(0, 0, 0, 0.04), inset 1px -1px 3px 0px rgba(0, 0, 0, 0.12);
+
 
   /* Border radius */
   --radius-material: 30px;
