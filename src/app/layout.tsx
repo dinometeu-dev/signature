@@ -7,9 +7,9 @@ import { FirstSlideAnimationProvider } from '@/utils/providers/FirstSlideAnimati
 import { MenuProvider } from '@/utils/providers/MenuProvider';
 import { SlideProvider } from '@/utils/providers/SlideOpenProvider';
 import { SlideStackProvider } from '@/utils/providers/SlideStackProvider';
+import { TimelineProvider } from '@/utils/providers/TimelineProvider';
 
 import type { Metadata } from 'next';
-import { TimelineProvider } from '@/utils/providers/TimelineProvider';
 
 export const metadata: Metadata = {
   title: 'Signature',
@@ -35,7 +35,8 @@ export default function RootLayout({
             </FirstSlideAnimationProvider>
           </MenuProvider>
         </Suspense>
-        <SpeedInsights /> <Analytics />
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
