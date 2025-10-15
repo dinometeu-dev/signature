@@ -91,8 +91,9 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
   const [selectedItem, setSelectedItem] = useState(() => {
     const slideParam = getQuery(QUERY_SLIDE);
     const index = findSlideIndexByAriaLabel(slideParam);
-    return index !== -1 ? index : 0;
+    return index === -1 ? 0 : index;
   });
+
   const [direction, setDirection] = useState<MoveDirection>(1);
   const [lastCallTime, setLastCallTime] = useState(0);
 
