@@ -5,6 +5,7 @@ import { Fragment, useCallback, useState } from 'react';
 
 import dayjs from '@/lib/dayjs';
 import { cn } from '@/utils/functions/mergeClasses';
+import CompanyInfo from '@slides/ProfileSlide/components/Timeline/components/CompanyInfo';
 import Point from '@slides/ProfileSlide/components/Timeline/components/Point';
 import {
   emptyData,
@@ -128,6 +129,22 @@ const Timeline = () => {
               },
             }}
           >
+            <AnimatePresence>
+              {seg.type === 'work' && isHoverCurrentElement(idx) && (
+                <CompanyInfo
+                  className="left-0 translate-x-4 -translate-y-[calc(50%+20px)]"
+                  exit={{
+                    opacity: 0,
+                    filter: 'blur(10px)',
+                    transition: {
+                      duration: 0.1,
+                    },
+                  }}
+                  {...seg.company}
+                />
+              )}
+            </AnimatePresence>
+
             {seg.type === 'work' && isHoverCurrentElement(idx, true) && (
               <Point
                 position="start"
@@ -135,7 +152,7 @@ const Timeline = () => {
                 onHoverStart={() => seg.type === 'work' && setSegmentHover(idx)}
                 date={dayjs(seg.startDate)}
                 color={seg.color}
-                logo={seg.logo}
+                logo={seg.company.logo}
               />
             )}
             <motion.div
@@ -163,7 +180,13 @@ const Timeline = () => {
                   <motion.div
                     className="absolute left-0 translate-x-10 -translate-y-[20%]"
                     initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    exit={{ opacity: 0, filter: 'blur(10px)' }}
+                    exit={{
+                      opacity: 0,
+                      filter: 'blur(10px)',
+                      transition: {
+                        duration: 0.1,
+                      },
+                    }}
                     animate={{
                       opacity: 1,
                       filter: 'blur(0px)',
@@ -194,7 +217,7 @@ const Timeline = () => {
                     }}
                   >
                     <motion.p className="text-xl font-headings">
-                      {seg.company}
+                      {seg.company?.title}
                     </motion.p>
                     <motion.p className="text-black/60">
                       Worked {durationString}
