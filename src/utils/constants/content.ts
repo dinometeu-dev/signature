@@ -20,16 +20,8 @@ export const SUBTITLE =
   'Years of experience in the web industry with a focus on product quality and usability';
 
 export const PROFILE_TITLE = 'Shall we get acquainted?';
-export const PROFILE_DESCRIPTION = [
-  "I'm a",
-  'web developer',
-  'from Chisinau. I specialize in',
-  'Frontend Engineering',
-  'focusing on building',
-  'high quality',
-  'web experiences through',
-  'clean code.',
-];
+export const PROFILE_DESCRIPTION =
+  "I'm a **web developer** from Chisinau. I specialize in **Frontend Engineering** focusing on building **high quality** web experiences through **clean code.**";
 
 export const PROFILE_WORK_EXPERIENCE_TITLE = 'Work experience';
 export const PROFILE_WORK_EXPERIENCE_SUBTITLE =
@@ -40,6 +32,10 @@ export const PROFILE_CARD_DESCRIPTION = [
   `${dayjs().diff('2003-03-18', 'years')} yrs`,
   'FE Developer',
 ];
+
+export const CONTACT_CARD_TITLE = "Let's get in touch!";
+export const CONTACT_CARD_SUBTITLE =
+  'Feel free to reach out for collaborations with the following message';
 
 export const PROFILE_TECHNOLOGY_STAK = 'Technology stack';
 export const PROFILE_TECHNOLOGY_STAK_DESCRIPTION = [

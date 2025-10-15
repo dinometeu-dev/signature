@@ -2,6 +2,7 @@
 
 import { motion, MotionProps } from 'framer-motion';
 import React, { FC } from 'react';
+import Markdown from 'react-markdown';
 
 import { PROFILE_DESCRIPTION, PROFILE_TITLE } from '@/utils/constants/content';
 import { cn } from '@/utils/functions/mergeClasses';
@@ -39,23 +40,14 @@ const ProfileInfo: FC<MotionProps & { className?: string }> = ({
         direction="top"
         className="font-headings tracking-wide font-medium text-[40px] text-center leading-normal"
       />
-      <motion.p
-        className="text-2xl tracking-wide mr-6 transition-colors"
+      <motion.div
+        className="text-2xl tracking-wide mr-6 transition-colors text-black/90"
         initial={ProfileDescriptionAnimation.initial}
         animate={ProfileDescriptionAnimation.animate}
         transition={ProfileDescriptionAnimation.transition}
       >
-        {PROFILE_DESCRIPTION.map((value, index) => {
-          if (index % 2 !== 0) {
-            return (
-              <span key={index} className="font-bold relative">
-                {value}
-              </span>
-            );
-          }
-          return `${' '}${value}${' '}`;
-        })}
-      </motion.p>
+        <Markdown>{PROFILE_DESCRIPTION}</Markdown>
+      </motion.div>
     </motion.div>
   );
 };

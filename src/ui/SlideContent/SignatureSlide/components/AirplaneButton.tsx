@@ -10,12 +10,11 @@ import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
+import PaperAirplane from '@public/PaperAirplane.png';
 import {
   AirplaneAnimations,
   BigAirplaneAnimations,
 } from '@slides/SignatureSlide/animations/airplane-animations';
-
-import PaperAirplane from '../../../../../public/PaperAirplane.png';
 
 const SECOND_AIRPLANE_DURATION = 0.8;
 
