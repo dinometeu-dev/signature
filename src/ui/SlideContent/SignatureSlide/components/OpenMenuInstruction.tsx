@@ -1,7 +1,20 @@
 import { motion } from 'framer-motion';
 
-const DEFAULT_ANIMATION_DURATION = 8;
-const DEFAULT_ANIMATION_DELAY = 1.5;
+import {
+  ActiveCircleCursorAnimation,
+  circleActiveColor,
+  circleActiveStroke,
+  CircleAnimation,
+  circleDefaultColor,
+  circleDefaultStroke,
+  CursorAnimation,
+  GlassEffectAnimation,
+  menuItemActiveColor,
+  menuItemDefaultColor,
+  MenuItemsAnimation,
+  MenuItemsAnimation2,
+  MenuItemsMainAnimation,
+} from '@slides/SignatureSlide/animations/open-menu-instruction-animation';
 
 const OpenMenuInstruction = () => {
   const wrapperWidth = 360;
@@ -15,14 +28,6 @@ const OpenMenuInstruction = () => {
   const slideHeight = 51;
   const slideX = frameX + frameWidth / 2 - slideWidth / 2;
   const slideY = frameHeight - slideHeight;
-
-  const circleDefaultColor = '#FFFFFF';
-  const circleActiveColor = '#6FB3E0';
-  const circleDefaultStroke = '#CDCDCD';
-  const circleActiveStroke = '#BCE4FE';
-
-  const menuItemDefaultColor = '#ACACAC';
-  const menuItemActiveColor = '#EC6464';
 
   return (
     <motion.svg width={wrapperWidth}>
@@ -44,59 +49,8 @@ const OpenMenuInstruction = () => {
         fill={circleDefaultColor}
         stroke={circleDefaultStroke}
         strokeWidth="0.5"
-        initial={{
-          x: 120,
-          y: 90,
-          fill: circleDefaultColor,
-          stroke: circleDefaultStroke,
-          scale: 1,
-        }}
-        animate={{
-          x: [120, 80, 80, 80, 80, 80, 80, 80, 78, 78, 78, 78, 78, 78, 120],
-          y: [90, 75, 75, 75, 75, 75, 75, 75, 80, 80, 80, 80, 80, 80, 90],
-          opacity: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-          scale: [1, 1, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 1, 1, 1, 1, 1],
-          fill: [
-            circleDefaultColor,
-            circleDefaultColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleActiveColor,
-            circleDefaultColor,
-            circleDefaultColor,
-            circleDefaultColor,
-            circleDefaultColor,
-            circleDefaultColor,
-          ],
-          stroke: [
-            circleDefaultStroke,
-            circleDefaultStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleActiveStroke,
-            circleDefaultStroke,
-            circleDefaultStroke,
-            circleDefaultStroke,
-            circleDefaultStroke,
-            circleDefaultStroke,
-          ],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={CircleAnimation.initial}
+        animate={CircleAnimation.animate}
       />
 
       {/* ----- FRAME ------*/}
@@ -131,18 +85,8 @@ const OpenMenuInstruction = () => {
             width: '100%',
             opacity: 0,
           }}
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-            transition: {
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: DEFAULT_ANIMATION_DURATION,
-              delay: DEFAULT_ANIMATION_DELAY,
-            },
-          }}
+          initial={GlassEffectAnimation.initial}
+          animate={GlassEffectAnimation.animate}
         />
       </foreignObject>
       <defs>
@@ -161,41 +105,16 @@ const OpenMenuInstruction = () => {
         fill={circleActiveColor}
         stroke={circleActiveStroke}
         strokeWidth="0.5"
-        initial={{
-          opacity: 0,
-          scale: 0.8,
-        }}
-        animate={{
-          opacity: [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          scale: [
-            0.8, 0.8, 0.8, 0.8, 1, 1.2, 1.2, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8,
-            0.8,
-          ],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={ActiveCircleCursorAnimation.initial}
+        animate={ActiveCircleCursorAnimation.animate}
       />
 
       {/* ----- MENU_ITEMS ------*/}
 
       <motion.g
         transform={`translate(206, 52)`}
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={MenuItemsMainAnimation.initial}
+        animate={MenuItemsMainAnimation.animate}
       >
         <motion.rect x="4" width="25" height="4" rx="2" fill="#ACACAC" />
         <motion.rect
@@ -204,32 +123,8 @@ const OpenMenuInstruction = () => {
           height="4"
           rx="2"
           fill={menuItemActiveColor}
-          initial={{ fill: menuItemActiveColor }}
-          animate={{
-            fill: [
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-            ],
-            transition: {
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: DEFAULT_ANIMATION_DURATION,
-              delay: DEFAULT_ANIMATION_DELAY,
-            },
-          }}
+          initial={MenuItemsAnimation.initial}
+          animate={MenuItemsAnimation.animate}
         />
         <motion.rect
           x="11"
@@ -238,32 +133,8 @@ const OpenMenuInstruction = () => {
           height="4"
           rx="2"
           fill={menuItemDefaultColor}
-          initial={{ fill: menuItemDefaultColor }}
-          animate={{
-            fill: [
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemActiveColor,
-              menuItemActiveColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-              menuItemDefaultColor,
-            ],
-            transition: {
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: DEFAULT_ANIMATION_DURATION,
-              delay: DEFAULT_ANIMATION_DELAY,
-            },
-          }}
+          initial={MenuItemsAnimation2.initial}
+          animate={MenuItemsAnimation2.animate}
         />
         <motion.rect x="7" y="27" width="22" height="4" rx="2" fill="#ACACAC" />
       </motion.g>
@@ -271,25 +142,8 @@ const OpenMenuInstruction = () => {
       {/* ----- CURSOR ------*/}
       <motion.g
         transform={`translate(320, 100)`}
-        initial={{
-          x: 320,
-          y: 100,
-          scale: 1,
-        }}
-        animate={{
-          x: [
-            320, 230, 230, 230, 230, 230, 230, 230, 225, 225, 225, 225, 225,
-            225, 320,
-          ],
-          opacity: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-          y: [100, 60, 60, 60, 60, 60, 60, 60, 70, 70, 70, 70, 70, 70, 100],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={CursorAnimation.initial}
+        animate={CursorAnimation.animate}
       >
         <path
           d="M2.35486 2.73467C2.33184 2.68154 2.32532 2.62271 2.33616 2.56583C2.34699 2.50894 2.37468 2.45663 2.41563 2.41569C2.45657 2.37474 2.50888 2.34705 2.56577 2.33622C2.62265 2.32538 2.68148 2.3319 2.73461 2.35492L12.0679 6.14659C12.1247 6.16971 12.1727 6.21012 12.2052 6.26208C12.2377 6.31404 12.253 6.37491 12.2489 6.43606C12.2449 6.4972 12.2216 6.55551 12.1825 6.60271C12.1435 6.64991 12.0905 6.6836 12.0312 6.699L8.45886 7.62067C8.25702 7.67256 8.07276 7.77757 7.92525 7.92478C7.77773 8.07199 7.67234 8.25602 7.62003 8.45775L6.69894 12.0313C6.68354 12.0906 6.64985 12.1435 6.60265 12.1826C6.55545 12.2217 6.49714 12.2449 6.436 12.249C6.37485 12.253 6.31398 12.2378 6.26202 12.2053C6.21005 12.1728 6.16965 12.1248 6.14652 12.068L2.35486 2.73467Z"

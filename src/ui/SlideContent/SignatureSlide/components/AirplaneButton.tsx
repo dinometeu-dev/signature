@@ -10,6 +10,10 @@ import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/utils/constants/styled';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSlideStack } from '@/utils/providers/SlideStackProvider';
+import {
+  AirplaneAnimations,
+  BigAirplaneAnimations,
+} from '@slides/SignatureSlide/animations/airplane-animations';
 
 import PaperAirplane from '../../../../../public/PaperAirplane.png';
 
@@ -123,12 +127,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
       </Button>
       <motion.div
         style={{ animationFillMode: 'none' }}
-        initial={{
-          x: -36,
-          y: 4,
-          scale: 0.3,
-          rotateX: 0,
-        }}
+        initial={AirplaneAnimations.initial}
         animate={controls}
         className={'absolute transform-3d'}
       >
@@ -141,12 +140,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
 
       {isClick && (
         <motion.div
-          initial={{
-            y: SCREEN_HEIGHT * 3,
-            rotateZ: -90,
-            rotateX: 0,
-            scale: 58,
-          }}
+          initial={BigAirplaneAnimations.initial}
           animate={controlSecondAirplane}
           className={
             'absolute transform-3d top-1/2 left-1/2 -translate-x-1/2 z-[99999] blur-[0.5px]'

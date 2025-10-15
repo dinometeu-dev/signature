@@ -1,0 +1,5 @@
+export const DEFAULT_CONTENT_APPEAR_DELAY = 0.2;
+export const DEFAULT_CONTENT_APPEAR_DURATION = 0.5;
+
+export const DEFAULT_CONTENT_FILTER_BLUR_ON = 'blur(10px)';
+export const DEFAULT_CONTENT_FILTER_BLUR_OFF = 'blur(0)';

@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { CirclePressAnimation } from '@/ui/Menu/animations/long-press-animations';
 import { useMenuProvider } from '@/utils/providers/MenuProvider';
 
 const DEFAULT_CIRCLE_DELAY = 200;
@@ -222,17 +223,13 @@ function LongPress({
                 className={`fixed pointer-events-none -translate-x-1/2 -translate-y-1/2 rounded-full z-50 ${circle.size} ${circle.bg}`}
                 initial={circle.initial}
                 animate={circle.animate}
-                exit={{
-                  opacity: 0,
-                  scale: 1.5,
-                  transition: { duration: 0.1 },
-                }}
+                exit={CirclePressAnimation.exit}
                 transition={{
                   duration:
                     (DEFAULT_MENU_OPEN_DELAY - DEFAULT_CIRCLE_DELAY) *
                     circle.durationFactor,
-                  ease: 'easeInOut',
                   delay: circle.delay,
+                  ...CirclePressAnimation.transition,
                 }}
                 style={{
                   left: circlePosition.x,

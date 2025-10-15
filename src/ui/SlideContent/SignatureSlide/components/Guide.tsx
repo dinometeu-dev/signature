@@ -2,6 +2,7 @@ import { HTMLMotionProps, motion } from 'framer-motion';
 import { FC } from 'react';
 
 import { cn } from '@/utils/functions/mergeClasses';
+import { GuideAnimations } from '@slides/SignatureSlide/animations/guide-animations';
 
 const GuideWrapper: FC<HTMLMotionProps<'div'>> = ({
   children,
@@ -14,9 +15,9 @@ const GuideWrapper: FC<HTMLMotionProps<'div'>> = ({
         'w-full flex items-center justify-between text-black/40',
         className
       )}
-      initial={{ opacity: 0, filter: 'blur(10px)' }}
-      animate={{ opacity: 1, filter: 'blur(0px)' }}
-      transition={{ delay: 0.3, duration: 0.5 }}
+      initial={GuideAnimations.initial}
+      animate={GuideAnimations.animate}
+      transition={GuideAnimations.transition}
       {...props}
     >
       {children}

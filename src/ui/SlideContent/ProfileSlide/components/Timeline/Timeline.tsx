@@ -1,19 +1,27 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback } from 'react';
 
 import dayjs from '@/lib/dayjs';
 import { cn } from '@/utils/functions/mergeClasses';
+import { useTimeline } from '@/utils/providers/TimelineProvider';
+import {
+  CompanyInfoAnimation,
+  ExperienceCompanyTitleAnimation,
+  ExperienceTitleAnimation,
+  TimelineAnimations,
+  TimelineWrapperAnimation,
+} from '@slides/ProfileSlide/animations/timeline-animations';
 import CompanyInfo from '@slides/ProfileSlide/components/Timeline/components/CompanyInfo';
 import Point from '@slides/ProfileSlide/components/Timeline/components/Point';
 import {
   emptyData,
   workExperience,
-} from '@slides/ProfileSlide/components/Timeline/utils/constants';
+} from '@slides/ProfileSlide/components/Timeline/utils/content';
 
 const Timeline = () => {
-  const [segmentHover, setSegmentHover] = useState<number | null>(null);
+  const { segmentHover, setSegmentHover } = useTimeline();
 
   const isHoverCurrentElement = useCallback(
     (idx: number, positive?: boolean) => {
@@ -93,9 +101,9 @@ const Timeline = () => {
   return (
     <motion.div
       className="w-full h-full flex items-center relative"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2, duration: 0.5, ease: 'easeInOut' }}
+      initial={TimelineWrapperAnimation.initial}
+      animate={TimelineWrapperAnimation.animate}
+      transition={TimelineWrapperAnimation.transition}
     >
       {segmentHover === null && (
         <Point position="start" date={startDate} isStart />
@@ -114,7 +122,7 @@ const Timeline = () => {
             key={idx}
             className={cn('relative flex items-center justify-center')}
             style={{ width: `${seg.width}%` }}
-            initial={{ width: 0 }}
+            initial={TimelineAnimations.initial}
             onHoverEnd={() => setSegmentHover(null)}
             animate={{
               width: (() => {
@@ -133,13 +141,7 @@ const Timeline = () => {
               {seg.type === 'work' && isHoverCurrentElement(idx) && (
                 <CompanyInfo
                   className="left-0 translate-x-4 -translate-y-[calc(50%+20px)]"
-                  exit={{
-                    opacity: 0,
-                    filter: 'blur(10px)',
-                    transition: {
-                      duration: 0.1,
-                    },
-                  }}
+                  exit={CompanyInfoAnimation.exit}
                   {...seg.company}
                 />
               )}
@@ -163,7 +165,7 @@ const Timeline = () => {
               )}
               onHoverStart={() => seg.type === 'work' && setSegmentHover(idx)}
             >
-              <motion.div
+              <div
                 style={{
                   background:
                     seg.type === 'work' ? `${seg.color}` : 'var(--border)',
@@ -179,49 +181,29 @@ const Timeline = () => {
                 <Fragment>
                   <motion.div
                     className="absolute left-0 translate-x-10 -translate-y-[20%]"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    exit={{
-                      opacity: 0,
-                      filter: 'blur(10px)',
-                      transition: {
-                        duration: 0.1,
-                      },
-                    }}
-                    animate={{
-                      opacity: 1,
-                      filter: 'blur(0px)',
-                      transition: {
-                        delay: 0.2,
-                      },
-                    }}
+                    initial={ExperienceTitleAnimation.initial}
+                    animate={ExperienceTitleAnimation.animate}
+                    exit={ExperienceTitleAnimation.exit}
                   >
-                    <motion.p
+                    <p
                       className="text-6xl font-headings font-light select-none cursor-zoom-in"
                       style={{
                         color: `${seg.color}`,
                       }}
                     >
                       {seg.title}
-                    </motion.p>
+                    </p>
                   </motion.div>
                   <motion.div
                     className="absolute translate-y-14 flex flex-col items-center justify-center gap-1"
-                    initial={{ opacity: 0, filter: 'blur(10px)' }}
-                    exit={{ opacity: 0, filter: 'blur(10px)' }}
-                    animate={{
-                      opacity: 1,
-                      filter: 'blur(0px)',
-                      transition: {
-                        delay: 0.2,
-                      },
-                    }}
+                    initial={ExperienceCompanyTitleAnimation.initial}
+                    animate={ExperienceCompanyTitleAnimation.animate}
+                    exit={ExperienceCompanyTitleAnimation.exit}
                   >
-                    <motion.p className="text-xl font-headings">
+                    <p className="text-xl font-headings">
                       {seg.company?.title}
-                    </motion.p>
-                    <motion.p className="text-black/60">
-                      Worked {durationString}
-                    </motion.p>
+                    </p>
+                    <p className="text-black/60">Worked {durationString}</p>
                   </motion.div>
                 </Fragment>
               )}

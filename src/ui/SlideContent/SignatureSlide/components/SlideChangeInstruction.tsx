@@ -1,7 +1,13 @@
 import { motion } from 'framer-motion';
 
-const DEFAULT_ANIMATION_DURATION = 4.5;
-const DEFAULT_ANIMATION_DELAY = 1.5;
+import {
+  ArrowUpAnimation,
+  arrowUpColorBase,
+  ArrowUpIconAnimation,
+  arrowUpIconColorBase,
+  SlideChangeAnimation1,
+  SlideChangeAnimation2,
+} from '@slides/SignatureSlide/animations/slide-change-instruction-animatons';
 
 const SlideChangeInstruction = () => {
   const arrowDownRectX = 238;
@@ -20,12 +26,6 @@ const SlideChangeInstruction = () => {
   const arrowUpCenterX = arrowUpRectX + arrowUpRectWidth / 2;
   const arrowUpCenterY = arrowUpRectY + arrowUpRectHeight / 2;
 
-  const arrowUpColorBase = '#ECECEC';
-  const arrowUpColorActive = '#6FB3E0';
-  const arrowUpStrokeActive = '#BCE4FE';
-  const arrowUpIconColorBase = '#767676';
-  const arrowUpIconColorActive = 'white';
-
   return (
     <motion.svg fill="none" width="360" xmlns="http://www.w3.org/2000/svg">
       <motion.rect
@@ -37,48 +37,8 @@ const SlideChangeInstruction = () => {
         fill={arrowUpColorBase}
         stroke={arrowUpColorBase}
         strokeWidth="0.5"
-        initial={{
-          scale: 1,
-          fill: arrowUpColorBase,
-          stroke: arrowUpColorBase,
-        }}
-        animate={{
-          scale: [1, 1, 1, 1, 1, 0.94, 1, 1, 1, 1, 0.94, 1],
-          fill: [
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorActive,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorActive,
-            arrowUpColorBase,
-          ],
-          stroke: [
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpStrokeActive,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpColorBase,
-            arrowUpStrokeActive,
-            arrowUpColorBase,
-          ],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={ArrowUpAnimation.initial}
+        animate={ArrowUpAnimation.animate}
       />
       <motion.g transform={`translate(${arrowUpCenterX}, ${arrowUpCenterY})`}>
         <motion.path
@@ -87,35 +47,8 @@ const SlideChangeInstruction = () => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          initial={{
-            scale: 1,
-            stroke: arrowUpIconColorBase,
-            transform: 'translate(-27px, -12px)',
-          }}
-          animate={{
-            transform: 'translate(-27px, -12px)',
-            scale: [1, 1, 1, 1, 1, 0.8, 1, 1, 1, 1, 0.8, 1],
-            stroke: [
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorActive,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorBase,
-              arrowUpIconColorActive,
-              arrowUpIconColorBase,
-            ],
-            transition: {
-              repeat: Infinity,
-              repeatType: 'loop',
-              duration: DEFAULT_ANIMATION_DURATION,
-              delay: DEFAULT_ANIMATION_DELAY,
-            },
-          }}
+          initial={ArrowUpIconAnimation.initial}
+          animate={ArrowUpIconAnimation.animate}
         />
       </motion.g>
 
@@ -191,18 +124,8 @@ const SlideChangeInstruction = () => {
         fill="#F4F4F4"
         stroke="#65B2E6"
         strokeWidth="0.5"
-        initial={{ y: 25, opacity: 1, scale: 1 }}
-        animate={{
-          y: [25, 25, 25, 25, 25, -20, 25, 25, 25, 25, 25],
-          scale: [1, 1, 1, 1, 1, 1, 0.8, 0.8, 0.8, 0.8, 1],
-          opacity: [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={SlideChangeAnimation1.initial}
+        animate={SlideChangeAnimation1.animate}
       />
       <motion.rect
         x="0.25"
@@ -213,18 +136,8 @@ const SlideChangeInstruction = () => {
         fill="#F4F4F4"
         stroke="#65B2E6"
         strokeWidth="0.5"
-        initial={{ y: 25, opacity: 1, scale: 1 }}
-        animate={{
-          y: [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, -20],
-          scale: [0.8, 0.8, 0.8, 0.8, 0.8, 1, 1, 1, 1, 1, 1],
-          opacity: [0, 0, 0, 0, 0, 1, 1, 1, 1, 0],
-          transition: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: DEFAULT_ANIMATION_DURATION,
-            delay: DEFAULT_ANIMATION_DELAY,
-          },
-        }}
+        initial={SlideChangeAnimation2.initial}
+        animate={SlideChangeAnimation2.animate}
       />
     </motion.svg>
   );

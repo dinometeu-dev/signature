@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { MenuItemsLineAnimations } from '@/ui/Menu/animations/menu-items-animations';
 import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 import { cn } from '@/utils/functions/mergeClasses';
@@ -52,7 +53,7 @@ const MenuItems = () => {
     <div className="flex flex-col gap-6 items-end justify-center overflow-hidden pb-[10px] pl-[20px] ">
       {isLoading
         ? Array.from({ length: 4 }).map((_, index) => (
-            <motion.div
+            <div
               key={index}
               className="h-10 bg-black/5 rounded-lg animate-pulse"
               style={{
@@ -78,14 +79,10 @@ const MenuItems = () => {
                 {currentSlide === link && (
                   <motion.span
                     className="absolute w-[calc(100%+20px)] h-4 bg-red-accent -translate-y-2/3 -translate-x-[20px]"
-                    initial={{ height: 0 }}
-                    animate={{ height: 16 }}
-                    exit={{
-                      translateX: '100%',
-                    }}
-                    transition={{
-                      duration: 0.5,
-                    }}
+                    initial={MenuItemsLineAnimations.initial}
+                    animate={MenuItemsLineAnimations.animate}
+                    exit={MenuItemsLineAnimations.exit}
+                    transition={MenuItemsLineAnimations.transition}
                   />
                 )}
               </AnimatePresence>

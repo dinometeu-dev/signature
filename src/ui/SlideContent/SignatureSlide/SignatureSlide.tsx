@@ -11,6 +11,12 @@ import SignatureBg from '@/ui/SlideContent/SignatureSlide/components/SignatureBg
 import SlideChangeInstruction from '@/ui/SlideContent/SignatureSlide/components/SlideChangeInstruction';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
+import {
+  AirplaneAnimation,
+  SignatureBgAnimation,
+  SlideAnimation,
+  SubtitleAnimation,
+} from '@slides/SignatureSlide/animations/signature-animations';
 import OpenMenuInstruction from '@slides/SignatureSlide/components/OpenMenuInstruction';
 
 const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
@@ -20,30 +26,8 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
   return (
     <Slide
       className="flex items-center justify-center"
-      initial={
-        firstSlideAnimation
-          ? {
-              width: '100%',
-              height: '100%',
-              scale: 1.1,
-            }
-          : undefined
-      }
-      animate={
-        firstSlideAnimation
-          ? {
-              width: 'var(--spacing-slide-width)',
-              height: 'var(--spacing-slide-height)',
-              scale: 1,
-              transition: {
-                delay: 2,
-                duration: 1.3,
-                bounce: 0.5,
-                type: 'spring',
-              },
-            }
-          : undefined
-      }
+      initial={firstSlideAnimation ? SlideAnimation.initial : undefined}
+      animate={firstSlideAnimation ? SlideAnimation.animate : undefined}
       onAnimationComplete={() => setFirstSlideAnimation(false)}
       {...props}
     >
@@ -59,30 +43,17 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
             />
             <motion.p
               className="text-black/60 text-lg"
-              initial={{
-                opacity: 0,
-                translateY: '-50%',
-                filter: 'blur(10px)',
-              }}
-              animate={{
-                opacity: 1,
-                translateY: 0,
-                filter: 'blur(0px)',
-                transition: { delay: 0.2, duration: 0.5 },
-              }}
+              initial={SubtitleAnimation.initial}
+              animate={SubtitleAnimation.animate}
             >
               {SUBTITLE}
             </motion.p>
           </div>
           <AirplaneButton
             className="top-1/2 -translate-y-1/4 z-50"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            initial={AirplaneAnimation.initial}
+            animate={AirplaneAnimation.animate}
+            transition={AirplaneAnimation.transition}
           />
 
           <GuideWrapper className="z-10">
@@ -101,9 +72,9 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
       <div className="w-full h-full absolute z-0 overflow-hidden flex items-center justify-center rounded-slide">
         <SignatureBg
           className="absolute"
-          initial={{ scale: 1.2 }}
-          animate={{ scale: 1.2 }}
-          transition={{ delay: 3, duration: 0.3 }}
+          initial={SignatureBgAnimation.initial}
+          animate={SignatureBgAnimation.animate}
+          transition={SignatureBgAnimation.transition}
         />
       </div>
     </Slide>

@@ -15,6 +15,11 @@ import { cn } from '@/utils/functions/mergeClasses';
 import { Button } from '@components/Button';
 import Chip from '@components/Chip';
 import ProfileImg from '@public/ProfileImg.png';
+import {
+  ProfileCardAnimation,
+  SocialLinksAnimation,
+  TechnologyStackAnimation,
+} from '@slides/ProfileSlide/animations/profile-card-animations';
 
 const StackWrapper: FC<ComponentProps<'div'>> = ({
   children,
@@ -38,9 +43,9 @@ const ProfileCard: FC<HTMLMotionProps<'div'>> = ({ className, ...props }) => {
         'overflow-hidden w-full h-full relative bg-gradient-to-br from-light-accent to-white border-[0.5px] border-accent rounded-3xl flex items-center justify-center gap-3',
         className
       )}
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      initial={ProfileCardAnimation.initial}
+      animate={ProfileCardAnimation.animate}
+      transition={ProfileCardAnimation.transition}
       {...props}
     >
       <Image
@@ -78,9 +83,12 @@ const ProfileCard: FC<HTMLMotionProps<'div'>> = ({ className, ...props }) => {
                 ({ id, Icon, title }, idx) => (
                   <Chip
                     key={id}
-                    initial={{ filter: 'blur(10px)', opacity: 0 }}
-                    animate={{ filter: 'blur(0px)', opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.05 * idx + 0.5 }}
+                    initial={TechnologyStackAnimation.initial}
+                    animate={TechnologyStackAnimation.animate}
+                    transition={{
+                      delay: 0.05 * idx + 0.5,
+                      ...TechnologyStackAnimation.transition,
+                    }}
                   >
                     <Icon className="size-[16px] rounded-xs" /> {title}
                   </Chip>
@@ -93,15 +101,11 @@ const ProfileCard: FC<HTMLMotionProps<'div'>> = ({ className, ...props }) => {
           {PROFILE_SOCIALS_STACK.map(({ id, Icon, link }, idx) => (
             <motion.div
               key={id}
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
+              initial={SocialLinksAnimation.initial}
+              animate={SocialLinksAnimation.animate}
               transition={{
-                duration: 0.3,
                 delay: 0.05 * idx + 0.2,
+                ...SocialLinksAnimation.transition,
               }}
             >
               <Link href={link} target={'_blank'}>

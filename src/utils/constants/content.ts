@@ -32,6 +32,8 @@ export const PROFILE_DESCRIPTION = [
 ];
 
 export const PROFILE_WORK_EXPERIENCE_TITLE = 'Work experience';
+export const PROFILE_WORK_EXPERIENCE_SUBTITLE =
+  '   Hover the timeline to see more details about each experience.';
 
 export const PROFILE_CARD_NAME = 'Dmitri P.';
 export const PROFILE_CARD_DESCRIPTION = [

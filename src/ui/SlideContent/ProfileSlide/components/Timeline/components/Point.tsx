@@ -1,18 +1,11 @@
 import dayjs from 'dayjs';
-import { motion, MotionProps } from 'framer-motion';
-import Image, { StaticImageData } from 'next/image';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { FC } from 'react';
 
 import { cn } from '@/utils/functions/mergeClasses';
-
-export interface PointProps extends MotionProps {
-  position: 'start' | 'end';
-  date: dayjs.Dayjs;
-  isStart?: boolean;
-  className?: string | null;
-  logo?: StaticImageData | null;
-  color?: string | null;
-}
+import { PointAnimation } from '@slides/ProfileSlide/animations/point-animations';
+import { PointProps } from '@slides/ProfileSlide/components/Timeline/utils/types';
 
 const Point: FC<PointProps> = ({
   position,
@@ -36,8 +29,8 @@ const Point: FC<PointProps> = ({
         position === 'end' ? 'right-0 translate-x-1/2' : '',
         className
       )}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={PointAnimation.initial}
+      animate={PointAnimation.animate}
     >
       {logo ? (
         <motion.div
@@ -53,9 +46,9 @@ const Point: FC<PointProps> = ({
           />
         </motion.div>
       ) : null}
-      <motion.p className="absolute whitespace-nowrap -translate-x-1/2 translate-y-[calc(100%+10px)] bg-linear-(--color-date-gradient) px-5 text-center text-black/50 text-sm z-0">
+      <p className="absolute whitespace-nowrap -translate-x-1/2 translate-y-[calc(100%+10px)] bg-linear-(--color-date-gradient) px-5 text-center text-black/50 text-sm z-0">
         {isCurrentDay ? 'Present' : date.format(isStart ? 'YYYY' : 'MMM YYYY')}
-      </motion.p>
+      </p>
     </motion.div>
   );
 };

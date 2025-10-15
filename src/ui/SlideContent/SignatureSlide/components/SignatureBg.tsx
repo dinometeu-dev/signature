@@ -1,8 +1,10 @@
 import { motion, SVGMotionProps, Variants } from 'framer-motion';
 import { FC } from 'react';
 
-const DEFAULT_PATH_ANIMATE_DURATION = 1.5;
-const DEFAULT_DOT_ANIMATE_DURATION = 0.4;
+import {
+  SignatureDotAnimation,
+  SignatureMainPathAnimation,
+} from '@slides/SignatureSlide/animations/signature-bg-animations';
 
 const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
   const pathVariants: Variants = {
@@ -28,13 +30,7 @@ const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
         variants={pathVariants}
         initial="hidden"
         animate="visible"
-        transition={{
-          default: {
-            duration: DEFAULT_PATH_ANIMATE_DURATION,
-            ease: 'easeInOut',
-          },
-          opacity: { duration: 0.5 },
-        }}
+        transition={SignatureMainPathAnimation.transition}
       />
       <motion.path
         d="M439.296 118.812C435.172 118.812 431.672 116.273 431.672 110.762C431.672 96.1009 440.171 92.4792 451.515 91.2127C462.859 89.9462 478.478 90.6476 481.354 105.03C485.177 124.146 459.21 121.492 447.547 121.492"
@@ -45,14 +41,7 @@ const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
         variants={pathVariants}
         initial="hidden"
         animate="visible"
-        transition={{
-          default: {
-            delay: DEFAULT_PATH_ANIMATE_DURATION,
-            duration: DEFAULT_DOT_ANIMATE_DURATION,
-            ease: 'easeInOut',
-          },
-          opacity: { duration: 0.5 },
-        }}
+        transition={SignatureDotAnimation.transition}
       />
     </motion.svg>
   );
