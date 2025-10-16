@@ -28,7 +28,7 @@ const CompanyInfo: FC<CompanyInfoProps> = ({
       {...props}
     >
       <motion.div
-        className="ml-2 p-4 w-full backdrop-blur-md shadow-xl rounded-2xl border-[0.5px] border-black/10 flex flex-col gap-2 bg-gradient-to-tr from-white/80 to-white/60"
+        className="ml-2 p-6 w-full backdrop-blur-md shadow-xl rounded-2xl border-[0.5px] border-black/10 flex flex-col gap-2 bg-gradient-to-tr from-white/80 to-white/60"
         initial={CompanyInfoAnimation.initial}
         animate={CompanyInfoAnimation.animate}
         transition={{ delay: 0.7 }}

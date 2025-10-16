@@ -17,7 +17,7 @@ export type SlideNameType =
   | null;
 
 type SlideStackContextValue = {
-  setSlideStack: (slideName: SlideNameType) => void;
+  setSlideStack: (slideName: SlideNameType, id?: number) => void;
   currentSlide: string | null;
 };
 

@@ -14,7 +14,8 @@ import React, {
   useState,
 } from 'react';
 
-import { QUERY_SLIDE } from '@/utils/constants/routes';
+import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
+import { QUERY_SLIDE, QUERY_WORK_ITEM } from '@/utils/constants/routes';
 import { SCREEN_HEIGHT } from '@/utils/constants/styled';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useSetQueryParam, useGetQueryParams } from '@/utils/hooks/navigation';
@@ -133,7 +134,13 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
 
         const nextSlide = slides[nextItem];
         const ariaLabel = nextSlide.props['aria-label'];
-        if (ariaLabel) {
+
+        if (ariaLabel === QUERY_SLIDE_VALUES.WORKS) {
+          const workItem = nextSlide.props['id'];
+          if (workItem) {
+            setQuery({ [QUERY_SLIDE]: ariaLabel, [QUERY_WORK_ITEM]: workItem });
+          }
+        } else {
           setQuery(QUERY_SLIDE, ariaLabel);
         }
       }

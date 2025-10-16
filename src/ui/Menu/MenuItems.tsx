@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { MenuItemsLineAnimations } from '@/ui/Menu/animations/menu-items-animations';
-import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
+import { MENU_ITEMS } from '@/ui/Menu/utils/content';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useGetQueryParams } from '@/utils/hooks/navigation';
@@ -10,29 +10,6 @@ import {
   SlideNameType,
   useSlideStack,
 } from '@/utils/providers/SlideStackProvider';
-
-const menus = [
-  {
-    id: 1,
-    title: 'Signature',
-    link: QUERY_SLIDE_VALUES.SIGNATURE,
-  },
-  {
-    id: 2,
-    title: 'Profile',
-    link: QUERY_SLIDE_VALUES.PROFILE,
-  },
-  // {
-  //   id: 3,
-  //   title: 'Works',
-  //   link: QUERY_SLIDE_VALUES.WORKS,
-  // },
-  {
-    id: 4,
-    title: 'Contact',
-    link: QUERY_SLIDE_VALUES.CONTACT,
-  },
-] as const;
 
 const MenuItems = () => {
   const isLoading = false;
@@ -61,7 +38,7 @@ const MenuItems = () => {
               }}
             />
           ))
-        : menus?.map(({ title, id, link }) => (
+        : MENU_ITEMS?.map(({ title, id, link }) => (
             <div
               key={id}
               className="relative select-none"
