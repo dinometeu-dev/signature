@@ -7,7 +7,7 @@ import {
   CONTACT_CARD_SUBTITLE,
   CONTACT_CARD_TITLE,
 } from '@/utils/constants/content';
-import BlurText from '@components/TextAnimations/BlurText';
+import BlurText from '@components/BlurText';
 import {
   ContactCardFormWrapperAnimation,
   ContactCardSubtitleAnimation,

@@ -7,7 +7,7 @@ import Markdown from 'react-markdown';
 import { PROFILE_DESCRIPTION, PROFILE_TITLE } from '@/utils/constants/content';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useTimeline } from '@/utils/providers/TimelineProvider';
-import BlurText from '@components/TextAnimations/BlurText';
+import BlurText from '@components/BlurText';
 import {
   SegmentHoverAnimationOff,
   SegmentHoverAnimationOn,
