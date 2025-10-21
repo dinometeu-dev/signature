@@ -1,8 +1,4 @@
 import { AnimationType } from '@/types/animation';
-import {
-  DEFAULT_CONTENT_FILTER_BLUR_OFF,
-  DEFAULT_CONTENT_FILTER_BLUR_ON,
-} from '@/utils/constants/global-settings';
 
 export const MainTitleAnimations: AnimationType = {
   initial: {
@@ -14,7 +10,7 @@ export const MainTitleAnimations: AnimationType = {
   },
   animate: {
     fontSize: '40px',
-    top: '98%',
+    top: '95%',
     translateY: '-100%',
   },
   transition: {
@@ -24,14 +20,12 @@ export const MainTitleAnimations: AnimationType = {
   },
 };
 
-export const DomeGalleryAnimation: AnimationType = {
+export const RoadItemsAnimation: AnimationType = {
   initial: {
     opacity: 0,
-    filter: DEFAULT_CONTENT_FILTER_BLUR_ON,
   },
   animate: {
     opacity: 1,
-    filter: DEFAULT_CONTENT_FILTER_BLUR_OFF,
   },
   transition: {
     delay: 1,

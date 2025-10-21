@@ -65,7 +65,7 @@ const Slide: FC<SlideProps> = ({
             exit={{ opacity: 0 }}
           >
             <div className="absolute left-0 top-0 h-full w-full progressive-backdrop-blur-reverse backdrop-blur-lg" />
-            <div className="absolute left-0 top-0 h-full w-full  bg-gradient-to-b from-white to-transparen" />
+            {/*<div className="absolute left-0 top-0 h-full w-full  bg-gradient-to-b from-white to-transparen" />*/}
             <Button className="bg-white-300" onClick={backButtonOnClick}>
               <ChevronLeft size={14} /> Back
             </Button>

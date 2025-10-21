@@ -1,33 +1,35 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
-import React, { FC } from 'react';
+import { CircleArrowRight } from 'lucide-react';
+import React, { FC, Fragment, useState } from 'react';
 
 import BlurText from '@components/BlurText';
+import { Button } from '@components/Button';
 import Prism from '@components/PrismBg';
 import { Slide } from '@components/Slide';
-import { MainTitleAnimations } from '@slides/WorkSlide/animations/work-slide-animations';
+import {
+  MainTitleAnimations,
+  RoadItemsAnimation,
+} from '@slides/WorkSlide/animations/work-slide-animations';
+import ContentWrapper from '@slides/WorkSlide/components/ContentWrapper';
+import { WorkItemProps } from '@slides/WorkSlide/utils/types';
 
-// const ContentWrapper: FC<ComponentProps<'div'>> = ({
-//   className,
-//   children,
-//   ...props
-// }) => {
-//   return (
-//     <div
-//       className={cn(
-//         'bg-black/20 rounded-2xl p-6 border-[0.5px] border-black/20',
-//         className
-//       )}
-//       {...props}
-//     >
-//       {children}
-//     </div>
-//   );
-// };
+type WorkSlideProps = Omit<HTMLMotionProps<'div'>, keyof WorkItemProps> &
+  WorkItemProps;
 
-const WorkSlide: FC<HTMLMotionProps<'div'>> = ({ title, ...props }) => {
+const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const handleActiveSection = (section: string) => {
+    if (activeSection === section) {
+      setActiveSection(null);
+    } else {
+      setActiveSection(section);
+    }
+  };
+
   return (
-    <Slide {...props} setOverlowHidden>
-      <div className="absolute inset-0">
+    <Slide {...props} id={id.toString()} setOverlowHidden>
+      <div className="absolute inset-0 bg-black">
         <Prism
           animationType="3drotate"
           timeScale={0.5}
@@ -42,12 +44,32 @@ const WorkSlide: FC<HTMLMotionProps<'div'>> = ({ title, ...props }) => {
         />
       </div>
 
-      <motion.div className="relative w-full h-full text-white flex gap-4">
-        {/*<div className="w-[60%] h-full flex flex-col gap-4">*/}
-        {/*  <ContentWrapper className="h-[60%]">1</ContentWrapper>*/}
-        {/*  <ContentWrapper className="h-[40%]">2</ContentWrapper>*/}
-        {/*</div>*/}
-        {/*<ContentWrapper className="w-[40%]">3</ContentWrapper>*/}
+      <motion.div
+        className="relative w-full h-full text-white flex gap-4 items-center justify-center"
+        initial={RoadItemsAnimation.initial}
+        animate={RoadItemsAnimation.animate}
+        transition={RoadItemsAnimation.transition}
+      >
+        {Object.entries(details).map(([key, value]) => (
+          <Fragment key={key}>
+            <ContentWrapper
+              title={key}
+              isActive={activeSection}
+              onClick={() => handleActiveSection(key)}
+            >
+              {value}
+            </ContentWrapper>
+            <motion.div
+              className="h-px bg-white transition-[width]"
+              style={{
+                width: activeSection ? '0' : '100%',
+              }}
+            />
+          </Fragment>
+        ))}
+        <Button className="px-4 py-2 text-sm gap-2">
+          Next Project <CircleArrowRight size={18} className="rotate-90" />
+        </Button>
       </motion.div>
 
       <motion.div

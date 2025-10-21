@@ -19,8 +19,7 @@ const SlideContent: FC<ComponentProps<'div'>> = (props) => {
         <WorkSlide
           key={slide.id}
           aria-label={QUERY_SLIDE_VALUES.WORKS}
-          id={slide.id.toString()}
-          title={slide.title}
+          {...slide}
         />
       ))}
       <ContactSlide aria-label={QUERY_SLIDE_VALUES.CONTACT} />

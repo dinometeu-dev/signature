@@ -86,8 +86,8 @@
   --radius-slide: 50px;
 
   /* Spacings */
-  --spacing-slide-height: 796px;
-  --spacing-slide-width: 1192px;
+  --spacing-slide-height: 80%;
+  --spacing-slide-width: 80%;
 
   --spacing-profile-card-width: 296px;
   --spacing-profile-card-height: 486px;

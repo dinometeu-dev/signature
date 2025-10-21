@@ -22,7 +22,7 @@ type PrismProps = {
 const Prism: React.FC<PrismProps> = ({
   height = 3.5,
   baseWidth = 5.5,
-  animationType = 'rotate',
+  animationType = '3drotate',
   glow = 1,
   offset = { x: 0, y: 0 },
   noise = 0.5,
@@ -348,6 +348,13 @@ const Prism: React.FC<PrismProps> = ({
       window.addEventListener('blur', onBlur);
       program.uniforms.uUseBaseWobble.value = 0;
     } else if (animationType === '3drotate') {
+      onPointerMove = (e: PointerEvent) => {
+        onMove(e);
+        startRAF();
+      };
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('mouseleave', onLeave);
+      window.addEventListener('blur', onBlur);
       program.uniforms.uUseBaseWobble.value = 0;
     } else {
       program.uniforms.uUseBaseWobble.value = 1;
