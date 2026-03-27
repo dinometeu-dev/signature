@@ -1,5 +1,5 @@
 import { Renderer, Triangle, Program, Mesh } from 'ogl';
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
 type PrismProps = {
   height?: number;
@@ -17,6 +17,9 @@ type PrismProps = {
   bloom?: number;
   suspendWhenOffscreen?: boolean;
   timeScale?: number;
+  maxDpr?: number;
+  maxFps?: number;
+  sampleCount?: number;
 };
 
 const Prism: React.FC<PrismProps> = ({
@@ -35,6 +38,9 @@ const Prism: React.FC<PrismProps> = ({
   bloom = 1,
   suspendWhenOffscreen = false,
   timeScale = 0.5,
+  maxDpr = 2,
+  maxFps = 60,
+  sampleCount = 100,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -60,8 +66,12 @@ const Prism: React.FC<PrismProps> = ({
     const TS = Math.max(0, timeScale || 1);
     const HOVSTR = Math.max(0, hoverStrength || 1);
     const INERT = Math.max(0, Math.min(1, inertia || 0.12));
+    const MAX_DPR = Math.max(0.5, maxDpr || 1);
+    const MAX_FPS = Math.max(1, maxFps || 60);
+    const FRAME_INTERVAL = 1000 / MAX_FPS;
+    const STEPS = Math.max(24, Math.round(sampleCount || 100));
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(MAX_DPR, window.devicePixelRatio || 1);
     const renderer = new Renderer({
       dpr,
       alpha: transparent,
@@ -175,7 +185,7 @@ const Prism: React.FC<PrismProps> = ({
           wob = mat2(c0, c1, c2, c0);
         }
 
-        const int STEPS = 100;
+        const int STEPS = ${STEPS};
         for (int i = 0; i < STEPS; i++) {
           p = vec3(f, z);
           p.xz = p.xz * wob;
@@ -239,9 +249,18 @@ const Prism: React.FC<PrismProps> = ({
     });
     const mesh = new Mesh(gl, { geometry, program });
 
+    let lastWidth = 0;
+    let lastHeight = 0;
     const resize = () => {
       const w = container.clientWidth || 1;
       const h = container.clientHeight || 1;
+
+      if (w === lastWidth && h === lastHeight) {
+        return;
+      }
+
+      lastWidth = w;
+      lastHeight = h;
       renderer.setSize(w, h);
       iResBuf[0] = gl.drawingBufferWidth;
       iResBuf[1] = gl.drawingBufferHeight;
@@ -294,6 +313,9 @@ const Prism: React.FC<PrismProps> = ({
     const NOISE_IS_ZERO = NOISE < 1e-6;
     let raf = 0;
     const t0 = performance.now();
+    let lastFrameTime = 0;
+    let isInViewport = !suspendWhenOffscreen;
+    let isDocumentVisible = typeof document === 'undefined' || !document.hidden;
     const startRAF = () => {
       if (raf) return;
       raf = requestAnimationFrame(render);
@@ -302,6 +324,13 @@ const Prism: React.FC<PrismProps> = ({
       if (!raf) return;
       cancelAnimationFrame(raf);
       raf = 0;
+    };
+    const updateAnimationState = () => {
+      if (isDocumentVisible && isInViewport) {
+        startRAF();
+      } else {
+        stopRAF();
+      }
     };
 
     const rnd = () => Math.random();
@@ -336,6 +365,10 @@ const Prism: React.FC<PrismProps> = ({
     const onBlur = () => {
       pointer.inside = false;
     };
+    const onVisibilityChange = () => {
+      isDocumentVisible = !document.hidden;
+      updateAnimationState();
+    };
 
     let onPointerMove: ((e: PointerEvent) => void) | null = null;
     if (animationType === 'hover') {
@@ -348,19 +381,20 @@ const Prism: React.FC<PrismProps> = ({
       window.addEventListener('blur', onBlur);
       program.uniforms.uUseBaseWobble.value = 0;
     } else if (animationType === '3drotate') {
-      onPointerMove = (e: PointerEvent) => {
-        onMove(e);
-        startRAF();
-      };
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('mouseleave', onLeave);
-      window.addEventListener('blur', onBlur);
       program.uniforms.uUseBaseWobble.value = 0;
     } else {
       program.uniforms.uUseBaseWobble.value = 1;
     }
 
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     const render = (t: number) => {
+      if (t - lastFrameTime < FRAME_INTERVAL) {
+        raf = requestAnimationFrame(render);
+        return;
+      }
+
+      lastFrameTime = t;
       const time = (t - t0) * 0.001;
       program.uniforms.iTime.value = time;
 
@@ -418,7 +452,7 @@ const Prism: React.FC<PrismProps> = ({
       }
 
       renderer.render({ scene: mesh });
-      if (continueRAF) {
+      if (continueRAF && isDocumentVisible && isInViewport) {
         raf = requestAnimationFrame(render);
       } else {
         raf = 0;
@@ -431,20 +465,20 @@ const Prism: React.FC<PrismProps> = ({
 
     if (suspendWhenOffscreen) {
       const io = new IntersectionObserver((entries) => {
-        const vis = entries.some((e) => e.isIntersecting);
-        if (vis) startRAF();
-        else stopRAF();
+        isInViewport = entries.some((e) => e.isIntersecting);
+        updateAnimationState();
       });
       io.observe(container);
-      startRAF();
+      updateAnimationState();
       (container as PrismContainer).__prismIO = io;
     } else {
-      startRAF();
+      updateAnimationState();
     }
 
     return () => {
       stopRAF();
       ro.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       if (animationType === 'hover') {
         if (onPointerMove)
           window.removeEventListener(
@@ -481,9 +515,14 @@ const Prism: React.FC<PrismProps> = ({
     inertia,
     bloom,
     suspendWhenOffscreen,
+    maxDpr,
+    maxFps,
+    sampleCount,
   ]);
 
   return <div className="w-full h-full relative" ref={containerRef} />;
 };
 
-export default Prism;
+Prism.displayName = 'Prism';
+
+export default memo(Prism);

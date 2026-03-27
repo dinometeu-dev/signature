@@ -42,12 +42,40 @@ const ANIMATION_CONFIG = {
 const cx = (...parts: Array<string | false | null | undefined>) =>
   parts.filter(Boolean).join(' ');
 
+const useDocumentVisibility = () => {
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof document === 'undefined') {
+      return true;
+    }
+
+    return !document.hidden;
+  });
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  return isVisible;
+};
+
 const useResizeObserver = (
   callback: () => void,
-  elements: Array<React.RefObject<Element | null>>,
-  dependencies: React.DependencyList
+  containerRef: React.RefObject<Element | null>,
+  sequenceRef: React.RefObject<Element | null>
 ) => {
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     if (!window.ResizeObserver) {
       const handleResize = () => callback();
       window.addEventListener('resize', handleResize);
@@ -55,19 +83,22 @@ const useResizeObserver = (
       return () => window.removeEventListener('resize', handleResize);
     }
 
-    const observers = elements.map((ref) => {
-      if (!ref.current) return null;
-      const observer = new ResizeObserver(callback);
-      observer.observe(ref.current);
-      return observer;
-    });
+    const observer = new ResizeObserver(callback);
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    if (sequenceRef.current) {
+      observer.observe(sequenceRef.current);
+    }
 
     callback();
 
     return () => {
-      observers.forEach((observer) => observer?.disconnect());
+      observer.disconnect();
     };
-  }, dependencies);
+  }, [callback, containerRef, sequenceRef]);
 };
 
 const useAnimationLoop = (
@@ -75,7 +106,8 @@ const useAnimationLoop = (
   targetVelocity: number,
   seqWidth: number,
   isHovered: boolean,
-  pauseOnHover: boolean
+  pauseOnHover: boolean,
+  isVisible: boolean
 ) => {
   const rafRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
@@ -99,6 +131,12 @@ const useAnimationLoop = (
 
     if (prefersReduced) {
       track.style.transform = 'translate3d(0, 0, 0)';
+      return () => {
+        lastTimestampRef.current = null;
+      };
+    }
+
+    if (!isVisible) {
       return () => {
         lastTimestampRef.current = null;
       };
@@ -138,7 +176,7 @@ const useAnimationLoop = (
       }
       lastTimestampRef.current = null;
     };
-  }, [targetVelocity, seqWidth, isHovered, pauseOnHover]);
+  }, [trackRef, targetVelocity, seqWidth, isHovered, pauseOnHover, isVisible]);
 };
 
 export const Loop = React.memo<LogoLoopProps>(
@@ -162,6 +200,7 @@ export const Loop = React.memo<LogoLoopProps>(
       ANIMATION_CONFIG.MIN_COPIES
     );
     const [isHovered, setIsHovered] = useState<boolean>(false);
+    const isDocumentVisible = useDocumentVisibility();
 
     const targetVelocity = useMemo(() => {
       const magnitude = Math.abs(speed);
@@ -176,22 +215,31 @@ export const Loop = React.memo<LogoLoopProps>(
         seqRef.current?.getBoundingClientRect?.()?.width ?? 0;
 
       if (sequenceWidth > 0) {
-        setSeqWidth(Math.ceil(sequenceWidth));
+        const nextSeqWidth = Math.ceil(sequenceWidth);
         const copiesNeeded =
           Math.ceil(containerWidth / sequenceWidth) +
           ANIMATION_CONFIG.COPY_HEADROOM;
-        setCopyCount(Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded));
+        const nextCopyCount = Math.max(
+          ANIMATION_CONFIG.MIN_COPIES,
+          copiesNeeded
+        );
+
+        setSeqWidth((prev) => (prev === nextSeqWidth ? prev : nextSeqWidth));
+        setCopyCount((prev) =>
+          prev === nextCopyCount ? prev : nextCopyCount
+        );
       }
     }, []);
 
-    useResizeObserver(updateDimensions, [containerRef, seqRef], [logos, gap]);
+    useResizeObserver(updateDimensions, containerRef, seqRef);
 
     useAnimationLoop(
       trackRef,
       targetVelocity,
       seqWidth,
       isHovered,
-      pauseOnHover
+      pauseOnHover,
+      isDocumentVisible
     );
 
     const cssVariables = useMemo(

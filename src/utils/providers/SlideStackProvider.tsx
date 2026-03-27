@@ -8,12 +8,11 @@ import React, {
   useState,
 } from 'react';
 
-import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
-import { QUERY_SLIDE } from '@/utils/constants/routes';
-import { useGetQueryParams } from '@/utils/hooks/navigation';
-
 export type SlideNameType =
-  | (typeof QUERY_SLIDE_VALUES)[keyof typeof QUERY_SLIDE_VALUES]
+  | 'signature'
+  | 'profile'
+  | 'works'
+  | 'contact'
   | null;
 
 type SlideStackContextValue = {
@@ -32,12 +31,7 @@ type SlideStackProviderProps = {
 export function SlideStackProvider({
   children,
 }: Readonly<SlideStackProviderProps>) {
-  const getQuery = useGetQueryParams();
-
-  const [currentSlide, setCurrentSlide] = useState<string | null>(() => {
-    const slideParam = getQuery(QUERY_SLIDE);
-    return slideParam || QUERY_SLIDE_VALUES.SIGNATURE;
-  });
+  const [currentSlide, setCurrentSlide] = useState<string | null>(null);
 
   const setSlideStack = useCallback((slideName: SlideNameType) => {
     setCurrentSlide(slideName);
