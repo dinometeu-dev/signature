@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, searchParams } = new URL(request.url);
 
   if (pathname === `/${QUERY_SLIDE_VALUES.SIGNATURE}`) {
