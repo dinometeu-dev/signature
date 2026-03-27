@@ -94,7 +94,6 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
     const index = findSlideIndexByAriaLabel(slideParam);
     return index === -1 ? 0 : index;
   });
-
   const [direction, setDirection] = useState<MoveDirection>(1);
   const [lastCallTime, setLastCallTime] = useState(0);
 
@@ -121,8 +120,7 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
 
       if (
         !firstSlideAnimation &&
-        (direction === newDirection ||
-          now - lastCallTime > EXIT_DURATION * 1000)
+        (direction === newDirection || now - lastCallTime > EXIT_DURATION * 1000)
       ) {
         const nextItem =
           nextCustomSlide ??
@@ -145,7 +143,16 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
         }
       }
     },
-    [direction, lastCallTime, slides.length, selectedItem, firstSlideAnimation]
+    [
+      direction,
+      firstSlideAnimation,
+      lastCallTime,
+      slides.length,
+      selectedItem,
+      handleItems,
+      setQuery,
+      setSlideStack,
+    ]
   );
 
   useEffect(() => {
@@ -156,7 +163,9 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
         setSlide(1);
       }
     };
+
     window.addEventListener('keydown', onKeyDown);
+
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [setSlide]);
 

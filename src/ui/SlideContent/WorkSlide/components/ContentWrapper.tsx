@@ -1,5 +1,5 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
-import React, { FC, ReactNode } from 'react';
+import React, { FC, Fragment, ReactNode } from 'react';
 
 import { cn } from '@/utils/functions/mergeClasses';
 import {
@@ -23,19 +23,23 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
   isActive,
   ...props
 }) => {
-  const currentIsActive = isActive === title;
+  const currentActiveTab = isActive === title;
 
   return (
-    <motion.div
-      className={cn('flex items-center justify-center', className)}
-      animate={{
-        width: `${currentIsActive ? '100%' : 'fit-content'}`,
-      }}
-    >
-      <motion.div className="flex relative items-center gap-10" {...props}>
+    <Fragment>
+      <motion.div
+        className={cn('flex items-center justify-center', className)}
+        // initial={{
+        //   width: 0,
+        // }}
+        // animate={{
+        //   width: currentActiveTab ? '100%' : '0',
+        // }}
+        {...props}
+      >
         <Title
           animate={{
-            fontSize: currentIsActive ? '80px' : '20px',
+            fontSize: currentActiveTab ? '80px' : '20px',
           }}
           onClick={onClick}
           whileHover={TitleAnimations.whileHover}
@@ -43,7 +47,7 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
           {title.charAt(0).toUpperCase() + title.slice(1)}
         </Title>
 
-        {currentIsActive && (
+        {currentActiveTab && (
           <motion.div
             className="text-black"
             initial={ContentAnimations.initial}
@@ -54,7 +58,13 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
           </motion.div>
         )}
       </motion.div>
-    </motion.div>
+      <motion.div
+        className="h-px w-full bg-white"
+        // animate={{
+        //   width: isActive ? '0' : '100%',
+        // }}
+      />
+    </Fragment>
   );
 };
 

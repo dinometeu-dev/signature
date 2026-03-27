@@ -21,7 +21,7 @@ export const SUBTITLE =
 
 export const PROFILE_TITLE = 'Shall we get acquainted?';
 export const PROFILE_DESCRIPTION =
-  "I'm a **web developer** from Chisinau. I specialize in **Frontend Engineering** focusing on building **high quality** web experiences through **clean code.**";
+  "Hi!\n I'm Dmitri, a **web developer** from Chisinau. I specialize in **Frontend Engineering** focusing on building **high quality** web experiences through **clean code.**";
 
 export const PROFILE_WORK_EXPERIENCE_TITLE = 'Work experience';
 export const PROFILE_WORK_EXPERIENCE_SUBTITLE =

@@ -1,0 +1,6 @@
+- generic [active] [ref=e1]:
+  - generic "signature" [ref=e4]:
+    - img [ref=e7]
+  - button "Open Next.js Dev Tools" [ref=e17] [cursor=pointer]:
+    - img [ref=e18]
+  - alert [ref=e21]

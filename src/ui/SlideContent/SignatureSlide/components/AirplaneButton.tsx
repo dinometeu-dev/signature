@@ -70,7 +70,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
 
   useEffect(() => {
     if (buttonIsHovered) {
-      controls
+      void controls
         .start({
           scale: 1.5,
           x: '50%',

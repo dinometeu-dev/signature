@@ -39,7 +39,9 @@ export const FirstSlideAnimationProvider: React.FC<React.PropsWithChildren> = ({
 export const useFirstSlideAnimation = (): FirstSlideAnimationContextValue => {
   const ctx = useContext(FirstSlideAnimationContext);
   if (!ctx) {
-    throw new Error('useSlide must be used within a SlideProvider');
+    throw new Error(
+      'useFirstSlideAnimation must be used within a FirstSlideAnimationProvider'
+    );
   }
   return ctx;
 };

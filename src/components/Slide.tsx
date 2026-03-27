@@ -8,7 +8,7 @@ import {
   VariantLabels,
 } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, ReactNode } from 'react';
 
 import { Button } from '@/components/Button';
 import { cn } from '@/utils/functions/mergeClasses';
@@ -30,21 +30,13 @@ const Slide: FC<SlideProps> = ({
   mainClassName,
   ...props
 }) => {
-  const [open, setOpen] = useState(isOpen);
-
-  const openWidth = typeof window !== 'undefined' ? window.innerWidth - 200 : 0;
-  const openHeight =
-    typeof window !== 'undefined' ? window.innerHeight - 20 : 0;
+  const open = Boolean(isOpen);
 
   const animate: TargetAndTransition | VariantLabels = {
-    width: open ? openWidth : 'var(--spacing-slide-width)',
-    height: open ? openHeight : 'var(--spacing-slide-height)',
+    width: open ? 'calc(100vw - 200px)' : 'var(--spacing-slide-width)',
+    height: open ? 'calc(100vh - 20px)' : 'var(--spacing-slide-height)',
     transition: { type: 'spring', bounce: open ? 0.5 : 0.4, duration: 1 },
   };
-
-  useEffect(() => {
-    setOpen(isOpen);
-  }, [isOpen]);
 
   return (
     <motion.div

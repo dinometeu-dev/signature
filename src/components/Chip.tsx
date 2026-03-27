@@ -12,7 +12,7 @@ const Chip: FC<MotionProps & Pick<ComponentProps<'div'>, 'className'>> = ({
     <motion.div
       className={cn(
         className,
-        'border-[0.5px] border-accent bg-white/1 backdrop-blur-xs flex items-center justify-center gap-1.5 px-1.5 py-1 rounded-full text-sm text-black/60 cursor-default select-none'
+        'border border-black/20  backdrop-blur-xs flex items-center justify-center gap-3 px-5 py-3 rounded-full text-2xl text-nowrap text-black cursor-default select-none'
       )}
       {...props}
     >

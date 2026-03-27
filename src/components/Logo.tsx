@@ -1,37 +1,84 @@
-'use client'
+'use client';
 
-import MetallicPaint, { parseLogoImage } from '@/components/MetallicPaint'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import logo from '@/../public/svg/Logo.svg'
+import logo from '@/../public/svg/Logo.svg';
+import MetallicPaint, { parseLogoImage } from '@/components/MetallicPaint';
+
+let cachedLogoImageData: ImageData | null = null;
+let logoImagePromise: Promise<ImageData | null> | null = null;
+
+const loadLogoImageData = async () => {
+  if (cachedLogoImageData) {
+    return cachedLogoImageData;
+  }
+
+  if (!logoImagePromise) {
+    logoImagePromise = (async () => {
+      const response = await fetch(logo.src);
+      const blob = await response.blob();
+      const file = new File([blob], 'default.png', { type: blob.type });
+      const parsedData = await parseLogoImage(file);
+
+      cachedLogoImageData = parsedData?.imageData ?? null;
+
+      return cachedLogoImageData;
+    })().catch((error) => {
+      logoImagePromise = null;
+      throw error;
+    });
+  }
+
+  return logoImagePromise;
+};
+
+const scheduleWhenIdle = (callback: () => void) => {
+  if (typeof window.requestIdleCallback === 'function') {
+    const idleCallbackId = window.requestIdleCallback(callback);
+
+    return () => window.cancelIdleCallback(idleCallbackId);
+  }
+
+  const timeoutId = globalThis.setTimeout(callback, 1);
+
+  return () => {
+    globalThis.clearTimeout(timeoutId);
+  };
+};
 
 const Logo = () => {
-  const [imageData, setImageData] = useState<ImageData | null>(null)
-  const [canRender, setCanRender] = useState(false)
+  const [imageData, setImageData] = useState<ImageData | null>(
+    cachedLogoImageData
+  );
+  const [canRender, setCanRender] = useState(Boolean(cachedLogoImageData));
 
   useEffect(() => {
-    async function loadDefaultImage() {
-      try {
-        const response = await fetch(logo.src)
-        const blob = await response.blob()
-        const file = new File([blob], 'default.png', { type: blob.type })
+    let isMounted = true;
 
-        const parsedData = await parseLogoImage(file)
-        setImageData(parsedData?.imageData ?? null)
-        setCanRender(true)
-      } catch (err) {
-        console.error('Error loading default image:', err)
-      }
+    if (cachedLogoImageData) {
+      return;
     }
 
-    loadDefaultImage()
-  }, [])
+    const cancelScheduledLoad = scheduleWhenIdle(() => {
+      void loadLogoImageData()
+        .then((nextImageData) => {
+          if (!isMounted) {
+            return;
+          }
 
-  useEffect(() => {
-    if (!imageData && typeof window !== 'undefined') {
-      setImageData(new ImageData(1, 1))
-    }
-  }, [])
+          setImageData(nextImageData);
+          setCanRender(Boolean(nextImageData));
+        })
+        .catch((error) => {
+          console.error('Error loading default image:', error);
+        });
+    });
+
+    return () => {
+      isMounted = false;
+      cancelScheduledLoad();
+    };
+  }, []);
 
   return (
     <div
@@ -51,9 +98,9 @@ const Logo = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-Logo.displayName = 'Logo'
+Logo.displayName = 'Logo';
 
-export { Logo }
+export { Logo };

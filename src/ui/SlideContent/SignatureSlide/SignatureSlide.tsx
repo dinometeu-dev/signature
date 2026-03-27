@@ -4,13 +4,13 @@ import { HTMLMotionProps, motion } from 'framer-motion';
 import React, { FC } from 'react';
 
 import { Slide } from '@/components/Slide';
-import BlurText from '@components/BlurText';
 import { AirplaneButton } from '@/ui/SlideContent/SignatureSlide/components/AirplaneButton';
 import { GuideWrapper } from '@/ui/SlideContent/SignatureSlide/components/Guide';
 import SignatureBg from '@/ui/SlideContent/SignatureSlide/components/SignatureBg';
 import SlideChangeInstruction from '@/ui/SlideContent/SignatureSlide/components/SlideChangeInstruction';
 import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
+import BlurText from '@components/BlurText';
 import {
   AirplaneAnimation,
   SignatureBgAnimation,

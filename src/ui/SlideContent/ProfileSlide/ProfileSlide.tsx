@@ -1,61 +1,64 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
+import Image from 'next/image';
 import React, { FC } from 'react';
+import Markdown from 'react-markdown';
 
 import { Slide } from '@/components/Slide';
 import {
-  PROFILE_WORK_EXPERIENCE_SUBTITLE,
-  PROFILE_WORK_EXPERIENCE_TITLE,
+  PROFILE_DESCRIPTION,
+  PROFILE_TECHNOLOGY_STAK_DESCRIPTION,
+  PROFILE_TITLE,
 } from '@/utils/constants/content';
-import { useTimeline } from '@/utils/providers/TimelineProvider';
-import {
-  SegmentHoverAnimationOff,
-  SegmentHoverAnimationOn,
-} from '@slides/ProfileSlide/animations/common-anitmations';
-import {
-  ExperienceSubTitleAnimations,
-  ExperienceTitleAnimations,
-} from '@slides/ProfileSlide/animations/profile-slide-animations';
-import ProfileCard from '@slides/ProfileSlide/components/ProfileCard';
-import ProfileInfo from '@slides/ProfileSlide/components/ProfileInfo';
+import BlurText from '@components/BlurText';
+import Loop from '@components/Loop';
+import ProfileImg from '@public/ProfileImg.png';
+import { ProfileDescriptionAnimation } from '@slides/ProfileSlide/animations/profile-info-animations';
 import Timeline from '@slides/ProfileSlide/components/Timeline/Timeline';
 
 const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
-  const { segmentHover } = useTimeline();
-
   return (
-    <Slide setOverlowHidden className="grid grid-rows-7 gap-8" {...props}>
-      <div className="grid grid-cols-2 h-full items-start row-span-4">
-        <ProfileInfo />
-        <ProfileCard />
-      </div>
-      <div className="w-full h-full flex flex-col gap-10 row-span-3">
+    <Slide setOverlowHidden className="flex flex-col gap-10" {...props}>
+      <BlurText
+        text={PROFILE_TITLE}
+        delay={80}
+        animateBy="words"
+        direction="top"
+        className="font-headings tracking-wide font-medium text-[40px] text-center leading-normal"
+      />
+      <div className="flex w-full h-full flex-col justify-between">
         <motion.div
-          className="space-y-2"
-          animate={
-            segmentHover === null
-              ? SegmentHoverAnimationOff.animate
-              : SegmentHoverAnimationOn.animate
-          }
+          className="text-2xl pr-52 tracking-wide mr-6 transition-colors text-black/90"
+          initial={ProfileDescriptionAnimation.initial}
+          animate={ProfileDescriptionAnimation.animate}
+          transition={ProfileDescriptionAnimation.transition}
         >
-          <motion.h3
-            className="font-headings text-4xl text-black font-medium"
-            initial={ExperienceTitleAnimations.initial}
-            animate={ExperienceTitleAnimations.animate}
-            transition={ExperienceTitleAnimations.transition}
-          >
-            {PROFILE_WORK_EXPERIENCE_TITLE}
-          </motion.h3>
-          <motion.p
-            className="text-black/60"
-            initial={ExperienceSubTitleAnimations.initial}
-            animate={ExperienceSubTitleAnimations.animate}
-            transition={ExperienceSubTitleAnimations.transition}
-          >
-            {PROFILE_WORK_EXPERIENCE_SUBTITLE}
-          </motion.p>
+          <Markdown>{PROFILE_DESCRIPTION}</Markdown>
         </motion.div>
-        <Timeline />
+        <div className="pr-80">
+          <Timeline />
+        </div>
+        <Loop
+          logos={PROFILE_TECHNOLOGY_STAK_DESCRIPTION}
+          speed={40}
+          direction="right"
+          gap={20}
+          pauseOnHover
+          fadeOut
+          fadeOutColor="#ffffff"
+          ariaLabel="Technology partners"
+        />
       </div>
+      <motion.div className="absolute self-end top-full -translate-y-full translate-x-[100px]">
+        <Image
+          src={ProfileImg}
+          style={{
+            width: 'auto',
+            height: '100%',
+          }}
+          className="z-10 select-none"
+          alt={'Profile Image'}
+        />
+      </motion.div>
     </Slide>
   );
 };

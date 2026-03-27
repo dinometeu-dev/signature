@@ -2,26 +2,32 @@
 
 import React, {
   createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useMemo,
   useCallback,
+  useContext,
   useEffect,
+  useMemo,
+  ReactNode,
+  useState,
 } from 'react';
 
 type CirclePosition = { x: number; y: number } | null;
 
-type MenuProviderContextType = {
-  circlePosition: CirclePosition;
-  setCirclePosition: (pos: CirclePosition) => void;
-  clearCirclePosition: () => void;
+type MenuStateContextValue = {
   menuOpen: boolean;
   openMenu: () => void;
   closeMenu: () => void;
 };
 
-const MenuProviderContext = createContext<MenuProviderContextType | undefined>(
+type MenuPositionContextValue = {
+  circlePosition: CirclePosition;
+  setCirclePosition: (pos: CirclePosition) => void;
+  clearCirclePosition: () => void;
+};
+
+const MenuStateContext = createContext<MenuStateContextValue | undefined>(
+  undefined
+);
+const MenuPositionContext = createContext<MenuPositionContextValue | undefined>(
   undefined
 );
 
@@ -47,40 +53,47 @@ export function MenuProvider({ children }: Readonly<MenuProviderProps>) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [closeMenu]);
 
-  const value = useMemo<MenuProviderContextType>(
+  const menuStateValue = useMemo<MenuStateContextValue>(
     () => ({
-      circlePosition,
-      setCirclePosition,
-      clearCirclePosition,
       menuOpen,
       openMenu,
       closeMenu,
     }),
-    [
+    [closeMenu, menuOpen, openMenu]
+  );
+
+  const menuPositionValue = useMemo<MenuPositionContextValue>(
+    () => ({
       circlePosition,
       setCirclePosition,
       clearCirclePosition,
-      menuOpen,
-      openMenu,
-      closeMenu,
-    ]
+    }),
+    [circlePosition, clearCirclePosition]
   );
 
   return (
-    <MenuProviderContext.Provider value={value}>
-      {children}
-    </MenuProviderContext.Provider>
+    <MenuStateContext.Provider value={menuStateValue}>
+      <MenuPositionContext.Provider value={menuPositionValue}>
+        {children}
+      </MenuPositionContext.Provider>
+    </MenuStateContext.Provider>
   );
 }
 
-export function useMenuProvider() {
-  const context = useContext(MenuProviderContext);
+export function useMenuState() {
+  const context = useContext(MenuStateContext);
   if (context === undefined) {
-    throw new Error(
-      'useLongPressContext must be used within a LongPressProvider'
-    );
+    throw new Error('useMenuState must be used within a MenuProvider');
+  }
+  return context;
+}
+
+export function useMenuPosition() {
+  const context = useContext(MenuPositionContext);
+  if (context === undefined) {
+    throw new Error('useMenuPosition must be used within a MenuProvider');
   }
   return context;
 }

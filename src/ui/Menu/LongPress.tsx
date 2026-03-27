@@ -1,10 +1,10 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { CirclePressAnimation } from '@/ui/Menu/animations/long-press-animations';
-import { useMenuProvider } from '@/utils/providers/MenuProvider';
+import { useMenuPosition } from '@/utils/providers/MenuProvider';
 
 const DEFAULT_CIRCLE_DELAY = 200;
 const DEFAULT_MENU_OPEN_DELAY = 900;
@@ -22,167 +22,165 @@ function LongPress({
   disable = false,
   moveThreshold = 50,
 }: Readonly<LongPressProviderProps>) {
-  const { setCirclePosition: setContextCirclePosition } = useMenuProvider();
+  const { setCirclePosition: setContextCirclePosition } = useMenuPosition();
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const circleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialPosRef = useRef<{ x: number; y: number } | null>(null);
-  const circleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const circlePositionRef = useRef<{ x: number; y: number } | null>(null);
+  const disableRef = useRef(disable);
+  const moveThresholdRef = useRef(moveThreshold);
+  const onLongPressRef = useRef(onLongPress);
+  const setContextCirclePositionRef = useRef(setContextCirclePosition);
   const [circlePosition, setCirclePosition] = useState<{
     x: number;
     y: number;
   } | null>(null);
 
-  useEffect(() => {
-    if (disable) return;
+  const syncCirclePosition = useCallback(
+    (nextCirclePosition: { x: number; y: number } | null) => {
+      circlePositionRef.current = nextCirclePosition;
+      setCirclePosition(nextCirclePosition);
+    },
+    []
+  );
 
-    const handleMouseDown = (e: MouseEvent): void => {
-      const computedStyle = window.getComputedStyle(e.target as Element);
-      const cursor = computedStyle.cursor;
-      if (cursor !== 'auto' && cursor !== 'default') {
+  const clearPress = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    if (circleTimerRef.current) {
+      clearTimeout(circleTimerRef.current);
+      circleTimerRef.current = null;
+    }
+
+    initialPosRef.current = null;
+    syncCirclePosition(null);
+  }, [syncCirclePosition]);
+
+  useEffect(() => {
+    disableRef.current = disable;
+    moveThresholdRef.current = moveThreshold;
+    onLongPressRef.current = onLongPress;
+    setContextCirclePositionRef.current = setContextCirclePosition;
+
+    if (disable) {
+      clearPress();
+    }
+  }, [clearPress, disable, moveThreshold, onLongPress, setContextCirclePosition]);
+
+  useEffect(() => {
+    const hasInteractiveCursor = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) {
+        return false;
+      }
+
+      const cursor = window.getComputedStyle(target).cursor;
+
+      return cursor !== 'auto' && cursor !== 'default';
+    };
+
+    const startPress = (x: number, y: number) => {
+      initialPosRef.current = { x, y };
+
+      circleTimerRef.current = setTimeout(() => {
+        const nextCirclePosition = { x, y };
+
+        setContextCirclePositionRef.current(nextCirclePosition);
+        syncCirclePosition(nextCirclePosition);
+      }, DEFAULT_CIRCLE_DELAY);
+
+      timerRef.current = setTimeout(() => {
+        syncCirclePosition(null);
+        circleTimerRef.current = null;
+        onLongPressRef.current();
+      }, DEFAULT_MENU_OPEN_DELAY);
+    };
+
+    const updatePressPosition = (x: number, y: number) => {
+      if (!timerRef.current || !initialPosRef.current) {
         return;
       }
 
-      initialPosRef.current = { x: e.clientX, y: e.clientY };
-      circleTimerRef.current = setTimeout(() => {
-        setContextCirclePosition({ x: e.clientX, y: e.clientY });
-        setCirclePosition({ x: e.clientX, y: e.clientY });
-      }, DEFAULT_CIRCLE_DELAY);
-      timerRef.current = setTimeout(() => {
-        setCirclePosition(null);
-        circleTimerRef.current = null;
-        onLongPress();
-      }, DEFAULT_MENU_OPEN_DELAY);
+      const deltaX = Math.abs(x - initialPosRef.current.x);
+      const deltaY = Math.abs(y - initialPosRef.current.y);
+
+      if (
+        deltaX > moveThresholdRef.current ||
+        deltaY > moveThresholdRef.current
+      ) {
+        clearPress();
+        return;
+      }
+
+      if (circlePositionRef.current) {
+        const nextCirclePosition = { x, y };
+
+        setContextCirclePositionRef.current(nextCirclePosition);
+        syncCirclePosition(nextCirclePosition);
+      }
+    };
+
+    const handleMouseDown = (e: MouseEvent): void => {
+      if (disableRef.current || hasInteractiveCursor(e.target)) {
+        return;
+      }
+
+      clearPress();
+      startPress(e.clientX, e.clientY);
     };
 
     const handleMouseMove = (e: MouseEvent): void => {
-      if (timerRef.current && initialPosRef.current) {
-        const deltaX = Math.abs(e.clientX - initialPosRef.current.x);
-        const deltaY = Math.abs(e.clientY - initialPosRef.current.y);
-
-        if (deltaX <= moveThreshold && deltaY <= moveThreshold) {
-          if (circlePosition) {
-            setContextCirclePosition({ x: e.clientX, y: e.clientY });
-            setCirclePosition({ x: e.clientX, y: e.clientY });
-          }
-        } else {
-          if (circleTimerRef.current) {
-            clearTimeout(circleTimerRef.current);
-            circleTimerRef.current = null;
-          }
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-          initialPosRef.current = null;
-          setCirclePosition(null);
-        }
-      }
-    };
-
-    const clearMouseTimer = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        if (circleTimerRef.current) {
-          clearTimeout(circleTimerRef.current);
-          circleTimerRef.current = null;
-        }
-        initialPosRef.current = null;
-        setCirclePosition(null);
-      }
+      updatePressPosition(e.clientX, e.clientY);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
-      const target = e.target as Element;
-      const computedStyle = window.getComputedStyle(target);
-      const cursor = computedStyle.cursor;
-      if (cursor !== 'auto' && cursor !== 'default') {
+      if (disableRef.current || hasInteractiveCursor(e.target)) {
         return;
       }
 
-      initialPosRef.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-      circleTimerRef.current = setTimeout(() => {
-        setContextCirclePosition({
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        });
-        setCirclePosition({
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        });
-      }, DEFAULT_CIRCLE_DELAY);
-      timerRef.current = setTimeout(() => {
-        setCirclePosition(null);
-        circleTimerRef.current = null;
-        onLongPress();
-      }, DEFAULT_MENU_OPEN_DELAY);
+      const touch = e.touches[0];
+      if (!touch) {
+        return;
+      }
+
+      clearPress();
+      startPress(touch.clientX, touch.clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (timerRef.current && initialPosRef.current) {
-        const deltaX = Math.abs(e.touches[0].clientX - initialPosRef.current.x);
-        const deltaY = Math.abs(e.touches[0].clientY - initialPosRef.current.y);
-
-        if (deltaX <= moveThreshold && deltaY <= moveThreshold) {
-          if (circlePosition) {
-            setContextCirclePosition({
-              x: e.touches[0].clientX,
-              y: e.touches[0].clientY,
-            });
-            setCirclePosition({
-              x: e.touches[0].clientX,
-              y: e.touches[0].clientY,
-            });
-          }
-        } else {
-          if (circleTimerRef.current) {
-            clearTimeout(circleTimerRef.current);
-            circleTimerRef.current = null;
-          }
-          clearTimeout(timerRef.current);
-          timerRef.current = null;
-          initialPosRef.current = null;
-          setCirclePosition(null);
-        }
+      const touch = e.touches[0];
+      if (!touch) {
+        return;
       }
-    };
 
-    const clearTouchTimer = () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-        if (circleTimerRef.current) {
-          clearTimeout(circleTimerRef.current);
-          circleTimerRef.current = null;
-        }
-        initialPosRef.current = null;
-        setCirclePosition(null);
-      }
+      updatePressPosition(touch.clientX, touch.clientY);
     };
 
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', clearMouseTimer);
-    window.addEventListener('mouseleave', clearMouseTimer);
+    window.addEventListener('mouseup', clearPress);
+    window.addEventListener('mouseleave', clearPress);
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', clearTouchTimer);
-    window.addEventListener('touchcancel', clearTouchTimer);
+    window.addEventListener('touchend', clearPress);
+    window.addEventListener('touchcancel', clearPress);
 
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', clearMouseTimer);
-      window.removeEventListener('mouseleave', clearMouseTimer);
+      window.removeEventListener('mouseup', clearPress);
+      window.removeEventListener('mouseleave', clearPress);
 
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', clearTouchTimer);
-      window.removeEventListener('touchcancel', clearTouchTimer);
+      window.removeEventListener('touchend', clearPress);
+      window.removeEventListener('touchcancel', clearPress);
     };
-  }, [moveThreshold, onLongPress, circlePosition, disable]);
+  }, [clearPress, syncCirclePosition]);
 
   const circleSettings = [
     {

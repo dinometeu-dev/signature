@@ -1,85 +1,94 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export function useSetQueryParam() {
-  const router = useRouter();
+type QueryUpdates = Record<string, string | null | undefined>;
 
-  return (
-    updates: Record<string, string | null | undefined> | string,
-    value?: string | null | undefined
-  ) => {
-    const params = new URLSearchParams();
-
-    if (typeof updates === 'string') {
-      if (value) {
-        params.set(updates, value);
-      } else {
-        params.delete(updates);
-      }
+const applyQueryUpdates = (
+  params: URLSearchParams,
+  updates: QueryUpdates | string,
+  value?: string | null | undefined
+) => {
+  if (typeof updates === 'string') {
+    if (value) {
+      params.set(updates, value);
     } else {
-      for (const [key, val] of Object.entries(updates)) {
-        if (val) {
-          params.set(key, val);
-        } else {
-          params.delete(key);
-        }
-      }
+      params.delete(updates);
     }
 
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
+    return params;
+  }
+
+  for (const [key, nextValue] of Object.entries(updates)) {
+    if (nextValue) {
+      params.set(key, nextValue);
+    } else {
+      params.delete(key);
+    }
+  }
+
+  return params;
+};
+
+const buildHref = (pathname: string, params: URLSearchParams) => {
+  const nextQuery = params.toString();
+
+  return nextQuery ? `${pathname}?${nextQuery}` : pathname;
+};
+
+export function useReplaceQueryParams() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  return useCallback((
+    updates: QueryUpdates | string,
+    value?: string | null | undefined
+  ) => {
+    const params = applyQueryUpdates(new URLSearchParams(), updates, value);
+
+    router.push(buildHref(pathname, params), { scroll: false });
+  }, [pathname, router]);
 }
 
-export function useAddQueryParam() {
+export function useMergeQueryParams() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  return (
-    updates: Record<string, string | null | undefined> | string,
+  return useCallback((
+    updates: QueryUpdates | string,
     value?: string | null | undefined
   ) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = applyQueryUpdates(
+      new URLSearchParams(searchParams.toString()),
+      updates,
+      value
+    );
 
-    if (typeof updates === 'string') {
-      if (value) {
-        params.set(updates, value);
-      } else {
-        params.delete(updates);
-      }
-    } else {
-      for (const [key, val] of Object.entries(updates)) {
-        if (val) {
-          params.set(key, val);
-        } else {
-          params.delete(key);
-        }
-      }
-    }
-
-    router.push(`${window.location.pathname}?${params.toString()}`, {
-      scroll: false,
-    });
-  };
+    router.push(buildHref(pathname, params), { scroll: false });
+  }, [pathname, router, searchParams]);
 }
 
 export function useDeleteQueryParam() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  return (key: string) => {
+  return useCallback((key: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete(key);
-    router.push(`${window.location.pathname}?${params.toString()}`, {
-      scroll: false,
-    });
-  };
+    router.push(buildHref(pathname, params), { scroll: false });
+  }, [pathname, router, searchParams]);
 }
 
 export function useGetQueryParams() {
   const searchParams = useSearchParams();
 
-  return (key: string) => {
+  return useCallback((key: string) => {
     return searchParams.get(key);
-  };
+  }, [searchParams]);
 }
+
+export const useSetQueryParam = useReplaceQueryParams;
+export const useAddQueryParam = useMergeQueryParams;

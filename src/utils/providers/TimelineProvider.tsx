@@ -38,7 +38,7 @@ export const TimelineProvider = ({
 export const useTimeline = () => {
   const ctx = useContext(TimelineContext);
   if (!ctx) {
-    throw new Error('useSlide must be used within a SlideProvider');
+    throw new Error('useTimeline must be used within a TimelineProvider');
   }
   return ctx;
 };

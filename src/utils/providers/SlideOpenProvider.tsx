@@ -6,14 +6,13 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from 'react';
-import {
-  useAddQueryParam,
-  useDeleteQueryParam,
-  useGetQueryParams,
-} from '@/utils/hooks/navigation';
 import { QUERY_SLIDE_OPEN } from '@/utils/constants/routes';
+import {
+  useGetQueryParams,
+  useMergeQueryParams,
+  useDeleteQueryParam,
+} from '@/utils/hooks/navigation';
 
 type SlideContextValue = {
   isOpen: boolean;
@@ -27,32 +26,29 @@ const SlideContext = createContext<SlideContextValue | undefined>(undefined);
 export const SlideProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const addQuery = useAddQueryParam();
+  const mergeQuery = useMergeQueryParams();
   const getQuery = useGetQueryParams();
   const deleteQuery = useDeleteQueryParam();
 
   const slideOpen = getQuery(QUERY_SLIDE_OPEN);
-
-  const [isOpen, setIsOpen] = useState<boolean>(Boolean(slideOpen));
+  const isOpen = Boolean(slideOpen);
 
   const open = useCallback(() => {
-    setIsOpen(true);
-    addQuery(QUERY_SLIDE_OPEN, 'true');
-  }, [addQuery]);
+    mergeQuery(QUERY_SLIDE_OPEN, 'true');
+  }, [mergeQuery]);
 
   const close = useCallback(() => {
-    setIsOpen(false);
     deleteQuery(QUERY_SLIDE_OPEN);
   }, [deleteQuery]);
 
   const toggle = useCallback(() => {
-    setIsOpen((prev) => {
-      const next = !prev;
-      if (next) addQuery(QUERY_SLIDE_OPEN, 'true');
-      else deleteQuery(QUERY_SLIDE_OPEN);
-      return next;
-    });
-  }, [addQuery, deleteQuery]);
+    if (isOpen) {
+      deleteQuery(QUERY_SLIDE_OPEN);
+      return;
+    }
+
+    mergeQuery(QUERY_SLIDE_OPEN, 'true');
+  }, [deleteQuery, isOpen, mergeQuery]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

@@ -5,7 +5,7 @@ import { MENU_ITEMS } from '@/ui/Menu/utils/content';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useGetQueryParams } from '@/utils/hooks/navigation';
-import { useMenuProvider } from '@/utils/providers/MenuProvider';
+import { useMenuState } from '@/utils/providers/MenuProvider';
 import {
   SlideNameType,
   useSlideStack,
@@ -17,7 +17,7 @@ const MenuItems = () => {
   const currentSlide = getQuery(QUERY_SLIDE);
   const { setSlideStack } = useSlideStack();
 
-  const { closeMenu } = useMenuProvider();
+  const { closeMenu } = useMenuState();
 
   const handleItemClick = (link: SlideNameType) => {
     if (!link) return;
