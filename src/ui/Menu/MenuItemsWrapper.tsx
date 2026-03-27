@@ -1,11 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  FC,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { MenuItemsWrapperAnimation } from '@/ui/Menu/animations/menu-items-wrapper-animations';
 import MenuItems from '@/ui/Menu/MenuItems';
@@ -42,7 +36,6 @@ const MenuItemsWrapper: FC<MenuItemsProps> = ({
     if (!menuRef.current) {
       return;
     }
-
     const menuWidth = menuRef.current.offsetWidth;
     const menuHeight = menuRef.current.offsetHeight;
     const activeMenuItem = menuRef.current.querySelector<HTMLElement>(
