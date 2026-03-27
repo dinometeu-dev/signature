@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { MenuAlign } from '@/ui/Menu/MenuItemsWrapper';
 import { MenuItemsLineAnimations } from '@/ui/Menu/animations/menu-items-animations';
 import { MENU_ITEMS } from '@/ui/Menu/utils/content';
 import { QUERY_SLIDE } from '@/utils/constants/routes';
@@ -11,7 +12,11 @@ import {
   useSlideStack,
 } from '@/utils/providers/SlideStackProvider';
 
-const MenuItems = () => {
+type MenuItemsProps = {
+  align?: MenuAlign;
+};
+
+const MenuItems = ({ align = 'right' }: Readonly<MenuItemsProps>) => {
   const isLoading = false;
   const getQuery = useGetQueryParams();
   const currentSlide = getQuery(QUERY_SLIDE);
@@ -27,7 +32,12 @@ const MenuItems = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-end justify-center overflow-hidden pb-[10px] pl-[20px] ">
+    <div
+      className={cn(
+        'flex flex-col gap-6 justify-center overflow-hidden pb-[10px]',
+        align === 'right' ? 'items-end pl-[20px]' : 'items-start pr-[20px]'
+      )}
+    >
       {isLoading
         ? Array.from({ length: 4 }).map((_, index) => (
             <div
@@ -42,6 +52,8 @@ const MenuItems = () => {
             <div
               key={id}
               className="relative select-none"
+              data-menu-item="true"
+              data-active={currentSlide === link ? 'true' : 'false'}
               onClick={() => handleItemClick(link)}
             >
               <h2
@@ -55,7 +67,12 @@ const MenuItems = () => {
               <AnimatePresence>
                 {currentSlide === link && (
                   <motion.span
-                    className="absolute w-[calc(100%+20px)] h-4 bg-red-accent -translate-y-2/3 -translate-x-[20px]"
+                    className={cn(
+                      'absolute h-4 w-[calc(100%+20px)] -translate-y-2/3 bg-red-accent',
+                      align === 'right'
+                        ? 'right-0 -translate-x-[20px]'
+                        : 'left-0'
+                    )}
                     initial={MenuItemsLineAnimations.initial}
                     animate={MenuItemsLineAnimations.animate}
                     exit={MenuItemsLineAnimations.exit}
