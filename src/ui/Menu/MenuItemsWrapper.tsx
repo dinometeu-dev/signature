@@ -36,6 +36,7 @@ const MenuItemsWrapper: FC<MenuItemsProps> = ({
     if (!menuRef.current) {
       return;
     }
+
     const menuWidth = menuRef.current.offsetWidth;
     const menuHeight = menuRef.current.offsetHeight;
     const activeMenuItem = menuRef.current.querySelector<HTMLElement>(
