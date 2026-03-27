@@ -11,6 +11,28 @@ import { WORK_EXPERIENCE } from '@slides/WorkSlide/utils/content';
 import WorkSlide from '@slides/WorkSlide/WorkSlide';
 
 const SlideContent: FC<ComponentProps<'div'>> = (props) => {
+  React.useEffect(() => {
+    const preloadPrism = () => {
+      void import('@components/PrismBg');
+    };
+
+    if (typeof requestIdleCallback === 'function') {
+      const idleId = requestIdleCallback(preloadPrism, {
+        timeout: 1500,
+      });
+
+      return () => {
+        cancelIdleCallback(idleId);
+      };
+    }
+
+    const timeoutId = setTimeout(preloadPrism, 300);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
   return (
     <SlideStack {...props}>
       <SignatureSlide aria-label={QUERY_SLIDE_VALUES.SIGNATURE} />

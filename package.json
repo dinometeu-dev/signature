@@ -9,7 +9,6 @@
     "studio": "prisma studio",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed"
   },

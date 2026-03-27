@@ -1,5 +1,6 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
 import { CircleArrowRight } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
 
 import BlurText from '@components/BlurText';
@@ -15,6 +16,11 @@ import { WorkItemProps } from '@slides/WorkSlide/utils/types';
 type WorkSlideProps = Omit<HTMLMotionProps<'div'>, keyof WorkItemProps> &
   WorkItemProps;
 
+const Prism = dynamic(() => import('@components/PrismBg'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full" aria-hidden="true" />,
+});
+
 const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
@@ -29,18 +35,22 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   return (
     <Slide {...props} id={id.toString()} setOverlowHidden>
       <div className="absolute inset-0 bg-black">
-        {/*<Prism*/}
-        {/*  animationType="3drotate"*/}
-        {/*  timeScale={0.5}*/}
-        {/*  height={3.5}*/}
-        {/*  baseWidth={5.5}*/}
-        {/*  scale={2.5}*/}
-        {/*  hueShift={0}*/}
-        {/*  colorFrequency={1}*/}
-        {/*  noise={0.2}*/}
-        {/*  glow={2}*/}
-        {/*  transparent={false}*/}
-        {/*/>*/}
+        <Prism
+          animationType="3drotate"
+          timeScale={0.5}
+          height={3.5}
+          baseWidth={5.5}
+          scale={2.5}
+          hueShift={0}
+          colorFrequency={1}
+          noise={0.2}
+          glow={2}
+          transparent={false}
+          suspendWhenOffscreen
+          maxDpr={1.25}
+          maxFps={30}
+          sampleCount={64}
+        />
       </div>
 
       <motion.div

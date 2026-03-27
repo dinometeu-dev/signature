@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
 type ShaderParams = {
   patternScale: number;
@@ -384,40 +384,133 @@ void main() {
 }
 `
 
+const useDocumentVisibility = () => {
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof document === 'undefined') {
+      return true;
+    }
+
+    return !document.hidden;
+  });
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsVisible(!document.hidden);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  return isVisible;
+};
+
+const useElementInViewport = <T extends Element>(ref: RefObject<T | null>) => {
+  const [isInViewport, setIsInViewport] = useState(true);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInViewport(entry.isIntersecting);
+      },
+      {
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
+
+  return isInViewport;
+};
+
+const applyShaderParams = (
+  gl: WebGL2RenderingContext,
+  uniforms: Record<string, WebGLUniformLocation>,
+  params: ShaderParams
+) => {
+  gl.uniform1f(uniforms.u_edge, params.edge);
+  gl.uniform1f(uniforms.u_patternBlur, params.patternBlur);
+  gl.uniform1f(uniforms.u_time, 0);
+  gl.uniform1f(uniforms.u_patternScale, params.patternScale);
+  gl.uniform1f(uniforms.u_refraction, params.refraction);
+  gl.uniform1f(uniforms.u_liquid, params.liquid);
+};
+
+const resizeShaderCanvas = (
+  canvasEl: HTMLCanvasElement,
+  gl: WebGL2RenderingContext,
+  uniforms: Record<string, WebGLUniformLocation>,
+  imageData: ImageData
+) => {
+  const imgRatio = imageData.width / imageData.height;
+  const bounds = canvasEl.getBoundingClientRect();
+  const side = Math.max(1, Math.ceil(Math.max(bounds.width, bounds.height)));
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const nextWidth = side * dpr;
+  const nextHeight = side * dpr;
+
+  if (canvasEl.width !== nextWidth || canvasEl.height !== nextHeight) {
+    canvasEl.width = nextWidth;
+    canvasEl.height = nextHeight;
+  }
+
+  gl.viewport(0, 0, canvasEl.width, canvasEl.height);
+  gl.uniform1f(uniforms.u_ratio, 1);
+  gl.uniform1f(uniforms.u_img_ratio, imgRatio);
+};
+
 export default function MetallicPaint({
   imageData,
   params = defaultParams,
 }: {
-  imageData: ImageData
-  params: ShaderParams
+  imageData: ImageData;
+  params: ShaderParams;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [gl, setGl] = useState<WebGL2RenderingContext | null>(null)
-  const [uniforms, setUniforms] = useState<
-    Record<string, WebGLUniformLocation>
-  >({})
-  const totalAnimationTime = useRef(0)
-  const lastRenderTime = useRef(0)
-
-  function updateUniforms() {
-    if (!gl || !uniforms) return
-    gl.uniform1f(uniforms.u_edge, params.edge)
-    gl.uniform1f(uniforms.u_patternBlur, params.patternBlur)
-    gl.uniform1f(uniforms.u_time, 0)
-    gl.uniform1f(uniforms.u_patternScale, params.patternScale)
-    gl.uniform1f(uniforms.u_refraction, params.refraction)
-    gl.uniform1f(uniforms.u_liquid, params.liquid)
-  }
+  const { edge, liquid, patternBlur, patternScale, refraction, speed } = params;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const glRef = useRef<WebGL2RenderingContext | null>(null);
+  const uniformsRef = useRef<Record<string, WebGLUniformLocation> | null>(
+    null
+  );
+  const textureRef = useRef<WebGLTexture | null>(null);
+  const totalAnimationTime = useRef(0);
+  const lastRenderTime = useRef(0);
+  const [isReady, setIsReady] = useState(false);
+  const isDocumentVisible = useDocumentVisibility();
+  const isInViewport = useElementInViewport(canvasRef);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    let vertexBuffer: WebGLBuffer | null = null;
+    let vertexShader: WebGLShader | null = null;
+    let fragmentShader: WebGLShader | null = null;
+    let program: WebGLProgram | null = null;
+
     function initShader() {
-      const canvas = canvasRef.current
       const gl = canvas?.getContext('webgl2', {
         antialias: true,
         alpha: true,
-      })
+      });
       if (!canvas || !gl) {
-        return
+        return;
       }
 
       function createShader(
@@ -425,160 +518,236 @@ export default function MetallicPaint({
         sourceCode: string,
         type: number
       ) {
-        const shader = gl.createShader(type)
+        const shader = gl.createShader(type);
         if (!shader) {
-          return null
+          return null;
         }
 
-        gl.shaderSource(shader, sourceCode)
-        gl.compileShader(shader)
+        gl.shaderSource(shader, sourceCode);
+        gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
           console.error(
             'An error occurred compiling the shaders: ' +
               gl.getShaderInfoLog(shader)
-          )
-          gl.deleteShader(shader)
-          return null
+          );
+          gl.deleteShader(shader);
+          return null;
         }
 
-        return shader
+        return shader;
       }
 
-      const vertexShader = createShader(
+      vertexShader = createShader(
         gl,
         vertexShaderSource,
         gl.VERTEX_SHADER
-      )
-      const fragmentShader = createShader(
+      );
+      fragmentShader = createShader(
         gl,
         liquidFragSource,
         gl.FRAGMENT_SHADER
-      )
-      const program = gl.createProgram()
+      );
+      program = gl.createProgram();
       if (!program || !vertexShader || !fragmentShader) {
-        return
+        return;
       }
 
-      gl.attachShader(program, vertexShader)
-      gl.attachShader(program, fragmentShader)
-      gl.linkProgram(program)
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
 
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         console.error(
           'Unable to initialize the shader program: ' +
             gl.getProgramInfoLog(program)
-        )
-        return null
+        );
+        return null;
       }
 
       function getUniforms(program: WebGLProgram, gl: WebGL2RenderingContext) {
-        const uniforms: Record<string, WebGLUniformLocation> = {}
-        const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+        const uniforms: Record<string, WebGLUniformLocation> = {};
+        const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
         for (let i = 0; i < uniformCount; i++) {
-          const uniformName = gl.getActiveUniform(program, i)?.name
-          if (!uniformName) continue
+          const uniformName = gl.getActiveUniform(program, i)?.name;
+          if (!uniformName) continue;
           uniforms[uniformName] = gl.getUniformLocation(
             program,
             uniformName
-          ) as WebGLUniformLocation
+          ) as WebGLUniformLocation;
         }
-        return uniforms
+        return uniforms;
       }
-      const uniforms = getUniforms(program, gl)
-      setUniforms(uniforms)
+      const uniforms = getUniforms(program, gl);
 
-      const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1])
-      const vertexBuffer = gl.createBuffer()
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
+      const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+      vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-      gl.useProgram(program)
+      gl.useProgram(program);
 
-      const positionLocation = gl.getAttribLocation(program, 'a_position')
-      gl.enableVertexAttribArray(positionLocation)
+      const positionLocation = gl.getAttribLocation(program, 'a_position');
+      gl.enableVertexAttribArray(positionLocation);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-      setGl(gl)
+      glRef.current = gl;
+      uniformsRef.current = uniforms;
+      setIsReady(true);
     }
 
-    initShader()
-    updateUniforms()
-  }, [])
+    initShader();
+
+    return () => {
+      const gl = glRef.current;
+
+      if (gl && textureRef.current) {
+        gl.deleteTexture(textureRef.current);
+        textureRef.current = null;
+      }
+
+      if (gl && vertexBuffer) {
+        gl.deleteBuffer(vertexBuffer);
+      }
+
+      if (gl && program && vertexShader) {
+        gl.detachShader(program, vertexShader);
+        gl.deleteShader(vertexShader);
+      }
+
+      if (gl && program && fragmentShader) {
+        gl.detachShader(program, fragmentShader);
+        gl.deleteShader(fragmentShader);
+      }
+
+      if (gl && program) {
+        gl.deleteProgram(program);
+      }
+
+      glRef.current = null;
+      uniformsRef.current = null;
+      setIsReady(false);
+    };
+  }, []);
 
   useEffect(() => {
-    if (!gl || !uniforms) return
-    updateUniforms()
-  }, [gl, params, uniforms])
+    const gl = glRef.current;
+    const uniforms = uniformsRef.current;
+
+    if (!isReady || !gl || !uniforms) return;
+
+    applyShaderParams(gl, uniforms, {
+      edge,
+      liquid,
+      patternBlur,
+      patternScale,
+      refraction,
+      speed,
+    });
+  }, [
+    isReady,
+    edge,
+    liquid,
+    patternBlur,
+    patternScale,
+    refraction,
+    speed,
+  ]);
 
   useEffect(() => {
-    if (!gl || !uniforms) return
+    const gl = glRef.current;
+    const uniforms = uniformsRef.current;
 
-    let renderId: number
+    if (!isReady || !gl || !uniforms || !isDocumentVisible || !isInViewport) {
+      return;
+    }
+
+    let renderId: number;
 
     function render(currentTime: number) {
-      const deltaTime = currentTime - lastRenderTime.current
-      lastRenderTime.current = currentTime
+      const activeGl = glRef.current;
+      const activeUniforms = uniformsRef.current;
+      if (!activeGl || !activeUniforms) {
+        return;
+      }
 
-      totalAnimationTime.current += deltaTime * params.speed
-      gl!.uniform1f(uniforms.u_time, totalAnimationTime.current)
-      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)
-      renderId = requestAnimationFrame(render)
+      const deltaTime = currentTime - lastRenderTime.current;
+      lastRenderTime.current = currentTime;
+
+      totalAnimationTime.current += deltaTime * speed;
+      activeGl.uniform1f(activeUniforms.u_time, totalAnimationTime.current);
+      activeGl.drawArrays(activeGl.TRIANGLE_STRIP, 0, 4);
+      renderId = requestAnimationFrame(render);
     }
 
-    lastRenderTime.current = performance.now()
-    renderId = requestAnimationFrame(render)
+    lastRenderTime.current = performance.now();
+    renderId = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(renderId)
-    }
-  }, [gl, params.speed])
+      cancelAnimationFrame(renderId);
+    };
+  }, [isDocumentVisible, isInViewport, isReady, speed]);
 
   useEffect(() => {
-    const canvasEl = canvasRef.current
-    if (!canvasEl || !gl || !uniforms) return
+    const canvasEl = canvasRef.current;
+    const gl = glRef.current;
+    const uniforms = uniformsRef.current;
+
+    if (!canvasEl || !gl || !uniforms || !isReady) return;
+
+    const canvas = canvasEl;
+    const activeGl = gl;
+    const activeUniforms = uniforms;
 
     function resizeCanvas() {
-      if (!canvasEl || !gl || !uniforms || !imageData) return
-      const imgRatio = imageData.width / imageData.height
-      gl.uniform1f(uniforms.u_img_ratio, imgRatio)
-
-      const side = 1000
-      canvasEl.width = side * devicePixelRatio
-      canvasEl.height = side * devicePixelRatio
-      gl.viewport(0, 0, canvasEl.height, canvasEl.height)
-      gl.uniform1f(uniforms.u_ratio, 1)
-      gl.uniform1f(uniforms.u_img_ratio, imgRatio)
+      resizeShaderCanvas(canvas, activeGl, activeUniforms, imageData);
     }
 
-    resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
+    resizeCanvas();
+
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            resizeCanvas();
+          });
+
+    observer?.observe(canvas);
+    window.addEventListener('resize', resizeCanvas);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
-    }
-  }, [gl, uniforms, imageData])
+      observer?.disconnect();
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [imageData, isReady]);
 
   useEffect(() => {
-    if (!gl || !uniforms) return
+    const gl = glRef.current;
+    const uniforms = uniformsRef.current;
+    if (!isReady || !gl || !uniforms) return;
 
-    const existingTexture = gl.getParameter(gl.TEXTURE_BINDING_2D)
-    if (existingTexture) {
-      gl.deleteTexture(existingTexture)
+    if (textureRef.current) {
+      gl.deleteTexture(textureRef.current);
+      textureRef.current = null;
     }
 
-    const imageTexture = gl.createTexture()
-    gl.activeTexture(gl.TEXTURE0)
-    gl.bindTexture(gl.TEXTURE_2D, imageTexture)
+    const imageTexture = gl.createTexture();
+    if (!imageTexture) {
+      return;
+    }
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    textureRef.current = imageTexture;
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, imageTexture);
 
-    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 
     try {
       gl.texImage2D(
@@ -591,21 +760,22 @@ export default function MetallicPaint({
         gl.RGBA,
         gl.UNSIGNED_BYTE,
         imageData?.data
-      )
+      );
 
-      gl.uniform1i(uniforms.u_image_texture, 0)
+      gl.uniform1i(uniforms.u_image_texture, 0);
     } catch (e) {
-      console.error('Error uploading texture:', e)
+      console.error('Error uploading texture:', e);
     }
 
     return () => {
-      if (imageTexture) {
-        gl.deleteTexture(imageTexture)
+      if (textureRef.current === imageTexture) {
+        gl.deleteTexture(imageTexture);
+        textureRef.current = null;
       }
-    }
-  }, [gl, uniforms, imageData])
+    };
+  }, [imageData, isReady]);
 
   return (
     <canvas ref={canvasRef} className="block w-full h-full object-contain" />
-  )
+  );
 }

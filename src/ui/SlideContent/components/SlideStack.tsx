@@ -11,6 +11,8 @@ import React, {
   FC,
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -28,6 +30,25 @@ const DEFAULT_SCALE = 0.9;
 const EXIT_DURATION = 0.25;
 const FLIP_DURATION = 0.5;
 const BOUNCE = 0.25;
+
+const getNextItemIndex = (
+  increment: MoveDirection,
+  itemsLength: number,
+  selectedItem: number
+) => {
+  if (increment > 0) {
+    if (selectedItem + increment < itemsLength) {
+      return selectedItem + increment;
+    }
+    return itemsLength - 1;
+  }
+
+  if (selectedItem + increment >= 0) {
+    return selectedItem + increment;
+  }
+
+  return 0;
+};
 
 const AnimSlide: FC<MotionProps> = ({ children, ...props }) => {
   const { firstSlideAnimation } = useFirstSlideAnimation();
@@ -76,9 +97,13 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
   const setQuery = useSetQueryParam();
   const getQuery = useGetQueryParams();
 
-  const slides = React.Children.toArray(children) as React.ReactElement<
-    React.HTMLAttributes<HTMLDivElement>
-  >[];
+  const slides = useMemo(
+    () =>
+      React.Children.toArray(children) as React.ReactElement<
+        React.HTMLAttributes<HTMLDivElement>
+      >[],
+    [children]
+  );
 
   const findSlideIndexByAriaLabel = useCallback(
     (ariaLabel: string | null) => {
@@ -95,24 +120,17 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
     return index === -1 ? 0 : index;
   });
   const [direction, setDirection] = useState<MoveDirection>(1);
-  const [lastCallTime, setLastCallTime] = useState(0);
+  const selectedItemRef = useRef(selectedItem);
+  const directionRef = useRef<MoveDirection>(direction);
+  const lastCallTimeRef = useRef(0);
 
-  const handleItems = useCallback(
-    (increment: MoveDirection, itemsLength: number, selectedItem: number) => {
-      if (increment > 0) {
-        if (selectedItem + increment < itemsLength) {
-          return selectedItem + increment;
-        }
-        return itemsLength - 1;
-      } else {
-        if (selectedItem + increment >= 0) {
-          return selectedItem + increment;
-        }
-        return 0;
-      }
-    },
-    []
-  );
+  useEffect(() => {
+    selectedItemRef.current = selectedItem;
+  }, [selectedItem]);
+
+  useEffect(() => {
+    directionRef.current = direction;
+  }, [direction]);
 
   const setSlide = useCallback(
     (newDirection: MoveDirection, nextCustomSlide?: number) => {
@@ -120,14 +138,18 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
 
       if (
         !firstSlideAnimation &&
-        (direction === newDirection || now - lastCallTime > EXIT_DURATION * 1000)
+        (directionRef.current === newDirection ||
+          now - lastCallTimeRef.current > EXIT_DURATION * 1000)
       ) {
         const nextItem =
           nextCustomSlide ??
-          handleItems(newDirection, slides.length, selectedItem);
+          getNextItemIndex(newDirection, slides.length, selectedItemRef.current);
+
         setSelectedItem(nextItem);
+        selectedItemRef.current = nextItem;
         setDirection(newDirection);
-        setLastCallTime(now);
+        directionRef.current = newDirection;
+        lastCallTimeRef.current = now;
         setSlideStack(null);
 
         const nextSlide = slides[nextItem];
@@ -144,12 +166,8 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
       }
     },
     [
-      direction,
       firstSlideAnimation,
-      lastCallTime,
-      slides.length,
-      selectedItem,
-      handleItems,
+      slides,
       setQuery,
       setSlideStack,
     ]
@@ -172,11 +190,11 @@ const SlideStack: FC<ComponentProps<'div'>> = ({ children }) => {
   useEffect(() => {
     const index = findSlideIndexByAriaLabel(currentSlide);
 
-    if (index !== -1 && index !== selectedItem) {
-      const direction = index > selectedItem ? 1 : -1;
+    if (index !== -1 && index !== selectedItemRef.current) {
+      const direction = index > selectedItemRef.current ? 1 : -1;
       setSlide(direction, index);
     }
-  }, [currentSlide]);
+  }, [currentSlide, findSlideIndexByAriaLabel, setSlide]);
 
   return (
     <AnimatePresence custom={direction} initial={true}>

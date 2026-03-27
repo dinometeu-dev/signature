@@ -1,11 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  FC,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { MenuItemsWrapperAnimation } from '@/ui/Menu/animations/menu-items-wrapper-animations';
 import MenuItems from '@/ui/Menu/MenuItems';
