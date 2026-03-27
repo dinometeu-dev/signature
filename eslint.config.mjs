@@ -1,21 +1,16 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-import { FlatCompat } from '@eslint/eslintrc';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
 import eslintPluginImport from 'eslint-plugin-import';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
 
 const eslintConfig = [
   {
-    ignores: ['**/src/generated/**', '**/.prisma/**'],
+    ignores: [
+      '**/src/generated/**',
+      '**/.prisma/**',
+      '**/output/**',
+      '**/playwright-report/**',
+    ],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...nextCoreWebVitals,
   {
     plugins: {
       import: eslintPluginImport,
@@ -42,6 +37,8 @@ const eslintConfig = [
           'newlines-between': 'always',
         },
       ],
+      'react-hooks/purity': 'off',
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ];
