@@ -117,6 +117,8 @@ const Timeline = () => {
         const durationString =
           `${years ? ` ${years}${years > 1 ? ' yrs' : ' y'} ` : ''}${months ? `${months}${months > 1 ? ' mos' : ' m'} ` : ''}`.trim();
 
+        const finalDuration = durationString.length ? durationString : '<1m';
+
         return (
           <motion.div
             key={idx}
@@ -203,7 +205,7 @@ const Timeline = () => {
                     <p className="text-xl font-headings">
                       {seg.company?.title}
                     </p>
-                    <p className="text-black/60">Worked {durationString}</p>
+                    <p className="text-black/60">Worked {finalDuration}</p>
                   </motion.div>
                 </Fragment>
               )}

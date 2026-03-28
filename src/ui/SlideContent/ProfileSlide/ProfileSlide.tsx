@@ -31,8 +31,8 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
           opacity: isTimelineHoverActive ? 0.8 : 1,
         }}
         transition={{
-          delay: 0.4,
-          duration: 0.35,
+          delay: isTimelineHoverActive ? 0.4 : 0.1,
+          duration: 0.3,
           ease: 'easeInOut',
         }}
       >
@@ -46,8 +46,7 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
       </motion.div>
       <div className="flex w-full h-full flex-col justify-between">
         <motion.div
-          className="text-2xl pr-52 tracking-wide mr-6 transition-colors text-black/90"
-          initial={ProfileDescriptionAnimation.initial}
+          className="mr-6 pr-52"
           animate={{
             filter: isTimelineHoverActive ? 'blur(6px)' : 'blur(0px)',
             color: isTimelineHoverActive
@@ -55,17 +54,20 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
               : 'rgba(0, 0, 0, 0.9)',
             opacity: isTimelineHoverActive ? 0.8 : 1,
           }}
-          transition={
-            isTimelineHoverActive
-              ? {
-                  delay: 0.4,
-                  duration: 0.35,
-                  ease: 'easeInOut',
-                }
-              : ProfileDescriptionAnimation.transition
-          }
+          transition={{
+            delay: isTimelineHoverActive ? 0.4 : 0.1,
+            duration: 0.3,
+            ease: 'easeInOut',
+          }}
         >
-          <Markdown>{PROFILE_DESCRIPTION}</Markdown>
+          <motion.span
+            className="text-2xl tracking-wide transition text-black/90"
+            initial={ProfileDescriptionAnimation.initial}
+            animate={ProfileDescriptionAnimation.animate}
+            transition={ProfileDescriptionAnimation.transition}
+          >
+            <Markdown>{PROFILE_DESCRIPTION}</Markdown>
+          </motion.span>
         </motion.div>
         <div className="pr-80">
           <Timeline />
