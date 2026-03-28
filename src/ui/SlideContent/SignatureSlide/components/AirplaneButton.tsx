@@ -77,7 +77,7 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
           y: 0,
           rotateX: 0,
           rotateZ: 0,
-          transformOrigin: 'center',
+          transformOrigin: '50% 50%',
           transition: { duration: 0.3, ease: 'easeInOut' },
         })
         .then(() => {

@@ -9,6 +9,7 @@ import {
   PROFILE_TECHNOLOGY_STAK_DESCRIPTION,
   PROFILE_TITLE,
 } from '@/utils/constants/content';
+import { useTimeline } from '@/utils/providers/TimelineProvider';
 import BlurText from '@components/BlurText';
 import Loop from '@components/Loop';
 import ProfileImg from '@public/ProfileImg.png';
@@ -16,21 +17,53 @@ import { ProfileDescriptionAnimation } from '@slides/ProfileSlide/animations/pro
 import Timeline from '@slides/ProfileSlide/components/Timeline/Timeline';
 
 const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
+  const { segmentHover } = useTimeline();
+  const isTimelineHoverActive = segmentHover !== null;
+
   return (
     <Slide setOverlowHidden className="flex flex-col gap-10" {...props}>
-      <BlurText
-        text={PROFILE_TITLE}
-        delay={80}
-        animateBy="words"
-        direction="top"
-        className="font-headings tracking-wide font-medium text-[40px] text-center leading-normal"
-      />
+      <motion.div
+        animate={{
+          filter: isTimelineHoverActive ? 'blur(6px)' : 'blur(0px)',
+          color: isTimelineHoverActive
+            ? 'rgba(17, 24, 39, 0.5)'
+            : 'rgba(17, 24, 39, 0.95)',
+          opacity: isTimelineHoverActive ? 0.8 : 1,
+        }}
+        transition={{
+          delay: 0.4,
+          duration: 0.35,
+          ease: 'easeInOut',
+        }}
+      >
+        <BlurText
+          text={PROFILE_TITLE}
+          delay={80}
+          animateBy="words"
+          direction="top"
+          className="font-headings tracking-wide font-medium text-[40px] text-center leading-normal"
+        />
+      </motion.div>
       <div className="flex w-full h-full flex-col justify-between">
         <motion.div
           className="text-2xl pr-52 tracking-wide mr-6 transition-colors text-black/90"
           initial={ProfileDescriptionAnimation.initial}
-          animate={ProfileDescriptionAnimation.animate}
-          transition={ProfileDescriptionAnimation.transition}
+          animate={{
+            filter: isTimelineHoverActive ? 'blur(6px)' : 'blur(0px)',
+            color: isTimelineHoverActive
+              ? 'rgba(17, 24, 39, 0.5)'
+              : 'rgba(0, 0, 0, 0.9)',
+            opacity: isTimelineHoverActive ? 0.8 : 1,
+          }}
+          transition={
+            isTimelineHoverActive
+              ? {
+                  delay: 0.4,
+                  duration: 0.35,
+                  ease: 'easeInOut',
+                }
+              : ProfileDescriptionAnimation.transition
+          }
         >
           <Markdown>{PROFILE_DESCRIPTION}</Markdown>
         </motion.div>
@@ -54,6 +87,7 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
           style={{
             width: 'auto',
             height: '100%',
+            filter: 'drop-shadow(0 18px 28px rgba(-3, -3, 23, 0.25))',
           }}
           className="z-10 select-none"
           alt={'Profile Image'}

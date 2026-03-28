@@ -23,6 +23,7 @@ const Prism = dynamic(() => import('@components/PrismBg'), {
 
 const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const detailEntries = Object.entries(details);
 
   const handleActiveSection = (section: string) => {
     if (activeSection === section) {
@@ -54,24 +55,24 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
       </div>
 
       <motion.div
+        layout
         className="relative w-full h-full text-white flex items-center justify-center"
         initial={RoadItemsAnimation.initial}
         animate={RoadItemsAnimation.animate}
         transition={RoadItemsAnimation.transition}
       >
-        {Object.entries(details).map(([key, value]) => (
+        {detailEntries.map(([key, value], index) => (
           <ContentWrapper
             key={key}
             title={key}
             isActive={activeSection}
+            hasActiveSection={Boolean(activeSection)}
+            showDivider={index < detailEntries.length - 1}
             onClick={() => handleActiveSection(key)}
           >
             {value}
           </ContentWrapper>
         ))}
-        <Button className="px-4 py-2 text-sm gap-2">
-          Next Project <CircleArrowRight size={18} className="rotate-90" />
-        </Button>
       </motion.div>
 
       <motion.div
