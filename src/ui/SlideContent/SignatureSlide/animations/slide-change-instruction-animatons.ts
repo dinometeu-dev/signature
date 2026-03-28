@@ -7,7 +7,7 @@ export const arrowUpColorBase = '#ECECEC';
 export const arrowUpColorActive = '#6FB3E0';
 export const arrowUpStrokeActive = '#BCE4FE';
 export const arrowUpIconColorBase = '#767676';
-export const arrowUpIconColorActive = 'white';
+export const arrowUpIconColorActive = '#FFFFFF';
 
 export const ArrowUpAnimation: AnimationType = {
   initial: {

@@ -1,6 +1,7 @@
 import AmigoCarLogo from '@public/experience-logos/amigo-car-logo.png';
 import InsomniacDesign from '@public/experience-logos/insomniac-logo.png';
 import LukoilLogo from '@public/experience-logos/lukoil-logo.png';
+import RubyLabsLogo from '@public/experience-logos/ruby-labs-logo.png';
 import { ExperiencePeriodType } from '@slides/ProfileSlide/components/Timeline/utils/types';
 
 export const workExperience: ExperiencePeriodType[] = [
@@ -34,22 +35,6 @@ export const workExperience: ExperiencePeriodType[] = [
     color: '#ED1B34',
     endDate: '2022-05',
   },
-  // {
-  //   title: 'Technical Support Specialist',
-  //   company: {
-  //     title: 'EvPoint',
-  //     officialLink: 'https://www.evpoint.md/',
-  //     logo: EvPointLogo,
-  //     description:
-  //       'EVPoint is a Moldova-based company providing EV charging networks and automated parking solutions across Eastern Europe.',
-  //     experienceHistory:
-  //       'EvPoint is a young Moldovan company where I provided technical assistance on the subject of tamping technologies and processes.',
-  //   },
-  //
-  //   color: '#1FBD8D',
-  //   startDate: '2022-07',
-  //   endDate: '2022-10',
-  // },
   {
     title: 'Front End Developer',
     company: {
@@ -63,6 +48,22 @@ export const workExperience: ExperiencePeriodType[] = [
     },
     color: '#F70B6D',
     startDate: '2022-12',
+    endDate: '2026-03',
+  },
+  {
+    title: 'UI/UX Developer',
+    company: {
+      title: 'Ruby Labs',
+      officialLink: 'https://rubylabs.com/',
+      logo: RubyLabsLogo,
+      description:
+        'EVPoint is a Moldova-based company providing EV charging networks and automated parking solutions across Eastern Europe.',
+      experienceHistory:
+        'EvPoint is a young Moldovan company where I provided technical assistance on the subject of tamping technologies and processes.',
+    },
+
+    color: '#082668',
+    startDate: '2026-03',
     endDate: new Date(),
   },
 ];

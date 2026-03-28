@@ -12,7 +12,10 @@ const Title: FC<TitleProps> = ({ className, children, ...props }) => {
   return (
     <Magnet padding={50} magnetStrength={10} className={'cursor-pointer'}>
       <motion.h3
-        className={cn('font-headings text-xl cursor-pointer', className)}
+        className={cn(
+          'inline-flex items-center justify-center text-center font-headings text-xl cursor-pointer',
+          className
+        )}
         {...props}
       >
         {children}
