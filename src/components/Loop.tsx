@@ -35,8 +35,20 @@ export interface LogoLoopProps {
 
 const ANIMATION_CONFIG = {
   SMOOTH_TAU: 0.25,
-  MIN_COPIES: 2,
+  PAUSE_TAU: 1.1,
+  MOMENTUM_TAU: 1.8,
+  MIN_COPIES: 3,
   COPY_HEADROOM: 2,
+  MAX_RELEASE_VELOCITY: 2200,
+  MIN_RELEASE_VELOCITY: 40,
+} as const;
+
+const ENTRY_EFFECT_CONFIG = {
+  DISTANCE: 250,
+  MIN_SCALE: 0.88,
+  MIN_OPACITY: 0.5,
+  MAX_BRIGHTNESS: 1.12,
+  MIN_SATURATION: 0.4,
 } as const;
 
 const cx = (...parts: Array<string | false | null | undefined>) =>
@@ -101,18 +113,293 @@ const useResizeObserver = (
   }, [callback, containerRef, sequenceRef]);
 };
 
+const useEntryEdgeEffect = (
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  trackRef: React.RefObject<HTMLDivElement | null>,
+  enabled: boolean,
+  isVisible: boolean,
+  itemCount: number
+) => {
+  const trackedItemsRef = useRef<HTMLElement[]>([]);
+  const lastProgressRef = useRef(new WeakMap<HTMLElement, number>());
+
+  const refreshTrackedItems = useCallback(() => {
+    const track = trackRef.current;
+
+    trackedItemsRef.current = track
+      ? Array.from(track.querySelectorAll<HTMLElement>('[data-loop-item]'))
+      : [];
+  }, [trackRef]);
+
+  const resetStyles = useCallback(() => {
+    trackedItemsRef.current.forEach((item) => {
+      item.style.transform = '';
+      item.style.opacity = '';
+      item.style.filter = '';
+      item.style.transformOrigin = '';
+      item.style.willChange = '';
+    });
+
+    lastProgressRef.current = new WeakMap<HTMLElement, number>();
+  }, []);
+
+  const applyEntryEffect = useCallback(
+    (translateX: number) => {
+      if (!enabled || !isVisible) {
+        return;
+      }
+
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (prefersReducedMotion) {
+        resetStyles();
+        return;
+      }
+
+      trackedItemsRef.current.forEach((item) => {
+        const itemLeft = item.offsetLeft + translateX;
+        const itemRight = itemLeft + item.offsetWidth;
+        const isInsideEffectZone =
+          itemRight > -ENTRY_EFFECT_CONFIG.DISTANCE &&
+          itemLeft < ENTRY_EFFECT_CONFIG.DISTANCE;
+
+        if (!isInsideEffectZone) {
+          if (lastProgressRef.current.has(item)) {
+            item.style.transform = '';
+            item.style.opacity = '';
+            item.style.filter = '';
+            item.style.transformOrigin = '';
+            item.style.willChange = '';
+            lastProgressRef.current.delete(item);
+          }
+          return;
+        }
+
+        const enteredDistance = Math.max(
+          0,
+          Math.min(ENTRY_EFFECT_CONFIG.DISTANCE, itemRight)
+        );
+        const progress = enteredDistance / ENTRY_EFFECT_CONFIG.DISTANCE;
+        const prevProgress = lastProgressRef.current.get(item);
+
+        if (
+          prevProgress !== undefined &&
+          Math.abs(prevProgress - progress) < 0.01
+        ) {
+          return;
+        }
+
+        const scale =
+          ENTRY_EFFECT_CONFIG.MIN_SCALE +
+          (1 - ENTRY_EFFECT_CONFIG.MIN_SCALE) * progress;
+        const opacity =
+          ENTRY_EFFECT_CONFIG.MIN_OPACITY +
+          (1 - ENTRY_EFFECT_CONFIG.MIN_OPACITY) * progress;
+        const brightness =
+          ENTRY_EFFECT_CONFIG.MAX_BRIGHTNESS -
+          (ENTRY_EFFECT_CONFIG.MAX_BRIGHTNESS - 1) * progress;
+        const saturation =
+          ENTRY_EFFECT_CONFIG.MIN_SATURATION +
+          (1 - ENTRY_EFFECT_CONFIG.MIN_SATURATION) * progress;
+
+        item.style.transformOrigin = 'left center';
+        item.style.transform = `scale(${scale})`;
+        item.style.opacity = `${opacity}`;
+        item.style.filter = `brightness(${brightness}) saturate(${saturation})`;
+        item.style.willChange = 'transform, opacity, filter';
+        lastProgressRef.current.set(item, progress);
+      });
+    },
+    [enabled, isVisible, resetStyles]
+  );
+
+  useEffect(() => {
+    refreshTrackedItems();
+  }, [itemCount, refreshTrackedItems]);
+
+  useEffect(() => {
+    if (!enabled || !isVisible) {
+      resetStyles();
+    }
+  }, [enabled, isVisible, resetStyles]);
+
+  return {
+    applyEntryEffect,
+    refreshTrackedItems,
+    resetStyles,
+  };
+};
+
 const useAnimationLoop = (
   trackRef: React.RefObject<HTMLDivElement | null>,
   targetVelocity: number,
   seqWidth: number,
   isHovered: boolean,
   pauseOnHover: boolean,
-  isVisible: boolean
+  isVisible: boolean,
+  onTranslateFrame?: (translateX: number) => void
 ) => {
   const rafRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
-  const offsetRef = useRef(0);
+  const translateRef = useRef(0);
   const velocityRef = useRef(0);
+  const momentumBoostRef = useRef(0);
+  const hasInitialTransformRef = useRef(false);
+  const prevSeqWidthRef = useRef(0);
+  const interactionRef = useRef({
+    isDragging: false,
+    pointerId: null as number | null,
+    lastClientX: 0,
+    lastTimestamp: 0,
+    releaseVelocity: 0,
+    resumeWhileHovered: false,
+  });
+
+  const applyTrackTransform = useCallback(() => {
+    const track = trackRef.current;
+    if (!track || seqWidth <= 0) {
+      return;
+    }
+
+    if (!hasInitialTransformRef.current) {
+      translateRef.current = -seqWidth;
+      hasInitialTransformRef.current = true;
+    }
+
+    while (translateRef.current > 0) {
+      translateRef.current -= seqWidth;
+    }
+
+    while (translateRef.current <= -seqWidth * 2) {
+      translateRef.current += seqWidth;
+    }
+
+    track.style.transform = `translate3d(${translateRef.current}px, 0, 0)`;
+  }, [seqWidth, trackRef]);
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (seqWidth <= 0 || event.button > 0) {
+        return;
+      }
+
+      const container = event.currentTarget;
+      container.setPointerCapture(event.pointerId);
+
+      interactionRef.current.isDragging = true;
+      interactionRef.current.pointerId = event.pointerId;
+      interactionRef.current.lastClientX = event.clientX;
+      interactionRef.current.lastTimestamp = performance.now();
+      interactionRef.current.releaseVelocity = 0;
+      interactionRef.current.resumeWhileHovered = true;
+      momentumBoostRef.current = 0;
+      velocityRef.current = 0;
+      hasInitialTransformRef.current = seqWidth > 0;
+      lastTimestampRef.current = interactionRef.current.lastTimestamp;
+    },
+    [seqWidth]
+  );
+
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (
+        !interactionRef.current.isDragging ||
+        interactionRef.current.pointerId !== event.pointerId
+      ) {
+        return;
+      }
+
+      const now = performance.now();
+      const deltaX = event.clientX - interactionRef.current.lastClientX;
+      const deltaTime = Math.max(
+        0.001,
+        (now - interactionRef.current.lastTimestamp) / 1000
+      );
+
+      interactionRef.current.lastClientX = event.clientX;
+      interactionRef.current.lastTimestamp = now;
+      interactionRef.current.releaseVelocity = deltaX / deltaTime;
+
+      if (seqWidth > 0) {
+        translateRef.current += deltaX;
+        applyTrackTransform();
+        onTranslateFrame?.(translateRef.current);
+      }
+    },
+    [applyTrackTransform, onTranslateFrame, seqWidth]
+  );
+
+  const finishPointerInteraction = useCallback(
+    (pointerId: number) => {
+      if (
+        !interactionRef.current.isDragging ||
+        interactionRef.current.pointerId !== pointerId
+      ) {
+        return;
+      }
+
+      interactionRef.current.isDragging = false;
+      interactionRef.current.pointerId = null;
+
+      const clampedReleaseVelocity = Math.max(
+        -ANIMATION_CONFIG.MAX_RELEASE_VELOCITY,
+        Math.min(
+          ANIMATION_CONFIG.MAX_RELEASE_VELOCITY,
+          interactionRef.current.releaseVelocity
+        )
+      );
+
+      if (
+        Math.abs(clampedReleaseVelocity) < ANIMATION_CONFIG.MIN_RELEASE_VELOCITY
+      ) {
+        interactionRef.current.releaseVelocity = 0;
+        return;
+      }
+
+      velocityRef.current = clampedReleaseVelocity;
+      momentumBoostRef.current = clampedReleaseVelocity + targetVelocity;
+    },
+    [targetVelocity]
+  );
+
+  const handlePointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      finishPointerInteraction(event.pointerId);
+    },
+    [finishPointerInteraction]
+  );
+
+  const handlePointerCancel = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      finishPointerInteraction(event.pointerId);
+    },
+    [finishPointerInteraction]
+  );
+
+  useEffect(() => {
+    if (seqWidth <= 0) {
+      return;
+    }
+
+    if (!hasInitialTransformRef.current) {
+      translateRef.current = -seqWidth;
+      hasInitialTransformRef.current = true;
+      prevSeqWidthRef.current = seqWidth;
+      applyTrackTransform();
+      onTranslateFrame?.(translateRef.current);
+      return;
+    }
+
+    if (prevSeqWidthRef.current > 0 && prevSeqWidthRef.current !== seqWidth) {
+      translateRef.current += prevSeqWidthRef.current - seqWidth;
+      prevSeqWidthRef.current = seqWidth;
+      applyTrackTransform();
+      onTranslateFrame?.(translateRef.current);
+    }
+  }, [applyTrackTransform, onTranslateFrame, seqWidth]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -123,11 +410,8 @@ const useAnimationLoop = (
       window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (seqWidth > 0) {
-      offsetRef.current =
-        ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
-      track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-    }
+    applyTrackTransform();
+    onTranslateFrame?.(translateRef.current);
 
     if (prefersReduced) {
       track.style.transform = 'translate3d(0, 0, 0)';
@@ -149,19 +433,43 @@ const useAnimationLoop = (
         Math.max(0, timestamp - lastTimestampRef.current) / 1000;
       lastTimestampRef.current = timestamp;
 
-      const target = pauseOnHover && isHovered ? 0 : targetVelocity;
+      if (
+        !isHovered &&
+        !interactionRef.current.isDragging &&
+        Math.abs(momentumBoostRef.current) < 1
+      ) {
+        interactionRef.current.resumeWhileHovered = false;
+      }
 
-      const easingFactor =
-        1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
-      velocityRef.current += (target - velocityRef.current) * easingFactor;
+      if (!interactionRef.current.isDragging) {
+        momentumBoostRef.current *= Math.exp(
+          -deltaTime / ANIMATION_CONFIG.MOMENTUM_TAU
+        );
+      }
+
+      const target =
+        pauseOnHover && isHovered && !interactionRef.current.resumeWhileHovered
+          ? 0
+          : -targetVelocity;
+
+      if (interactionRef.current.isDragging) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      const activeTau =
+        pauseOnHover && isHovered && !interactionRef.current.resumeWhileHovered
+          ? ANIMATION_CONFIG.PAUSE_TAU
+          : ANIMATION_CONFIG.SMOOTH_TAU;
+      const easingFactor = 1 - Math.exp(-deltaTime / activeTau);
+      const effectiveTarget = target + momentumBoostRef.current;
+      velocityRef.current +=
+        (effectiveTarget - velocityRef.current) * easingFactor;
 
       if (seqWidth > 0) {
-        let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
-        nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
-        offsetRef.current = nextOffset;
-
-        const translateX = -offsetRef.current;
-        track.style.transform = `translate3d(${translateX}px, 0, 0)`;
+        translateRef.current += velocityRef.current * deltaTime;
+        applyTrackTransform();
+        onTranslateFrame?.(translateRef.current);
       }
 
       rafRef.current = requestAnimationFrame(animate);
@@ -176,7 +484,23 @@ const useAnimationLoop = (
       }
       lastTimestampRef.current = null;
     };
-  }, [trackRef, targetVelocity, seqWidth, isHovered, pauseOnHover, isVisible]);
+  }, [
+    applyTrackTransform,
+    isHovered,
+    isVisible,
+    pauseOnHover,
+    seqWidth,
+    targetVelocity,
+    onTranslateFrame,
+    trackRef,
+  ]);
+
+  return {
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handlePointerCancel,
+  };
 };
 
 export const Loop = React.memo<LogoLoopProps>(
@@ -187,6 +511,7 @@ export const Loop = React.memo<LogoLoopProps>(
     gap = 32,
     pauseOnHover = true,
     fadeOut = false,
+    fadeOutColor = '#ffffff',
     scaleOnHover = false,
     className,
     style,
@@ -211,8 +536,7 @@ export const Loop = React.memo<LogoLoopProps>(
 
     const updateDimensions = useCallback(() => {
       const containerWidth = containerRef.current?.clientWidth ?? 0;
-      const sequenceWidth =
-        seqRef.current?.getBoundingClientRect?.()?.width ?? 0;
+      const sequenceWidth = seqRef.current?.scrollWidth ?? 0;
 
       if (sequenceWidth > 0) {
         const nextSeqWidth = Math.ceil(sequenceWidth);
@@ -225,21 +549,33 @@ export const Loop = React.memo<LogoLoopProps>(
         );
 
         setSeqWidth((prev) => (prev === nextSeqWidth ? prev : nextSeqWidth));
-        setCopyCount((prev) =>
-          prev === nextCopyCount ? prev : nextCopyCount
-        );
+        setCopyCount((prev) => (prev === nextCopyCount ? prev : nextCopyCount));
       }
     }, []);
 
     useResizeObserver(updateDimensions, containerRef, seqRef);
 
-    useAnimationLoop(
+    const { applyEntryEffect } = useEntryEdgeEffect(
+      containerRef,
+      trackRef,
+      fadeOut,
+      isDocumentVisible,
+      copyCount * logos.length
+    );
+
+    const {
+      handlePointerCancel,
+      handlePointerDown,
+      handlePointerMove,
+      handlePointerUp,
+    } = useAnimationLoop(
       trackRef,
       targetVelocity,
       seqWidth,
       isHovered,
       pauseOnHover,
-      isDocumentVisible
+      isDocumentVisible,
+      applyEntryEffect
     );
 
     const cssVariables = useMemo(
@@ -278,6 +614,7 @@ export const Loop = React.memo<LogoLoopProps>(
               scaleOnHover && 'overflow-visible group/item'
             )}
             key={id}
+            data-loop-item
           >
             <Chip
               initial={TechnologyStackAnimation.initial}
@@ -287,7 +624,7 @@ export const Loop = React.memo<LogoLoopProps>(
                 ...TechnologyStackAnimation.transition,
               }}
             >
-              <Icon className="size-14 rounded-2xl" /> {title}
+              <Icon className="loop-chip-icon size-14 rounded-2xl" /> {title}
             </Chip>
           </li>
         );
@@ -313,12 +650,12 @@ export const Loop = React.memo<LogoLoopProps>(
     const containerStyle = useMemo(
       (): React.CSSProperties => ({
         width: '100%',
+        ['--logoloop-fadeColor' as string]: fadeOutColor,
         ...cssVariables,
         ...style,
       }),
-      [cssVariables, style]
+      [cssVariables, fadeOutColor, style]
     );
-
     return (
       <div
         ref={containerRef}
@@ -326,6 +663,10 @@ export const Loop = React.memo<LogoLoopProps>(
         style={containerStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
       >
         {fadeOut && (
           <div
@@ -341,6 +682,7 @@ export const Loop = React.memo<LogoLoopProps>(
         <div
           className={cx(
             'flex w-max will-change-transform select-none',
+            'cursor-grab active:cursor-grabbing',
             'motion-reduce:transform-none'
           )}
           ref={trackRef}

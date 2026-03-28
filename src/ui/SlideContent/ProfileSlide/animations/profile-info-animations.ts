@@ -12,7 +12,7 @@ export const ProfileDescriptionAnimation: AnimationType = {
     opacity: 1,
   },
   transition: {
-    delay: DEFAULT_CONTENT_APPEAR_DELAY,
+    delay: DEFAULT_CONTENT_APPEAR_DELAY * 2,
     duration: DEFAULT_CONTENT_APPEAR_DURATION,
   },
 };
