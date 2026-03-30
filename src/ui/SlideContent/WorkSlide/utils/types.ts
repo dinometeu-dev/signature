@@ -5,6 +5,16 @@ export type WorkItemProps = {
     overview: string;
     problem: string;
     impact: string;
-    gallery: string[];
+    gallery: {
+      id: number;
+      imageUrl: string;
+      alt: string;
+    }[];
+    links: {
+      id: number;
+      url: string;
+      label: string;
+      iconPath: string | null;
+    }[];
   };
 };

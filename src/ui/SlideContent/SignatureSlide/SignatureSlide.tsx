@@ -4,11 +4,11 @@ import { HTMLMotionProps, motion } from 'framer-motion';
 import React, { FC } from 'react';
 
 import { Slide } from '@/components/Slide';
+import type { PublicPortfolioContent } from '@/lib/content/types';
 import { AirplaneButton } from '@/ui/SlideContent/SignatureSlide/components/AirplaneButton';
 import { GuideWrapper } from '@/ui/SlideContent/SignatureSlide/components/Guide';
 import SignatureBg from '@/ui/SlideContent/SignatureSlide/components/SignatureBg';
 import SlideChangeInstruction from '@/ui/SlideContent/SignatureSlide/components/SlideChangeInstruction';
-import { SUBTITLE, TITLE } from '@/utils/constants/content';
 import { useFirstSlideAnimation } from '@/utils/providers/FirstSlideAnimationProvider';
 import BlurText from '@components/BlurText';
 import {
@@ -19,7 +19,10 @@ import {
 } from '@slides/SignatureSlide/animations/signature-animations';
 import OpenMenuInstruction from '@slides/SignatureSlide/components/OpenMenuInstruction';
 
-const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
+type SignatureSlideProps = HTMLMotionProps<'div'> &
+  PublicPortfolioContent['signature'];
+
+const SignatureSlide: FC<SignatureSlideProps> = ({ title, subtitle, ...props }) => {
   const { firstSlideAnimation, setFirstSlideAnimation } =
     useFirstSlideAnimation();
 
@@ -35,7 +38,7 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
         <div className="flex flex-col items-center justify-between w-full h-full">
           <div className="flex flex-col items-center gap-6 text-center pt-24 z-10">
             <BlurText
-              text={TITLE}
+              text={title}
               delay={80}
               animateBy="words"
               direction="top"
@@ -46,7 +49,7 @@ const SignatureSlide: FC<HTMLMotionProps<'div'>> = (props) => {
               initial={SubtitleAnimation.initial}
               animate={SubtitleAnimation.animate}
             >
-              {SUBTITLE}
+              {subtitle}
             </motion.p>
           </div>
           <AirplaneButton

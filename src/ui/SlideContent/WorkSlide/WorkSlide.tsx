@@ -1,10 +1,17 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
-import { CircleArrowRight } from 'lucide-react';
+import {
+  Facebook,
+  Github,
+  Globe,
+  Instagram,
+  Linkedin,
+  Link2,
+} from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { FC, useState } from 'react';
+import Markdown from 'react-markdown';
 
 import BlurText from '@components/BlurText';
-import { Button } from '@components/Button';
 import { Slide } from '@components/Slide';
 import {
   MainTitleAnimations,
@@ -24,6 +31,89 @@ const Prism = dynamic(() => import('@components/PrismBg'), {
 const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const detailEntries = Object.entries(details);
+
+  const getLinkIcon = (iconPath: string | null) => {
+    switch (iconPath) {
+      case 'github':
+        return Github;
+      case 'official':
+        return Globe;
+      case 'instagram':
+        return Instagram;
+      case 'linkedin':
+        return Linkedin;
+      case 'facebook':
+        return Facebook;
+      default:
+        return Link2;
+    }
+  };
+
+  const renderDetailValue = (section: string, value: WorkItemProps['details'][keyof WorkItemProps['details']]) => {
+    if (section === 'gallery' && Array.isArray(value)) {
+      const galleryItems = value as WorkItemProps['details']['gallery'];
+
+      if (!galleryItems.length) {
+        return <p className="text-white/70">No gallery images yet.</p>;
+      }
+
+      return (
+        <div className="grid grid-cols-2 gap-3">
+          {galleryItems.map((image) => (
+            <div
+              key={image.id}
+              className="overflow-hidden rounded-2xl border border-white/15 bg-white/5"
+            >
+              <img
+                src={image.imageUrl}
+                alt={image.alt || title}
+                className="h-32 w-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (section === 'links' && Array.isArray(value)) {
+      const linkItems = value as WorkItemProps['details']['links'];
+
+      if (!linkItems.length) {
+        return <p className="text-white/70">No links yet.</p>;
+      }
+
+      return (
+        <div className="flex flex-wrap gap-3">
+          {linkItems.map((link) => {
+            const Icon = getLinkIcon(link.iconPath);
+
+            return (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white px-4 py-2 text-sm text-slate-950 transition hover:border-white hover:bg-slate-100"
+              >
+                <Icon className="size-4 shrink-0 text-slate-950" />
+                <span>{link.label}</span>
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (typeof value === 'string') {
+      return (
+        <div className="space-y-3 text-white/90">
+          <Markdown>{value}</Markdown>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   const handleActiveSection = (section: string) => {
     if (activeSection === section) {
@@ -70,7 +160,7 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
             showDivider={index < detailEntries.length - 1}
             onClick={() => handleActiveSection(key)}
           >
-            {value}
+            {renderDetailValue(key, value)}
           </ContentWrapper>
         ))}
       </motion.div>

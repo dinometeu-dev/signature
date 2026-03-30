@@ -2,15 +2,19 @@
 
 import React, { ComponentProps, FC } from 'react';
 
+import type { PublicPortfolioContent } from '@/lib/content/types';
 import { SlideStack } from '@/ui/SlideContent/components/SlideStack';
 import { ContactSlide } from '@/ui/SlideContent/ContactSlide/ContactSlide';
 import { ProfileSlide } from '@/ui/SlideContent/ProfileSlide/ProfileSlide';
 import SignatureSlide from '@/ui/SlideContent/SignatureSlide/SignatureSlide';
 import { QUERY_SLIDE_VALUES } from '@/utils/constants/paths';
-import { WORK_EXPERIENCE } from '@slides/WorkSlide/utils/content';
 import WorkSlide from '@slides/WorkSlide/WorkSlide';
 
-const SlideContent: FC<ComponentProps<'div'>> = (props) => {
+type SlideContentProps = ComponentProps<'div'> & {
+  portfolioContent: PublicPortfolioContent;
+};
+
+const SlideContent: FC<SlideContentProps> = ({ portfolioContent, ...props }) => {
   React.useEffect(() => {
     const preloadPrism = () => {
       void import('@components/PrismBg');
@@ -35,9 +39,19 @@ const SlideContent: FC<ComponentProps<'div'>> = (props) => {
 
   return (
     <SlideStack {...props}>
-      <SignatureSlide aria-label={QUERY_SLIDE_VALUES.SIGNATURE} />
-      <ProfileSlide aria-label={QUERY_SLIDE_VALUES.PROFILE} />
-      {WORK_EXPERIENCE.map((slide) => (
+      <SignatureSlide
+        aria-label={QUERY_SLIDE_VALUES.SIGNATURE}
+        title={portfolioContent.signature.title}
+        subtitle={portfolioContent.signature.subtitle}
+      />
+      <ProfileSlide
+        aria-label={QUERY_SLIDE_VALUES.PROFILE}
+        title={portfolioContent.profile.title}
+        description={portfolioContent.profile.description}
+        technologies={portfolioContent.profile.technologies}
+        experience={portfolioContent.profile.experience}
+      />
+      {portfolioContent.works.map((slide) => (
         <WorkSlide
           key={slide.id}
           aria-label={QUERY_SLIDE_VALUES.WORKS}

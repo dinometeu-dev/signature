@@ -16,6 +16,7 @@ type CompanyInfoProps = MotionProps &
 const CompanyInfo: FC<CompanyInfoProps> = ({
   className,
   title,
+  logoPath: _logoPath,
   officialLink,
   description,
   experienceHistory,

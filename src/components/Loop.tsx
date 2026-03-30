@@ -7,6 +7,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import CSS3Logo from '@public/svg/technology-logos/css3-logo';
+import JavaScriptLogo from '@public/svg/technology-logos/js-logo';
+import N8nLogo from '@public/svg/technology-logos/n8n-logo';
+import NextJSLogo from '@public/svg/technology-logos/nextjs-logo';
+import NodeJsLogo from '@public/svg/technology-logos/nodejs-logo';
+import PrismaLogo from '@public/svg/technology-logos/prisma-logo';
+import ReactJSLogo from '@public/svg/technology-logos/react-logo';
+import TailwindLogo from '@public/svg/technology-logos/tailwindcss-logo';
+import TypeScriptLogo from '@public/svg/technology-logos/typescript-logo';
 
 import Chip from '@components/Chip';
 import { TechnologyStackAnimation } from '@slides/ProfileSlide/animations/profile-card-animations';
@@ -14,7 +23,23 @@ import { TechnologyStackAnimation } from '@slides/ProfileSlide/animations/profil
 export type LogoItem = {
   id: number;
   title: string;
-  Icon: FC<SVGProps<SVGSVGElement>>;
+  Icon?: FC<SVGProps<SVGSVGElement>>;
+  iconPath?: string;
+};
+
+const LOGO_COMPONENT_REGISTRY: Record<
+  string,
+  FC<SVGProps<SVGSVGElement>>
+> = {
+  'react-logo.svg': ReactJSLogo,
+  'nextjs-logo.svg': NextJSLogo,
+  'typescript-logo.svg': TypeScriptLogo,
+  'tailwindcss-logo.svg': TailwindLogo,
+  'nodejs-logo.svg': NodeJsLogo,
+  'css3-logo.svg': CSS3Logo,
+  'js-logo.svg': JavaScriptLogo,
+  'prisma-logo.svg': PrismaLogo,
+  'n8n-logo.svg': N8nLogo,
 };
 
 export interface LogoLoopProps {
@@ -606,7 +631,9 @@ export const Loop = React.memo<LogoLoopProps>(
     }, [pauseOnHover]);
 
     const renderLogoItem = useCallback(
-      ({ id, Icon, title }: LogoItem, idx: number) => {
+      ({ id, Icon, iconPath, title }: LogoItem, idx: number) => {
+        const ResolvedIcon = Icon ?? (iconPath ? LOGO_COMPONENT_REGISTRY[iconPath] : undefined);
+
         return (
           <li
             className={cx(
@@ -624,7 +651,16 @@ export const Loop = React.memo<LogoLoopProps>(
                 ...TechnologyStackAnimation.transition,
               }}
             >
-              <Icon className="loop-chip-icon size-14 rounded-2xl" /> {title}
+              {ResolvedIcon ? (
+                <ResolvedIcon className="loop-chip-icon size-14 rounded-2xl" />
+              ) : iconPath ? (
+                <img
+                  src={iconPath.startsWith('/') || iconPath.startsWith('http') ? iconPath : `/svg/technology-logos/${iconPath}`}
+                  alt={title}
+                  className="loop-chip-icon size-14 rounded-2xl object-contain"
+                />
+              ) : null}{' '}
+              {title}
             </Chip>
           </li>
         );
