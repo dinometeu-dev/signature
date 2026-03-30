@@ -6,7 +6,7 @@ import type {
   SocialLink as SocialLinkPrisma,
   ExperienceBlock as ExperienceBlockPrisma,
   ExperiencePeriod as ExperiencePeriodPrisma,
-} from '@/generated/prisma';
+} from '@/generated/prisma/client';
 
 export type MenuType = MenuPrisma & {
   content: WorkItemPrisma[];
