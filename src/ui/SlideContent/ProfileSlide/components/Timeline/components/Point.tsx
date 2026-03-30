@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { cn } from '@/utils/functions/mergeClasses';
 import { PointAnimation } from '@slides/ProfileSlide/animations/point-animations';
@@ -16,6 +15,12 @@ const Point: FC<PointProps> = ({
   color,
   onHoverStart,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const isCurrentDay = date.isSame(dayjs(), 'day');
 
   return (
@@ -32,16 +37,16 @@ const Point: FC<PointProps> = ({
       initial={PointAnimation.initial}
       animate={PointAnimation.animate}
     >
-      {logo ? (
+      {logo && isMounted ? (
         <motion.div
           onHoverStart={onHoverStart}
           className={cn(
             'absolute overflow-hidden size-10 -translate-y-[calc(50%-6px)] -translate-x-[calc(50%-2px)] rounded-full p-1.5 border-[0.5px] bg-white border-border shadow-lg z-10 transition'
           )}
         >
-          <Image
+          <img
             src={logo}
-            alt={'Company Logo'}
+            alt="Company Logo"
             className={cn('object-cover w-full h-full')}
           />
         </motion.div>

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Fragment, useCallback } from 'react';
 
 import dayjs from '@/lib/dayjs';
+import type { PublicExperienceItem } from '@/lib/content/types';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useTimeline } from '@/utils/providers/TimelineProvider';
 import {
@@ -15,12 +16,9 @@ import {
 } from '@slides/ProfileSlide/animations/timeline-animations';
 import CompanyInfo from '@slides/ProfileSlide/components/Timeline/components/CompanyInfo';
 import Point from '@slides/ProfileSlide/components/Timeline/components/Point';
-import {
-  emptyData,
-  workExperience,
-} from '@slides/ProfileSlide/components/Timeline/utils/content';
+import { emptyData } from '@slides/ProfileSlide/components/Timeline/utils/content';
 
-const Timeline = () => {
+const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
   const { segmentHover, setSegmentHover } = useTimeline();
 
   const isHoverCurrentElement = useCallback(
@@ -33,22 +31,32 @@ const Timeline = () => {
 
   const startDate = dayjs('2019');
   const endDate = dayjs();
-
+  const orderedExperience = [...experience]
+    .map((item) => ({
+      ...item,
+      startDate: item.startDate,
+      endDate: item.endDate ?? endDate.toISOString(),
+    }))
+    .sort(
+    (left, right) =>
+      dayjs(left.startDate).valueOf() - dayjs(right.startDate).valueOf()
+    );
+  const hasExperience = orderedExperience.length > 0;
   const monthSegments = endDate.diff(startDate, 'month') + 1;
 
-  const beforeSegmentExist = startDate.isBefore(
-    workExperience[0].startDate,
+  const beforeSegmentExist = hasExperience && startDate.isBefore(
+    orderedExperience[0]?.startDate,
     'years'
   );
-  const afterSegmentExist = endDate.isAfter(
-    workExperience.at(-1)?.endDate,
+  const afterSegmentExist = hasExperience && endDate.isAfter(
+    orderedExperience.at(-1)?.endDate,
     'years'
   );
 
   const segments = [];
 
   if (beforeSegmentExist) {
-    const firstJobStart = dayjs(workExperience[0].startDate);
+    const firstJobStart = dayjs(orderedExperience[0].startDate);
     const segmentMonths = firstJobStart.diff(startDate, 'month');
     segments.push({
       ...emptyData,
@@ -57,10 +65,10 @@ const Timeline = () => {
     });
   }
 
-  for (let i = 0; i < workExperience.length; i++) {
-    const element = workExperience[i];
+  for (let i = 0; i < orderedExperience.length; i++) {
+    const element = orderedExperience[i];
     if (i > 0) {
-      const prevJobEnd = dayjs(workExperience[i - 1].endDate);
+      const prevJobEnd = dayjs(orderedExperience[i - 1].endDate);
       const currJobStart = dayjs(element.startDate);
       const gapMonths = currJobStart.diff(prevJobEnd, 'month');
       if (gapMonths > 0) {
@@ -83,7 +91,7 @@ const Timeline = () => {
   }
 
   if (afterSegmentExist) {
-    const lastJobEnd = dayjs(workExperience.at(-1)?.endDate);
+    const lastJobEnd = dayjs(orderedExperience.at(-1)?.endDate);
     const segmentMonths = endDate.diff(lastJobEnd, 'month');
     segments.push({
       ...emptyData,
@@ -105,123 +113,135 @@ const Timeline = () => {
       animate={TimelineWrapperAnimation.animate}
       transition={TimelineWrapperAnimation.transition}
     >
-      {segmentHover === null && (
-        <Point position="start" date={startDate} isStart />
-      )}
-      {segments.map((seg, idx) => {
-        const duration = dayjs.duration(
-          dayjs(seg.endDate).diff(dayjs(seg.startDate))
-        );
-        const years = duration.get('years');
-        const months = duration.get('months');
-        const durationString =
-          `${years ? ` ${years}${years > 1 ? ' yrs' : ' y'} ` : ''}${months ? `${months}${months > 1 ? ' mos' : ' m'} ` : ''}`.trim();
+      {!hasExperience ? (
+        <div className="rounded-2xl border border-dashed border-border bg-white/40 px-6 py-4 text-black/55 backdrop-blur-sm">
+          Timeline content will appear here once experience entries are added.
+        </div>
+      ) : (
+        <>
+          {segmentHover === null && (
+            <Point position="start" date={startDate} isStart />
+          )}
+          {segments.map((seg, idx) => {
+            const duration = dayjs.duration(
+              dayjs(seg.endDate).diff(dayjs(seg.startDate))
+            );
+            const years = duration.get('years');
+            const months = duration.get('months');
+            const durationString =
+              `${years ? ` ${years}${years > 1 ? ' yrs' : ' y'} ` : ''}${months ? `${months}${months > 1 ? ' mos' : ' m'} ` : ''}`.trim();
 
-        const finalDuration = durationString.length ? durationString : '<1m';
+            const finalDuration = durationString.length ? durationString : '<1m';
 
-        return (
-          <motion.div
-            key={idx}
-            className={cn('relative flex items-center justify-center')}
-            style={{ width: `${seg.width}%` }}
-            initial={TimelineAnimations.initial}
-            onHoverEnd={() => setSegmentHover(null)}
-            animate={{
-              width: (() => {
-                if (segmentHover === null) return `${seg.width}%`;
-                if (segmentHover === idx) return '100%';
-                return 0;
-              })(),
-              transition: {
-                type: 'spring',
-                ease: 'easeInOut',
-                bounce: 0.2,
-              },
-            }}
-          >
-            <AnimatePresence>
-              {seg.type === 'work' && isHoverCurrentElement(idx) && (
-                <CompanyInfo
-                  className="left-0 translate-x-4 -translate-y-[calc(50%+20px)]"
-                  exit={CompanyInfoAnimation.exit}
-                  {...seg.company}
-                />
-              )}
-            </AnimatePresence>
-
-            {seg.type === 'work' && isHoverCurrentElement(idx, true) && (
-              <Point
-                position="start"
-                className="cursor-zoom-in"
-                onHoverStart={() => seg.type === 'work' && setSegmentHover(idx)}
-                date={dayjs(seg.startDate)}
-                color={seg.color}
-                logo={seg.company.logo}
-              />
-            )}
-            <motion.div
-              className={cn(
-                'py-4 my-6 w-full',
-                seg.type === 'work' && 'cursor-zoom-in',
-                isHoverCurrentElement(idx) && 'py-10 my-0'
-              )}
-              onHoverStart={() => seg.type === 'work' && setSegmentHover(idx)}
-            >
-              <div
-                style={{
-                  background:
-                    seg.type === 'work' ? `${seg.color}` : 'var(--border)',
+            return (
+              <motion.div
+                key={idx}
+                className={cn('relative flex items-center justify-center')}
+                style={{ width: `${seg.width}%` }}
+                initial={TimelineAnimations.initial}
+                onHoverEnd={() => setSegmentHover(null)}
+                animate={{
+                  width: (() => {
+                    if (segmentHover === null) return `${seg.width}%`;
+                    if (segmentHover === idx) return '100%';
+                    return 0;
+                  })(),
+                  transition: {
+                    type: 'spring',
+                    ease: 'easeInOut',
+                    bounce: 0.2,
+                  },
                 }}
-                className={cn(
-                  'h-0.5 w-full transition-[height]',
-                  segmentHover !== null && 'h-[2.5px]'
+              >
+                <AnimatePresence>
+                  {seg.type === 'work' && isHoverCurrentElement(idx) && (
+                    <CompanyInfo
+                      className="left-0 translate-x-4 -translate-y-[calc(50%+20px)]"
+                      exit={CompanyInfoAnimation.exit}
+                      {...seg.company}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {seg.type === 'work' && isHoverCurrentElement(idx, true) && (
+                  <Point
+                    position="start"
+                    className="cursor-zoom-in"
+                    onHoverStart={() =>
+                      seg.type === 'work' && setSegmentHover(idx)
+                    }
+                    date={dayjs(seg.startDate)}
+                    color={seg.color}
+                    logo={seg.company.logoPath}
+                  />
                 )}
-              />
-            </motion.div>
-            <AnimatePresence>
-              {segmentHover === idx && (
-                <Fragment>
-                  <motion.div
-                    className="absolute left-0 translate-x-10 -translate-y-[20%]"
-                    initial={ExperienceTitleAnimation.initial}
-                    animate={ExperienceTitleAnimation.animate}
-                    exit={ExperienceTitleAnimation.exit}
-                  >
-                    <p
-                      className="text-6xl font-headings font-light select-none cursor-zoom-in"
-                      style={{
-                        color: `${seg.color}`,
-                      }}
-                    >
-                      {seg.title}
-                    </p>
-                  </motion.div>
-                  <motion.div
-                    className="absolute translate-y-14 flex flex-col items-center justify-center gap-1"
-                    initial={ExperienceCompanyTitleAnimation.initial}
-                    animate={ExperienceCompanyTitleAnimation.animate}
-                    exit={ExperienceCompanyTitleAnimation.exit}
-                  >
-                    <p className="text-xl font-headings">
-                      {seg.company?.title}
-                    </p>
-                    <p className="text-black/60">Worked {finalDuration}</p>
-                  </motion.div>
-                </Fragment>
-              )}
-            </AnimatePresence>
-            {seg.type === 'work' && isHoverCurrentElement(idx, true) && (
-              <Point
-                position="end"
-                date={dayjs(seg.endDate)}
-                color={seg.color}
-              />
-            )}
-          </motion.div>
-        );
-      })}
-      {segmentHover === null && afterSegmentExist && (
-        <Point position="end" date={dayjs()} />
+                <motion.div
+                  className={cn(
+                    'py-4 my-6 w-full',
+                    seg.type === 'work' && 'cursor-zoom-in',
+                    isHoverCurrentElement(idx) && 'py-10 my-0'
+                  )}
+                  onHoverStart={() =>
+                    seg.type === 'work' && setSegmentHover(idx)
+                  }
+                >
+                  <div
+                    style={{
+                      background:
+                        seg.type === 'work' ? `${seg.color}` : 'var(--border)',
+                    }}
+                    className={cn(
+                      'h-0.5 w-full transition-[height]',
+                      segmentHover !== null && 'h-[2.5px]'
+                    )}
+                  />
+                </motion.div>
+                <AnimatePresence>
+                  {segmentHover === idx && (
+                    <Fragment>
+                      <motion.div
+                        className="absolute left-0 translate-x-10 -translate-y-[20%]"
+                        initial={ExperienceTitleAnimation.initial}
+                        animate={ExperienceTitleAnimation.animate}
+                        exit={ExperienceTitleAnimation.exit}
+                      >
+                        <p
+                          className="text-6xl font-headings font-light select-none cursor-zoom-in"
+                          style={{
+                            color: `${seg.color}`,
+                          }}
+                        >
+                          {seg.title}
+                        </p>
+                      </motion.div>
+                      <motion.div
+                        className="absolute translate-y-14 flex flex-col items-center justify-center gap-1"
+                        initial={ExperienceCompanyTitleAnimation.initial}
+                        animate={ExperienceCompanyTitleAnimation.animate}
+                        exit={ExperienceCompanyTitleAnimation.exit}
+                      >
+                        <p className="text-xl font-headings">
+                          {seg.company?.title}
+                        </p>
+                        <p className="text-black/60">Worked {finalDuration}</p>
+                      </motion.div>
+                    </Fragment>
+                  )}
+                </AnimatePresence>
+                {seg.type === 'work' && isHoverCurrentElement(idx, true) && (
+                  <Point
+                    position="end"
+                    date={dayjs(seg.endDate)}
+                    color={seg.color}
+                  />
+                )}
+              </motion.div>
+            );
+          })}
+          {segmentHover === null && afterSegmentExist && (
+            <Point position="end" date={dayjs()} />
+          )}
+        </>
       )}
     </motion.div>
   );

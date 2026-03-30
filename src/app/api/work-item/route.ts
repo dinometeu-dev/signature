@@ -23,17 +23,26 @@ export async function GET() {
 // POST create a new work item
 export async function POST(req: Request) {
   try {
-    const { title, description, iconPath, menuId } = await req.json();
+    const { title, overview, problem, impact, iconPath, menuId, sortOrder } =
+      await req.json();
 
-    if (!title || !description || !iconPath || !menuId) {
+    if (!title || !menuId) {
       return NextResponse.json(
-        { error: 'title, description, iconPath, and menuId are required' },
+        { error: 'title and menuId are required' },
         { status: 400 }
       );
     }
 
     const item = await prisma.workItem.create({
-      data: { title, description, iconPath, menuId },
+      data: {
+        title,
+        overview: overview ?? '',
+        problem: problem ?? '',
+        impact: impact ?? '',
+        iconPath: iconPath ?? '',
+        menuId,
+        sortOrder: sortOrder ?? 0,
+      },
     });
 
     return NextResponse.json(item, { status: 201 });
@@ -48,7 +57,8 @@ export async function POST(req: Request) {
 // PATCH update a work item
 export async function PATCH(req: Request) {
   try {
-    const { id, title, description, iconPath, menuId } = await req.json();
+    const { id, title, overview, problem, impact, iconPath, menuId, sortOrder } =
+      await req.json();
 
     if (!id) {
       return NextResponse.json({ error: 'id is required' }, { status: 400 });
@@ -58,9 +68,12 @@ export async function PATCH(req: Request) {
       where: { id },
       data: {
         ...(title && { title }),
-        ...(description && { description }),
+        ...(overview !== undefined && { overview }),
+        ...(problem !== undefined && { problem }),
+        ...(impact !== undefined && { impact }),
         ...(iconPath && { iconPath }),
         ...(menuId && { menuId }),
+        ...(sortOrder !== undefined && { sortOrder }),
       },
     });
 

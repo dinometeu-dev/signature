@@ -1,10 +1,9 @@
 import dayjs from 'dayjs';
 import { MotionProps } from 'framer-motion';
-import { StaticImageData } from 'next/image';
 
 export type CompanyType = {
   title: string | null;
-  logo: StaticImageData | null;
+  logoPath: string | null;
   officialLink: string | null;
   description: string | null;
   experienceHistory: string | null;
@@ -23,6 +22,6 @@ export interface PointProps extends MotionProps {
   date: dayjs.Dayjs;
   isStart?: boolean;
   className?: string | null;
-  logo?: StaticImageData | null;
+  logo?: string | null;
   color?: string | null;
 }

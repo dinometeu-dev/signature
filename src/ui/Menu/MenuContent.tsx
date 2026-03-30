@@ -1,3 +1,5 @@
+'use client';
+
 import { ComponentProps, FC, Fragment } from 'react';
 
 import LongPress from '@/ui/Menu/LongPress';

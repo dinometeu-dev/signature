@@ -52,7 +52,7 @@ export async function PATCH(req: Request) {
       where: { id },
       data: {
         ...(url && { url }),
-        ...(iconPath && { imgPath: iconPath }),
+        ...(iconPath && { iconPath }),
         ...(alt && { alt }),
       },
     });

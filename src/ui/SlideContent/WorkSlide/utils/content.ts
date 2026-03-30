@@ -12,6 +12,7 @@ export const WORK_EXPERIENCE: WorkItemProps[] = [
       impact:
         'The impact of Signature has been profound, both personally and professionally.',
       gallery: [],
+      links: [],
     },
   },
   {
@@ -25,6 +26,7 @@ export const WORK_EXPERIENCE: WorkItemProps[] = [
       impact:
         'The impact of Signature has been profound, both personally and professionally.',
       gallery: [],
+      links: [],
     },
   },
   {
@@ -38,6 +40,7 @@ export const WORK_EXPERIENCE: WorkItemProps[] = [
       impact:
         'The impact of Signature has been profound, both personally and professionally.',
       gallery: [],
+      links: [],
     },
   },
 ];

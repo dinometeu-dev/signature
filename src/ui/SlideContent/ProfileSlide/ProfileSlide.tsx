@@ -1,22 +1,66 @@
 import { HTMLMotionProps, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import Markdown from 'react-markdown';
 
 import { Slide } from '@/components/Slide';
-import {
-  PROFILE_DESCRIPTION,
-  PROFILE_TECHNOLOGY_STAK_DESCRIPTION,
-  PROFILE_TITLE,
-} from '@/utils/constants/content';
+import type { PublicExperienceItem, PublicTechnology } from '@/lib/content/types';
 import { useTimeline } from '@/utils/providers/TimelineProvider';
 import BlurText from '@components/BlurText';
 import Loop from '@components/Loop';
 import ProfileImg from '@public/ProfileImg.png';
 import { ProfileDescriptionAnimation } from '@slides/ProfileSlide/animations/profile-info-animations';
-import Timeline from '@slides/ProfileSlide/components/Timeline/Timeline';
 
-const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
+const TimelineLoading = () => (
+  <div className="relative flex h-[180px] w-full items-center">
+    <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-black/10" />
+    <div className="absolute left-0 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/15" />
+
+    <div className="flex w-full items-center">
+      <div className="h-1 w-[24%] rounded-full bg-sky-300/50 animate-pulse" />
+      <div className="relative h-16 w-[10%]">
+        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/10 bg-white/80 shadow-sm" />
+        <div className="absolute left-1/2 top-full mt-4 h-3 w-16 -translate-x-1/2 rounded-full bg-black/8" />
+      </div>
+      <div className="h-1 w-[18%] rounded-full bg-rose-300/50 animate-pulse [animation-delay:120ms]" />
+      <div className="relative h-16 w-[10%]">
+        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/10 bg-white/80 shadow-sm" />
+        <div className="absolute left-1/2 top-full mt-4 h-3 w-20 -translate-x-1/2 rounded-full bg-black/8" />
+      </div>
+      <div className="h-1 w-[30%] rounded-full bg-fuchsia-300/50 animate-pulse [animation-delay:240ms]" />
+      <div className="relative h-16 w-[8%]">
+        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/10 bg-white/80 shadow-sm" />
+        <div className="absolute left-1/2 top-full mt-4 h-3 w-14 -translate-x-1/2 rounded-full bg-black/8" />
+      </div>
+    </div>
+
+    <div className="absolute right-0 top-1/2 size-3 translate-x-1/2 -translate-y-1/2 rounded-full bg-black/15" />
+  </div>
+);
+
+const Timeline = dynamic(
+  () => import('@slides/ProfileSlide/components/Timeline/Timeline'),
+  {
+    ssr: false,
+    loading: () => <TimelineLoading />,
+  }
+);
+
+type ProfileSlideProps = HTMLMotionProps<'div'> & {
+  title: string;
+  description: string;
+  technologies: PublicTechnology[];
+  experience: PublicExperienceItem[];
+};
+
+const ProfileSlide: FC<ProfileSlideProps> = ({
+  title,
+  description,
+  technologies,
+  experience,
+  ...props
+}) => {
   const { segmentHover } = useTimeline();
   const isTimelineHoverActive = segmentHover !== null;
 
@@ -37,7 +81,7 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
         }}
       >
         <BlurText
-          text={PROFILE_TITLE}
+          text={title}
           delay={80}
           animateBy="words"
           direction="top"
@@ -66,14 +110,14 @@ const ProfileSlide: FC<HTMLMotionProps<'div'>> = (props) => {
             animate={ProfileDescriptionAnimation.animate}
             transition={ProfileDescriptionAnimation.transition}
           >
-            <Markdown>{PROFILE_DESCRIPTION}</Markdown>
+            <Markdown>{description}</Markdown>
           </motion.span>
         </motion.div>
         <div className="pr-80">
-          <Timeline />
+          <Timeline experience={experience} />
         </div>
         <Loop
-          logos={PROFILE_TECHNOLOGY_STAK_DESCRIPTION}
+          logos={technologies}
           speed={40}
           direction="right"
           gap={20}

@@ -9,14 +9,19 @@ datasource db {
 }
 
 model ExperienceBlock {
-  id          Int                @id @default(autoincrement())
-  companyName String
-  iconPath    String
-  alt         String
-  location    String
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  periods     ExperiencePeriod[]
+  id                Int                @id @default(autoincrement())
+  companyName       String
+  iconPath          String
+  alt               String
+  location          String
+  description       String             @default("")
+  officialLink      String             @default("")
+  experienceHistory String             @default("")
+  color             String             @default("#94a3b8")
+  sortOrder         Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  periods           ExperiencePeriod[]
 }
 
 model ExperiencePeriod {
@@ -24,6 +29,7 @@ model ExperiencePeriod {
   position          String
   startDate         DateTime
   endDate           DateTime?
+  sortOrder         Int             @default(0)
   experienceBlockId Int
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
@@ -31,16 +37,21 @@ model ExperiencePeriod {
 }
 
 model WorkItem {
-  id           Int            @id @default(autoincrement())
-  title        String
-  description  String
-  menuId       Int
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  iconPath     String
-  menu         Menu           @relation(fields: [menuId], references: [id])
-  links        WorkItemLink[]
-  technologies Technology[]   @relation("WorkItemTechnologies")
+  id            Int                @id @default(autoincrement())
+  title         String
+  overview      String             @default("")
+  problem       String             @default("")
+  impact        String             @default("")
+  isArchived    Boolean            @default(false)
+  menuId        Int
+  iconPath      String
+  sortOrder     Int                @default(0)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  menu          Menu               @relation(fields: [menuId], references: [id])
+  links         WorkItemLink[]
+  technologies  Technology[]       @relation("WorkItemTechnologies")
+  galleryImages WorkGalleryImage[]
 }
 
 model WorkItemLink {
@@ -67,6 +78,7 @@ model Technology {
   id        Int        @id @default(autoincrement())
   name      String     @unique
   iconPath  String
+  sortOrder Int        @default(0)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   workItems WorkItem[] @relation("WorkItemTechnologies")
@@ -79,4 +91,49 @@ model Menu {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   content   WorkItem[]
+}
+
+model WorkGalleryImage {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  alt       String   @default("")
+  sortOrder Int      @default(0)
+  workItemId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workItem  WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+}
+
+model SignatureContent {
+  id        Int      @id @default(1)
+  title     String
+  subtitle  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProfileContent {
+  id          Int      @id @default(1)
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  passwordHash String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  userId    Int
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

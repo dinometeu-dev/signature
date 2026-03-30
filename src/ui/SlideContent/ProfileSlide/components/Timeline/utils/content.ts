@@ -1,7 +1,3 @@
-import AmigoCarLogo from '@public/experience-logos/amigo-car-logo.png';
-import InsomniacDesign from '@public/experience-logos/insomniac-logo.png';
-import LukoilLogo from '@public/experience-logos/lukoil-logo.png';
-import RubyLabsLogo from '@public/experience-logos/ruby-labs-logo.png';
 import { ExperiencePeriodType } from '@slides/ProfileSlide/components/Timeline/utils/types';
 
 export const workExperience: ExperiencePeriodType[] = [
@@ -9,7 +5,7 @@ export const workExperience: ExperiencePeriodType[] = [
     title: 'Frontend Developer',
     company: {
       title: 'Amigo Car',
-      logo: AmigoCarLogo,
+      logoPath: '/experience-logos/amigo-car-logo.png',
       officialLink: 'https://www.amigocar.md/',
       description:
         'Amigo Car is a car rental company based in Chisinau, Moldova.',
@@ -24,7 +20,7 @@ export const workExperience: ExperiencePeriodType[] = [
     title: 'Product Designer',
     company: {
       title: 'Lukoil',
-      logo: LukoilLogo,
+      logoPath: '/experience-logos/lukoil-logo.png',
       officialLink: 'https://www.lukoil.md/',
       description:
         'Lukoil is a major Russian vertically integrated oil and gas company with global operations.',
@@ -40,7 +36,7 @@ export const workExperience: ExperiencePeriodType[] = [
     company: {
       title: 'Insomniac Design',
       officialLink: 'https://www.insomniacdesign.com/',
-      logo: InsomniacDesign,
+      logoPath: '/experience-logos/insomniac-logo.png',
       description:
         'Insomniac Design is a Washington, DC–based digital agency specializing in branding, web, and product design.',
       experienceHistory:
@@ -55,7 +51,7 @@ export const workExperience: ExperiencePeriodType[] = [
     company: {
       title: 'Ruby Labs',
       officialLink: 'https://rubylabs.com/',
-      logo: RubyLabsLogo,
+      logoPath: '/experience-logos/ruby-labs-logo.png',
       description:
         'EVPoint is a Moldova-based company providing EV charging networks and automated parking solutions across Eastern Europe.',
       experienceHistory:
@@ -75,7 +71,7 @@ export const emptyData: ExperiencePeriodType = {
     description: null,
     officialLink: null,
     experienceHistory: null,
-    logo: null,
+    logoPath: null,
   },
   startDate: null,
   color: null,
