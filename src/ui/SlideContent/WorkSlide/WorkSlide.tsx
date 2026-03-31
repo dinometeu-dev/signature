@@ -49,7 +49,10 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
     }
   };
 
-  const renderDetailValue = (section: string, value: WorkItemProps['details'][keyof WorkItemProps['details']]) => {
+  const renderDetailValue = (
+    section: string,
+    value: WorkItemProps['details'][keyof WorkItemProps['details']]
+  ) => {
     if (section === 'gallery' && Array.isArray(value)) {
       const galleryItems = value as WorkItemProps['details']['gallery'];
 
@@ -106,7 +109,7 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
 
     if (typeof value === 'string') {
       return (
-        <div className="space-y-3 text-white/90">
+        <div className="space-y-3 ">
           <Markdown>{value}</Markdown>
         </div>
       );

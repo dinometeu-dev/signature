@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Fragment, useCallback } from 'react';
 
 import dayjs from '@/lib/dayjs';
-import type { PublicExperienceItem } from '@/lib/content/types';
 import { cn } from '@/utils/functions/mergeClasses';
 import { useTimeline } from '@/utils/providers/TimelineProvider';
 import {
@@ -16,7 +15,22 @@ import {
 } from '@slides/ProfileSlide/animations/timeline-animations';
 import CompanyInfo from '@slides/ProfileSlide/components/Timeline/components/CompanyInfo';
 import Point from '@slides/ProfileSlide/components/Timeline/components/Point';
-import { emptyData } from '@slides/ProfileSlide/components/Timeline/utils/content';
+
+import type { PublicExperienceItem } from '@/lib/content/types';
+
+const EMPTY_TIMELINE_SEGMENT = {
+  title: null,
+  company: {
+    title: null,
+    description: null,
+    officialLink: null,
+    experienceHistory: null,
+    logoPath: null,
+  },
+  startDate: null,
+  color: null,
+  endDate: null,
+};
 
 const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
   const { segmentHover, setSegmentHover } = useTimeline();
@@ -59,7 +73,7 @@ const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
     const firstJobStart = dayjs(orderedExperience[0].startDate);
     const segmentMonths = firstJobStart.diff(startDate, 'month');
     segments.push({
-      ...emptyData,
+      ...EMPTY_TIMELINE_SEGMENT,
       type: 'before',
       width: (segmentMonths / monthSegments) * 100,
     });
@@ -73,7 +87,7 @@ const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
       const gapMonths = currJobStart.diff(prevJobEnd, 'month');
       if (gapMonths > 0) {
         segments.push({
-          ...emptyData,
+          ...EMPTY_TIMELINE_SEGMENT,
           type: 'interval',
           width: (gapMonths / monthSegments) * 100,
         });
@@ -94,7 +108,7 @@ const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
     const lastJobEnd = dayjs(orderedExperience.at(-1)?.endDate);
     const segmentMonths = endDate.diff(lastJobEnd, 'month');
     segments.push({
-      ...emptyData,
+      ...EMPTY_TIMELINE_SEGMENT,
       type: 'after',
       width: (segmentMonths / monthSegments) * 100,
     });

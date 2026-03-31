@@ -22,7 +22,11 @@ import OpenMenuInstruction from '@slides/SignatureSlide/components/OpenMenuInstr
 type SignatureSlideProps = HTMLMotionProps<'div'> &
   PublicPortfolioContent['signature'];
 
-const SignatureSlide: FC<SignatureSlideProps> = ({ title, subtitle, ...props }) => {
+const SignatureSlide: FC<SignatureSlideProps> = ({
+  title,
+  subtitle,
+  ...props
+}) => {
   const { firstSlideAnimation, setFirstSlideAnimation } =
     useFirstSlideAnimation();
 
@@ -75,6 +79,7 @@ const SignatureSlide: FC<SignatureSlideProps> = ({ title, subtitle, ...props }) 
       <div className="w-full h-full absolute z-0 overflow-hidden flex items-center justify-center rounded-slide">
         <SignatureBg
           className="absolute"
+          animatePaths={firstSlideAnimation}
           initial={SignatureBgAnimation.initial}
           animate={SignatureBgAnimation.animate}
           transition={SignatureBgAnimation.transition}
