@@ -1,10 +1,9 @@
 import { unstable_cache } from 'next/cache';
 
 import { CACHE_TAGS } from '@/lib/cache-tags';
-import {
-  DEFAULT_PROFILE_CONTENT,
-  DEFAULT_SIGNATURE_CONTENT,
-} from '@/lib/content/defaults';
+import { prisma } from '@/lib/prisma';
+import { sortExperienceBlocksByTimeline, sortPeriodsByDate } from '@/lib/profile-timeline';
+
 import type {
   ExperienceBlockDto,
   ExperiencePeriodDto,
@@ -16,8 +15,6 @@ import type {
   WorkItemLinkDto,
   WorkItemDto,
 } from '@/lib/content/types';
-import { sortExperienceBlocksByTimeline, sortPeriodsByDate } from '@/lib/profile-timeline';
-import { prisma } from '@/lib/prisma';
 
 function serializeDate(date: Date) {
   return date.toISOString();
@@ -39,11 +36,31 @@ function normalizeAssetPath(path: string | null | undefined, prefix?: string) {
   return prefix ? `${prefix}/${path}` : path;
 }
 
+function createEmptySignatureContentDto(): SignatureContentDto {
+  return {
+    id: 1,
+    title: '',
+    subtitle: '',
+    createdAt: '',
+    updatedAt: '',
+  };
+}
+
+function createEmptyProfileContentDto(): ProfileContentDto {
+  return {
+    id: 1,
+    title: '',
+    description: '',
+    createdAt: '',
+    updatedAt: '',
+  };
+}
+
 function toSignatureContentDto(
   content: Awaited<ReturnType<typeof prisma.signatureContent.findUnique>>
 ): SignatureContentDto {
   if (!content) {
-    return DEFAULT_SIGNATURE_CONTENT;
+    return createEmptySignatureContentDto();
   }
 
   return {
@@ -59,7 +76,7 @@ function toProfileContentDto(
   content: Awaited<ReturnType<typeof prisma.profileContent.findUnique>>
 ): ProfileContentDto {
   if (!content) {
-    return DEFAULT_PROFILE_CONTENT;
+    return createEmptyProfileContentDto();
   }
 
   return {

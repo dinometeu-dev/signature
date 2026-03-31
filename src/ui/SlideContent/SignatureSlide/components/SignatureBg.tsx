@@ -6,11 +6,29 @@ import {
   SignatureMainPathAnimation,
 } from '@slides/SignatureSlide/animations/signature-bg-animations';
 
-const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
+type SignatureBgProps = SVGMotionProps<SVGSVGElement> & {
+  animatePaths?: boolean;
+};
+
+const SignatureBg: FC<SignatureBgProps> = ({
+  animatePaths = true,
+  ...props
+}) => {
   const pathVariants: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: { pathLength: 1, opacity: 1 },
   };
+
+  const pathMotionProps = animatePaths
+    ? {
+        variants: pathVariants,
+        initial: 'hidden' as const,
+        animate: 'visible' as const,
+      }
+    : {
+        initial: false,
+        animate: { pathLength: 1, opacity: 1 },
+      };
 
   return (
     <motion.svg
@@ -27,9 +45,7 @@ const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
         strokeOpacity="0.2"
         strokeWidth="0.5"
         strokeLinecap="round"
-        variants={pathVariants}
-        initial="hidden"
-        animate="visible"
+        {...pathMotionProps}
         transition={SignatureMainPathAnimation.transition}
       />
       <motion.path
@@ -38,9 +54,7 @@ const SignatureBg: FC<SVGMotionProps<SVGSVGElement>> = (props) => {
         strokeOpacity="0.2"
         strokeWidth="0.5"
         strokeLinecap="round"
-        variants={pathVariants}
-        initial="hidden"
-        animate="visible"
+        {...pathMotionProps}
         transition={SignatureDotAnimation.transition}
       />
     </motion.svg>

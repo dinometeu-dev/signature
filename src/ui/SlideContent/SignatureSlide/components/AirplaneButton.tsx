@@ -17,6 +17,7 @@ import {
 } from '@slides/SignatureSlide/animations/airplane-animations';
 
 const SECOND_AIRPLANE_DURATION = 0.8;
+const CONTACT_NAVIGATION_DELAY_MS = 1000 + SECOND_AIRPLANE_DURATION * 800;
 
 const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
   className,
@@ -30,42 +31,47 @@ const AirplaneButton: FC<HTMLMotionProps<'div'>> = ({
   const [isClick, setIsClick] = useState(false);
 
   useEffect(() => {
-    if (isClick) {
-      controls
-        .start({
-          x: SCREEN_WIDTH,
-          transition: { duration: 1, ease: 'backInOut' },
-        })
-        .then(() => {
-          controls.stop();
-          controlSecondAirplane
-            .start({
-              y: -SCREEN_HEIGHT * 2,
-              rotateZ: -90,
-              rotateX: 0,
-              scale: 58,
-              transition: {
-                type: 'keyframes',
-                duration: SECOND_AIRPLANE_DURATION,
-                ease: 'easeIn',
-              },
-            })
-            .then(() => {
-              controls.set({
-                x: -36,
-                y: 4,
-                scale: 0.3,
-                rotateX: 0,
-              });
-              setIsClick(false);
-              setButtonIsHovered(false);
-            });
-
-          setTimeout(() => {
-            setSlideStack(QUERY_SLIDE_VALUES.CONTACT);
-          }, SECOND_AIRPLANE_DURATION * 800);
-        });
+    if (!isClick) {
+      return;
     }
+
+    const navigationTimeout = window.setTimeout(() => {
+      setSlideStack(QUERY_SLIDE_VALUES.CONTACT);
+    }, CONTACT_NAVIGATION_DELAY_MS);
+
+    void controls
+      .start({
+        x: SCREEN_WIDTH,
+        transition: { duration: 1, ease: 'backInOut' },
+      })
+      .then(() => {
+        controls.stop();
+        return controlSecondAirplane.start({
+          y: -SCREEN_HEIGHT * 2,
+          rotateZ: -90,
+          rotateX: 0,
+          scale: 58,
+          transition: {
+            type: 'keyframes',
+            duration: SECOND_AIRPLANE_DURATION,
+            ease: 'easeIn',
+          },
+        });
+      })
+      .then(() => {
+        controls.set({
+          x: -36,
+          y: 4,
+          scale: 0.3,
+          rotateX: 0,
+        });
+        setIsClick(false);
+        setButtonIsHovered(false);
+      });
+
+    return () => {
+      window.clearTimeout(navigationTimeout);
+    };
   }, [isClick]);
 
   useEffect(() => {
