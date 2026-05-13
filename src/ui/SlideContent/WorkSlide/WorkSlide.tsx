@@ -1,4 +1,4 @@
-import { HTMLMotionProps, motion } from 'framer-motion';
+import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion';
 import {
   Facebook,
   Github,
@@ -6,22 +6,33 @@ import {
   Instagram,
   Linkedin,
   Link2,
+  Minimize2,
 } from 'lucide-react';
+import Link from 'next/dist/client/link';
 import dynamic from 'next/dynamic';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Markdown from 'react-markdown';
 
 import BlurText from '@components/BlurText';
+import { Button } from '@components/Button';
 import { Slide } from '@components/Slide';
+import {
+  GalleryLightboxImageAnimation,
+  GalleryLightboxOverlayAnimation,
+} from '@slides/WorkSlide/animations/work-gallery-animations';
+import { WorkLinksAnimation } from '@slides/WorkSlide/animations/work-links-animations';
 import {
   MainTitleAnimations,
   RoadItemsAnimation,
 } from '@slides/WorkSlide/animations/work-slide-animations';
 import ContentWrapper from '@slides/WorkSlide/components/ContentWrapper';
+import WorkGallery from '@slides/WorkSlide/components/WorkGallery';
 import { WorkItemProps } from '@slides/WorkSlide/utils/types';
 
 type WorkSlideProps = Omit<HTMLMotionProps<'div'>, keyof WorkItemProps> &
   WorkItemProps;
+
+type GalleryItem = WorkItemProps['details']['gallery'][0];
 
 const Prism = dynamic(() => import('@components/PrismBg'), {
   ssr: false,
@@ -30,7 +41,24 @@ const Prism = dynamic(() => import('@components/PrismBg'), {
 
 const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const detailEntries = Object.entries(details);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedImage(null);
+    };
+    globalThis.window?.addEventListener('keydown', handleKeyDown);
+    return () =>
+      globalThis.window?.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const links = details.links ?? [];
+  const detailEntries = Object.entries(details).filter(([key, value]) => {
+    if (key === 'links') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'string') return value.trim().length > 0;
+    return value != null;
+  });
 
   const getLinkIcon = (iconPath: string | null) => {
     switch (iconPath) {
@@ -55,61 +83,18 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
   ) => {
     if (section === 'gallery' && Array.isArray(value)) {
       const galleryItems = value as WorkItemProps['details']['gallery'];
-
-      if (!galleryItems.length) {
-        return <p className="text-white/70">No gallery images yet.</p>;
-      }
-
       return (
-        <div className="grid grid-cols-2 gap-3">
-          {galleryItems.map((image) => (
-            <div
-              key={image.id}
-              className="overflow-hidden rounded-2xl border border-white/15 bg-white/5"
-            >
-              <img
-                src={image.imageUrl}
-                alt={image.alt || title}
-                className="h-32 w-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    if (section === 'links' && Array.isArray(value)) {
-      const linkItems = value as WorkItemProps['details']['links'];
-
-      if (!linkItems.length) {
-        return <p className="text-white/70">No links yet.</p>;
-      }
-
-      return (
-        <div className="flex flex-wrap gap-3">
-          {linkItems.map((link) => {
-            const Icon = getLinkIcon(link.iconPath);
-
-            return (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white px-4 py-2 text-sm text-slate-950 transition hover:border-white hover:bg-slate-100"
-              >
-                <Icon className="size-4 shrink-0 text-slate-950" />
-                <span>{link.label}</span>
-              </a>
-            );
-          })}
-        </div>
+        <WorkGallery
+          items={galleryItems}
+          title={title}
+          onImageSelect={setSelectedImage}
+        />
       );
     }
 
     if (typeof value === 'string') {
       return (
-        <div className="space-y-3 ">
+        <div className="space-y-3">
           <Markdown>{value}</Markdown>
         </div>
       );
@@ -137,8 +122,8 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
           scale={2.5}
           hueShift={0}
           colorFrequency={1}
-          noise={0.2}
-          glow={2}
+          noise={0.18}
+          glow={0.6}
           transparent={false}
           suspendWhenOffscreen
           maxDpr={1.25}
@@ -147,6 +132,42 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
         />
       </div>
 
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            className="absolute inset-0 z-20 bg-black/70 flex justify-center"
+            initial={GalleryLightboxOverlayAnimation.initial}
+            animate={GalleryLightboxOverlayAnimation.animate}
+            exit={GalleryLightboxOverlayAnimation.exit}
+            transition={GalleryLightboxOverlayAnimation.transition}
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              className="absolute inset-0 z-30 p-10 flex items-center justify-center"
+              initial={GalleryLightboxImageAnimation.initial}
+              animate={GalleryLightboxImageAnimation.animate}
+              exit={GalleryLightboxImageAnimation.exit}
+              transition={GalleryLightboxImageAnimation.transition}
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedImage.imageUrl}
+                  alt={selectedImage.alt ?? title}
+                  className="max-w-full max-h-full w-auto h-auto rounded-3xl block"
+                />
+              </div>
+              <Button
+                className="p-0 absolute top-0 right-0 size-11 backdrop-blur-xl"
+                onClick={() => setSelectedImage(null)}
+              >
+                <Minimize2 size={16} className="text-white" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         layout
         className="relative w-full h-full text-white flex items-center justify-center"
@@ -154,18 +175,42 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
         animate={RoadItemsAnimation.animate}
         transition={RoadItemsAnimation.transition}
       >
-        {detailEntries.map(([key, value], index) => (
-          <ContentWrapper
-            key={key}
-            title={key}
-            isActive={activeSection}
-            hasActiveSection={Boolean(activeSection)}
-            showDivider={index < detailEntries.length - 1}
-            onClick={() => handleActiveSection(key)}
-          >
-            {renderDetailValue(key, value)}
-          </ContentWrapper>
-        ))}
+        <div className="relative flex items-center">
+          {detailEntries.map(([key, value], index) => (
+            <ContentWrapper
+              key={key}
+              title={key}
+              isActive={activeSection}
+              hasActiveSection={Boolean(activeSection)}
+              showDivider={index < detailEntries.length - 1}
+              onClick={() => handleActiveSection(key)}
+            >
+              {renderDetailValue(key, value)}
+            </ContentWrapper>
+          ))}
+        </div>
+        <AnimatePresence>
+          {links.length > 0 && !activeSection && (
+            <motion.div
+              className="absolute mt-40 flex items-center gap-3"
+              initial={WorkLinksAnimation.initial}
+              animate={WorkLinksAnimation.animate}
+              exit={WorkLinksAnimation.exit}
+              transition={WorkLinksAnimation.transition}
+            >
+              {links.map((link) => {
+                const Icon = getLinkIcon(link.iconPath);
+                return (
+                  <Link key={link.id} href={link.url} target="_blank">
+                    <Button className="p-0 size-11">
+                      <Icon className="size-4" />
+                    </Button>
+                  </Link>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       <motion.div
@@ -179,7 +224,7 @@ const WorkSlide: FC<WorkSlideProps> = ({ title, id, details, ...props }) => {
           delay={80}
           animateBy="words"
           direction="top"
-          className="font-headings tracking-wide font-medium text-center leading-normal"
+          className="font-headings tracking-wide font-medium text-white"
         />
       </motion.div>
     </Slide>

@@ -52,20 +52,18 @@ const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
       endDate: item.endDate ?? endDate.toISOString(),
     }))
     .sort(
-    (left, right) =>
-      dayjs(left.startDate).valueOf() - dayjs(right.startDate).valueOf()
+      (left, right) =>
+        dayjs(left.startDate).valueOf() - dayjs(right.startDate).valueOf()
     );
   const hasExperience = orderedExperience.length > 0;
   const monthSegments = endDate.diff(startDate, 'month') + 1;
 
-  const beforeSegmentExist = hasExperience && startDate.isBefore(
-    orderedExperience[0]?.startDate,
-    'years'
-  );
-  const afterSegmentExist = hasExperience && endDate.isAfter(
-    orderedExperience.at(-1)?.endDate,
-    'years'
-  );
+  const beforeSegmentExist =
+    hasExperience &&
+    startDate.isBefore(orderedExperience[0]?.startDate, 'years');
+  const afterSegmentExist =
+    hasExperience &&
+    endDate.isAfter(orderedExperience.at(-1)?.endDate, 'years');
 
   const segments = [];
 
@@ -145,7 +143,9 @@ const Timeline = ({ experience }: { experience: PublicExperienceItem[] }) => {
             const durationString =
               `${years ? ` ${years}${years > 1 ? ' yrs' : ' y'} ` : ''}${months ? `${months}${months > 1 ? ' mos' : ' m'} ` : ''}`.trim();
 
-            const finalDuration = durationString.length ? durationString : '<1m';
+            const finalDuration = durationString.length
+              ? durationString
+              : '<1m';
 
             return (
               <motion.div
