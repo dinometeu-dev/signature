@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 
-import { PrismaClient } from '@/generated/prisma/client';
+import { PrismaClient } from '@generated/prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -36,13 +36,26 @@ function readOptionalBoolean(name: string) {
   return undefined;
 }
 
-function createAdapter() {
-  const connectionString = process.env.DATABASE_URL;
+const LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
 
-  if (!connectionString) {
+function normalizeConnectionString(raw: string): string {
+  const url = new URL(raw);
+  const sslmode = url.searchParams.get('sslmode');
+  if (sslmode && LEGACY_SSL_MODES.has(sslmode)) {
+    url.searchParams.set('sslmode', 'verify-full');
+    return url.toString();
+  }
+  return raw;
+}
+
+function createAdapter() {
+  const raw = process.env.DATABASE_URL;
+
+  if (!raw) {
     throw new Error('DATABASE_URL is not set');
   }
 
+  const connectionString = normalizeConnectionString(raw);
   const url = new URL(connectionString);
   const sslRejectUnauthorized =
     readOptionalBoolean('PRISMA_SSL_REJECT_UNAUTHORIZED') ??

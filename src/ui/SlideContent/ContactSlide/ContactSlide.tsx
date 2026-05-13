@@ -1,6 +1,6 @@
-import { HTMLMotionProps, motion } from 'framer-motion';
+import { AnimatePresence, HTMLMotionProps, motion } from 'framer-motion';
 import { Smile } from 'lucide-react';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
 import { Slide } from '@/components/Slide';
 import {
@@ -16,6 +16,8 @@ import {
 import ContactForm from '@slides/ContactSlide/components/ContactForm';
 
 const ContactSlide: FC<HTMLMotionProps<'div'>> = (props) => {
+  const [sent, setSent] = useState(false);
+
   return (
     <Slide {...props} className="flex flex-col gap-12">
       <div className="flex flex-col gap-2 z-10">
@@ -41,15 +43,19 @@ const ContactSlide: FC<HTMLMotionProps<'div'>> = (props) => {
         animate={ContactCardFormWrapperAnimation.animate}
         transition={ContactCardFormWrapperAnimation.transition}
       >
-        <motion.h2
-          className="font-headings text-6xl text-black font-medium mb-2 text-nowrap flex items-center gap-6"
-          initial={ContactFormFirstMessageAnimation.initial}
-          animate={ContactFormFirstMessageAnimation.animate}
-          transition={ContactFormFirstMessageAnimation.transition}
-        >
-          Hello! <Smile size={80} />
-        </motion.h2>
-        <ContactForm />
+        <AnimatePresence>
+          {!sent && (
+            <motion.h2
+              className="font-headings text-6xl text-black font-medium mb-2 text-nowrap flex items-center gap-6"
+              initial={ContactFormFirstMessageAnimation.initial}
+              animate={ContactFormFirstMessageAnimation.animate}
+              transition={ContactFormFirstMessageAnimation.transition}
+            >
+              Hello! <Smile size={80} />
+            </motion.h2>
+          )}
+        </AnimatePresence>
+        <ContactForm onSuccess={() => setSent(true)} />
       </motion.div>
     </Slide>
   );

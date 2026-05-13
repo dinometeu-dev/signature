@@ -1,8 +1,10 @@
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import React from 'react';
+import React, { Suspense } from 'react';
 
+import FeedbackWidget from '@/components/FeedbackWidget';
+import MobileBlocker from '@/components/MobileBlocker';
 import PreventImageDrag from '@/components/PreventImageDrag';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -21,8 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground">
-        <PreventImageDrag />
-        {children}
+        <MobileBlocker />
+        <div className="hidden min-[1410px]:contents">
+          <PreventImageDrag />
+          {children}
+          <Suspense>
+            <FeedbackWidget />
+          </Suspense>
+        </div>
         <Toaster richColors position="top-right" />
         <SpeedInsights />
         <Analytics />

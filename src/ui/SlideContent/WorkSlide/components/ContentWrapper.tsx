@@ -74,18 +74,19 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
           'relative flex items-center justify-center shrink-0',
           className
         )}
+        initial={{ gap: '0px' }}
         animate={{
-          gap: currentActiveTab ? '24px' : '0',
+          gap: currentActiveTab ? '24px' : '0px',
         }}
         {...props}
       >
         <Title
           layout="position"
           animate={{
-            fontSize: currentActiveTab ? '80px' : '20px',
+            fontSize: currentActiveTab ? '80px' : '25px',
           }}
           onClick={onClick}
-          className="text-shadow-md"
+          className="text-shadow-lg"
           whileHover={TitleAnimations.whileHover}
         >
           {title.charAt(0).toUpperCase() + title.slice(1)}
@@ -93,7 +94,6 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
 
         <motion.div
           layout={false}
-          className="overflow-hidden"
           initial={false}
           animate={{
             width: currentActiveTab ? contentWidth : 0,
@@ -127,7 +127,7 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
           aria-hidden={!currentActiveTab}
         >
           <motion.div
-            className="text-black max-w-[28rem]"
+            className={cn('relative max-w-[28rem] p-5')}
             initial={false}
             animate={
               currentActiveTab
@@ -143,7 +143,24 @@ const ContentWrapper: FC<ContentWrapperProps> = ({
                   }
             }
           >
-            {children}
+            <div
+              className={cn(
+                'absolute top-0 left-0 w-full h-full rounded-xl',
+                'bg-black/30 backdrop-blur-md',
+                'scale-120'
+              )}
+              style={{
+                maskImage:
+                  'linear-gradient(to right, transparent, black 20%, black 80%, transparent), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+                maskComposite: 'intersect',
+                WebkitMaskImage:
+                  'linear-gradient(to right, transparent, black 20%, black 80%, transparent), linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+                WebkitMaskComposite: 'source-in',
+              }}
+            />
+            <div className={cn('relative text-white/90 text-shadow-xl')}>
+              {children}
+            </div>
           </motion.div>
         </motion.div>
 

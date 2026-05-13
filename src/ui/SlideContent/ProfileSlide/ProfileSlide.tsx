@@ -5,12 +5,18 @@ import React, { FC } from 'react';
 import Markdown from 'react-markdown';
 
 import { Slide } from '@/components/Slide';
-import type { PublicExperienceItem, PublicTechnology } from '@/lib/content/types';
 import { useTimeline } from '@/utils/providers/TimelineProvider';
 import BlurText from '@components/BlurText';
 import Loop from '@components/Loop';
 import ProfileImg from '@public/ProfileImg.png';
 import { ProfileDescriptionAnimation } from '@slides/ProfileSlide/animations/profile-info-animations';
+
+import { TimelineHintAnimation } from './animations/timeline-hint-animations';
+
+import type {
+  PublicExperienceItem,
+  PublicTechnology,
+} from '@/lib/content/types';
 
 const TimelineLoading = () => (
   <div className="relative flex h-[180px] w-full items-center">
@@ -113,8 +119,22 @@ const ProfileSlide: FC<ProfileSlideProps> = ({
             <Markdown>{description}</Markdown>
           </motion.span>
         </motion.div>
-        <div className="pr-80">
+        <div className="mr-80 relative">
           <Timeline experience={experience} />
+          {segmentHover === null && (
+            <motion.div
+              className="absolute left-1/2 -translate-x-1/2 mt-8 select-none flex items-end"
+              initial={TimelineHintAnimation.initial}
+              animate={TimelineHintAnimation.animate}
+              exit={TimelineHintAnimation.exit}
+              transition={TimelineHintAnimation.transition}
+            >
+              <motion.p className="text-base text-red-accent">*</motion.p>
+              <motion.p className="text-xs text-black/50 mb-1">
+                Hover the timeline to see more details
+              </motion.p>
+            </motion.div>
+          )}
         </div>
         <Loop
           logos={technologies}
